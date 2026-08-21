@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crazy Capital | Ambitious Reliability for Indian Entrepreneurs</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { font-family: 'Inter', sans-serif; background-color: #f9fafb; color: #1c1b1c; }
+        .glass { backdrop-filter: blur(12px); background: rgba(255, 255, 255, 0.8); }
+        .bento-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .bento-card:hover { transform: translateY(-4px); box-shadow: 0 12px 32px rgba(11, 14, 20, 0.08); }
+        .material-symbols-outlined { font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24; }
+        .step-active { background: #4b41e1; color: white; }
+    </style>
+</head>
+<body class="bg-background overflow-x-hidden">
+<!-- TopNavBar (Large) -->
+<header class="fixed top-0 w-full z-50 glass border-b border-outline-variant/30 shadow-sm">
+<div class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Crazy Capital</div>
+<nav class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-secondary font-bold border-b-2 border-secondary pb-1" href="#">Business</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Personal</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Invest</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Insure</a>
+</nav>
+<div class="flex items-center gap-6">
+<div class="hidden lg:block relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-low border-none rounded-full text-label-md focus:ring-2 focus:ring-secondary/20 transition-all" placeholder="Search services..." type="text"/>
+</div>
+<button class="bg-secondary text-on-secondary px-6 py-2.5 rounded-full font-label-md hover:opacity-90 transition-all">Consult Expert</button>
+<div class="flex gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-secondary">account_circle</span>
+</div>
+</div>
+</div>
+</header>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative py-20 px-margin-desktop overflow-hidden">
+<div class="max-w-container-max mx-auto grid lg:grid-cols-2 gap-16 items-center">
+<div class="z-10">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary/10 text-secondary rounded-full font-label-sm mb-6">
+<span class="material-symbols-outlined text-[16px]">verified</span>
+                        India's Most Trusted MSME Partner
+                    </div>
+<h1 class="font-display-lg text-display-lg mb-6 leading-tight">
+                        Start your business. <br/>
+<span class="text-secondary">Grow your wealth.</span> <br/>
+                        Protect your build.
+                    </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
+                        Comprehensive financial OS for the modern Indian entrepreneur. From company registration to multi-asset investment strategies, all in one dashboard.
+                    </p>
+<div class="flex flex-wrap gap-4">
+<button class="bg-primary text-on-primary px-8 py-4 rounded-xl font-label-md text-lg hover:scale-[1.02] transition-transform">Get Started Now</button>
+<button class="bg-[#FFB800] text-on-primary px-8 py-4 rounded-xl font-label-md text-lg hover:scale-[1.02] transition-transform">Book Advisory</button>
+</div>
+</div>
+<!-- Dashboard Preview Widget -->
+<div class="relative z-10">
+<div class="bg-surface-container-lowest p-8 rounded-3xl shadow-2xl border border-outline-variant/50 relative overflow-hidden">
+<div class="absolute top-0 right-0 p-4 opacity-10">
+<span class="material-symbols-outlined text-8xl">account_balance_wallet</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-8">Business Overview</h3>
+<div class="grid grid-cols-2 gap-6">
+<!-- GST Status -->
+<div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/30">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-on-tertiary-container">receipt_long</span>
+<span class="px-2 py-1 bg-on-tertiary-container/10 text-on-tertiary-container rounded text-[10px] font-bold">FILED</span>
+</div>
+<div class="text-label-sm text-outline mb-1">GST Filing (GSTR-3B)</div>
+<div class="font-headline-sm text-headline-sm">Q3 FY24</div>
+</div>
+<!-- Loan Status -->
+<div class="bg-surface-container-low p-5 rounded-2xl border border-outline-variant/30">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary">payments</span>
+<span class="px-2 py-1 bg-secondary/10 text-secondary rounded text-[10px] font-bold">ACTIVE</span>
+</div>
+<div class="text-label-sm text-outline mb-1">Business Expansion Loan</div>
+<div class="font-headline-sm text-headline-sm">₹45.0 L</div>
+</div>
+<!-- SIP Portfolio -->
+<div class="col-span-2 bg-secondary p-6 rounded-2xl text-white">
+<div class="flex justify-between items-center mb-4">
+<div>
+<div class="text-label-sm opacity-80">Monthly SIP Investments</div>
+<div class="font-headline-sm text-headline-sm">₹1,25,000</div>
+</div>
+<div class="text-right">
+<div class="text-[24px] font-bold">+14.2%</div>
+<div class="text-[10px] opacity-80 italic">Annualized Yield</div>
+</div>
+</div>
+<div class="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+<div class="h-full bg-[#89f5e7] w-3/4"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Elements -->
+<div class="absolute -top-10 -right-10 w-40 h-40 bg-secondary/10 rounded-full blur-3xl"></div>
+<div class="absolute -bottom-10 -left-10 w-40 h-40 bg-on-tertiary-container/10 rounded-full blur-3xl"></div>
+</div>
+</div>
+<!-- Background Animation Placeholder -->
+
+</section>
+<!-- Needs Selector -->
+<section class="py-16 bg-white border-y border-outline-variant/30">
+<div class="max-w-container-max mx-auto px-margin-desktop text-center">
+<h2 class="font-headline-md text-headline-md mb-12">What would you like to do today?</h2>
+<div class="flex flex-wrap justify-center gap-6">
+<button class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-secondary">rocket_launch</span>
+<span class="font-label-md">Start a Business</span>
+</button>
+<button class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-on-tertiary-container">history_edu</span>
+<span class="font-label-md">File GST</span>
+</button>
+<button class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-error">currency_rupee</span>
+<span class="font-label-md">Get Business Loan</span>
+</button>
+<button class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+<span class="font-label-md">Invest in Funds</span>
+</button>
+<button class="flex items-center gap-3 px-6 py-4 rounded-2xl bg-surface-container-lowest border border-outline-variant hover:border-secondary hover:text-secondary transition-all group">
+<span class="material-symbols-outlined text-on-tertiary-container">shield</span>
+<span class="font-label-md">Insure Assets</span>
+</button>
+</div>
+</div>
+</section>
+<!-- Bento Grid Services -->
+<section class="py-stack-xl px-margin-desktop bg-surface-container-low/30">
+<div class="max-w-container-max mx-auto">
+<div class="flex justify-between items-end mb-12">
+<div>
+<h2 class="font-display-lg text-display-lg mb-2">Our Ecosystem</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Everything your enterprise needs, under one digital roof.</p>
+</div>
+<a class="text-secondary font-label-md flex items-center gap-2 hover:underline" href="#">View All Services <span class="material-symbols-outlined">arrow_forward</span></a>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-6 grid-rows-2 gap-gutter h-auto lg:h-[600px]">
+<!-- Start a Business (Large) -->
+<div class="md:col-span-2 md:row-span-2 bento-card bg-primary-container text-white p-8 rounded-[32px] flex flex-col justify-between overflow-hidden relative">
+<div class="z-10">
+<div class="w-12 h-12 bg-white/10 rounded-xl flex items-center justify-center mb-6">
+<span class="material-symbols-outlined">business_center</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-4">Start a Business</h3>
+<p class="font-body-md opacity-70 mb-8">End-to-end incorporation for Pvt Ltd, LLP, or OPC with bank account opening and brand setup.</p>
+<ul class="space-y-3 font-label-sm opacity-90">
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">check_circle</span> DIN &amp; DSC Registration</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">check_circle</span> Name Approval in 24 hrs</li>
+<li class="flex items-center gap-2"><span class="material-symbols-outlined text-[18px]">check_circle</span> MOA &amp; AOA Drafting</li>
+</ul>
+</div>
+<img class="absolute bottom-0 right-0 w-1/2 opacity-30 grayscale hover:grayscale-0 transition-all" data-alt="A professional Indian female entrepreneur in a bright, modern glass-walled office, looking at her tablet with a confident smile. The scene is illuminated by soft, natural daylight, emphasizing a high-end corporate fintech aesthetic with clean lines and premium textures." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCvmvouK-GEqL8VmzBsYnwwoHmJxUinqfrIv1XWwnwWCbaxw8VDgChPZ72fNch3dseRwCzTc4qCHjnMqtybyg7lYCe2N5D2AWW2e3BGS4ABMhaxWtWyLoCuvm2c7cscl5ePB64ksVf226Yxf3egWWn8SMuVYkhz00XwXseANTdNG5AqNlZLk5NYca3EJYUoPK0gN_6Yw9thTi1XRq8g57ODofj7DSZT1b0fTAr2zBgbm_hRSzgLC4ueFg"/>
+</div>
+<!-- GST & Tax -->
+<div class="md:col-span-2 bento-card bg-white p-8 rounded-[32px] border border-outline-variant relative">
+<div class="flex justify-between items-start">
+<div>
+<h3 class="font-headline-sm text-headline-sm mb-2">GST &amp; Tax</h3>
+<p class="font-body-md text-on-surface-variant">Automated compliance for hassle-free scaling.</p>
+</div>
+<span class="material-symbols-outlined text-secondary p-3 bg-secondary/5 rounded-full">request_quote</span>
+</div>
+<div class="mt-8 flex gap-3">
+<span class="px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container rounded-full text-label-sm">Returns</span>
+<span class="px-3 py-1 bg-secondary/10 text-secondary rounded-full text-label-sm">Audits</span>
+<span class="px-3 py-1 bg-error/10 text-error rounded-full text-label-sm">TDS</span>
+</div>
+</div>
+<!-- Loans -->
+<div class="md:col-span-2 bento-card bg-secondary text-white p-8 rounded-[32px] overflow-hidden relative">
+<h3 class="font-headline-sm text-headline-sm mb-2">Business Loans</h3>
+<p class="font-body-md opacity-80 mb-6">Collateral-free credit up to ₹1 Crore.</p>
+<div class="text-[40px] font-bold">8.5% <span class="text-sm font-normal">p.a. onwards</span></div>
+<div class="absolute -bottom-4 -right-4 opacity-20">
+<span class="material-symbols-outlined text-9xl">account_balance</span>
+</div>
+</div>
+<!-- Insurance -->
+<div class="md:col-span-1 bento-card bg-surface-container-highest p-6 rounded-[32px]">
+<span class="material-symbols-outlined mb-4 text-on-tertiary-container">verified_user</span>
+<h4 class="font-headline-sm text-headline-sm mb-1">Insurance</h4>
+<p class="font-label-sm text-on-surface-variant leading-tight">Keyman &amp; Liability protection.</p>
+</div>
+<!-- MF -->
+<div class="md:col-span-1 bento-card bg-[#FFB800] p-6 rounded-[32px]">
+<span class="material-symbols-outlined mb-4 text-primary">pie_chart</span>
+<h4 class="font-headline-sm text-headline-sm mb-1">Wealth</h4>
+<p class="font-label-sm text-primary/80 leading-tight">Curated Mutual Funds.</p>
+</div>
+<!-- Broking -->
+<div class="md:col-span-2 bento-card bg-surface-container-lowest p-6 rounded-[32px] border border-outline-variant flex items-center justify-between">
+<div>
+<h4 class="font-headline-sm text-headline-sm mb-1">Stock Broking</h4>
+<p class="font-body-md text-on-surface-variant">Low cost, high leverage trading.</p>
+</div>
+<span class="material-symbols-outlined text-secondary text-4xl">show_chart</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Lifecycle Journey -->
+<section class="py-stack-xl px-margin-desktop">
+<div class="max-w-container-max mx-auto text-center mb-16">
+<h2 class="font-display-lg text-display-lg mb-4">The Entrepreneur's Journey</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">We guide you through every phase of business maturity.</p>
+</div>
+<div class="max-w-container-max mx-auto relative">
+<!-- Progress Line -->
+<div class="absolute top-1/2 left-0 w-full h-[2px] bg-outline-variant/30 hidden lg:block -translate-y-1/2"></div>
+<div class="grid lg:grid-cols-6 gap-8 relative z-10">
+<!-- Steps -->
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border-2 border-secondary text-secondary mb-4 font-headline-sm">1</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Idea</h5>
+<p class="font-label-sm text-on-surface-variant">Concept Validation &amp; Research</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border-2 border-secondary text-secondary mb-4 font-headline-sm">2</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Setup</h5>
+<p class="font-label-sm text-on-surface-variant">Registration &amp; GST Setup</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-secondary text-white mb-4 font-headline-sm shadow-lg shadow-secondary/40">3</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Growth</h5>
+<p class="font-label-sm text-on-surface-variant">Funding &amp; Team Expansion</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border-2 border-outline-variant text-outline mb-4 font-headline-sm">4</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Compliance</h5>
+<p class="font-label-sm text-on-surface-variant">Audits &amp; Tax Governance</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border-2 border-outline-variant text-outline mb-4 font-headline-sm">5</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Protection</h5>
+<p class="font-label-sm text-on-surface-variant">Risk Management &amp; IP</p>
+</div>
+<div class="flex flex-col items-center text-center">
+<div class="w-16 h-16 rounded-full flex items-center justify-center bg-white border-2 border-outline-variant text-outline mb-4 font-headline-sm">6</div>
+<h5 class="font-headline-sm text-[18px] mb-2">Wealth</h5>
+<p class="font-label-sm text-on-surface-variant">Personal &amp; Business Yield</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Local Presence Section -->
+<section class="py-stack-xl bg-primary-container text-white overflow-hidden">
+<div class="max-w-container-max mx-auto px-margin-desktop grid lg:grid-cols-2 gap-20 items-center">
+<div>
+<h2 class="font-display-lg text-display-lg mb-6">Digital First, <br/><span class="text-[#89f5e7]">Human Always.</span></h2>
+<p class="font-body-lg opacity-80 mb-10">Access Crazy Capital's network of over 250+ Strategic Partners across India. Get in-person advisory when you need it most.</p>
+<div class="bg-white/5 p-8 rounded-3xl border border-white/10">
+<h4 class="font-headline-sm text-[20px] mb-4">Find a Partner near you</h4>
+<div class="flex gap-4">
+<div class="flex-1 relative">
+<span class="material-symbols-outlined absolute left-4 top-1/2 -translate-y-1/2 text-white/40">location_on</span>
+<input class="w-full pl-12 pr-4 py-4 bg-white/10 border-white/20 rounded-xl focus:ring-secondary text-white placeholder:text-white/30" placeholder="Enter Pincode or City" type="text"/>
+</div>
+<button class="bg-[#89f5e7] text-on-tertiary-fixed px-8 py-4 rounded-xl font-label-md hover:bg-white transition-colors">Search</button>
+</div>
+</div>
+<div class="mt-12 grid grid-cols-3 gap-8">
+<div>
+<div class="text-3xl font-bold mb-1">250+</div>
+<div class="text-label-sm opacity-60 uppercase tracking-widest">Cities</div>
+</div>
+<div>
+<div class="text-3xl font-bold mb-1">1,200+</div>
+<div class="text-label-sm opacity-60 uppercase tracking-widest">Experts</div>
+</div>
+<div>
+<div class="text-3xl font-bold mb-1">4.9/5</div>
+<div class="text-label-sm opacity-60 uppercase tracking-widest">Partner Rating</div>
+</div>
+</div>
+</div>
+<div class="relative h-[500px]">
+<div class="absolute inset-0 bg-white/5 rounded-[40px] overflow-hidden">
+<!-- Map Placeholder -->
+<div class="w-full h-full bg-cover bg-center opacity-40" data-location="India" style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCJbtEK_L11IpI_peIHPWNuOOhj3fzrwoTUH5osnD9LR0l4CGyI5DHKmSL3P84RqZY3-uOktMiez3wx-Ix7cFQwBOsm2sCih8GGDhxcbZ_4mA6veuwRTjng8CZQr9RySyWLUXXMr7GSUloUVbaW08Ijf09400g8fsPDopDagf4nVZ8jd_YwMe0Ral-iLAjuDahFShkupNHnuj2Dnn_JNqAfgpeZVAayCIK1CGTJWPNe957-qWvVcZcDoA')"></div>
+<!-- Pulse Dots -->
+<div class="absolute top-1/4 left-1/2 w-4 h-4 bg-[#89f5e7] rounded-full animate-ping"></div>
+<div class="absolute top-2/3 left-1/3 w-4 h-4 bg-[#89f5e7] rounded-full animate-ping delay-75"></div>
+<div class="absolute bottom-1/4 right-1/4 w-4 h-4 bg-[#89f5e7] rounded-full animate-ping delay-150"></div>
+</div>
+</div>
+</div>
+</section>
+<!-- Trust Strip & Testimonials -->
+<section class="py-stack-xl bg-white">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center mb-16">
+<h2 class="font-headline-md text-headline-md mb-2">Trusted by 50,000+ Founders</h2>
+<p class="font-body-md text-on-surface-variant">Real stories from the backbones of the Indian economy.</p>
+</div>
+<div class="grid md:grid-cols-3 gap-8">
+<!-- Testimonial 1 -->
+<div class="bg-surface-container-low p-8 rounded-[32px] border border-outline-variant/30">
+<div class="flex gap-1 text-[#FFB800] mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md italic mb-8">"Crazy Capital handled my company registration and GST within a week. Their loan advisory helped me scale my retail chain to 5 new locations in Bengaluru."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A portrait of a middle-aged Indian man with a warm, genuine smile, wearing a professional smart-casual attire. He looks like a successful shopkeeper or retail business owner, standing in a well-lit storefront with a blurred commercial background, in high-end photography style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCugTtHnXlBnPL32HHUo0qmGUoFAGedVruY195-fjTj1Cz4TWp8cVmdVodScgtNwNHwI3d_NEC_S1gB2y_kowlugwFnJozBhGunGjsBXV794Tp81l6U2e67PW_8BN53SodWmMuTZIKXvhvKwssX67EYfZRjT6jl6Dl-UjRXl_mX82PZSVzBOoyrjD1C6cwTBkSCI-w89G_g4Xy03PtzOLyq-sMmZaRX40JLDMbQFT8ehCka8JYRPUY7Aw"/>
+</div>
+<div>
+<div class="font-label-md">Anand Deshmukh</div>
+<div class="font-label-sm text-outline">Founder, GreenRetail India</div>
+</div>
+</div>
+</div>
+<!-- Testimonial 2 -->
+<div class="bg-surface-container-low p-8 rounded-[32px] border border-outline-variant/30">
+<div class="flex gap-1 text-[#FFB800] mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md italic mb-8">"As a startup founder, managing equity and taxes is a nightmare. Crazy Capital's platform makes it so transparent. Their mutual fund advice is a bonus for my personal wealth."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A young Indian female tech founder in her late 20s, with sharp features and a modern professional look, sitting in a contemporary coworking space with vibrant greenery and soft architectural lighting. The image conveys ambition and technological success." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB2KcwMWBq6YvclmabSr0r_oKr5ZENiNICf0yWdBVzCWREPwdE6edOcowXo91F159zptKa5EqSaqPTUPz0RD_bS1y9HZfIXmDFESfjKONziEeJ0AltAIzB7jfyRohjbXtiI2ejeoUjRPJMtid321HPy_m00CGt3Ys0N72x1BPvtZPpuEXiD9jebCYgbTh-AaYi_MjPboF7IvLhI9Xy4vxb3iUPjXiaFv8C4Oeq4ZQ_9xZ3-s9CRXZVz7Q"/>
+</div>
+<div>
+<div class="font-label-md">Priya Sharma</div>
+<div class="font-label-sm text-outline">CEO, NexGen Systems</div>
+</div>
+</div>
+</div>
+<!-- Testimonial 3 -->
+<div class="bg-surface-container-low p-8 rounded-[32px] border border-outline-variant/30">
+<div class="flex gap-1 text-[#FFB800] mb-6">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">star</span>
+</div>
+<p class="font-body-md italic mb-8">"The insurance experts at Crazy Capital identified gaps in my liability cover that two other brokers missed. Reliable, technical, and fast."</p>
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 rounded-full overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A distinguished senior Indian professional man with graying hair and glasses, wearing a tailored blazer, looking thoughtfully into the distance. The setting is a library-like executive office with warm, professional lighting, reflecting high reliability and institutional trust." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDA7F3BfNWuIE1mQ0dx44A41Bfdsx2f4AumvtDQYEdPWSmDhANW5dD81UwPlI3s4VYXSjW7W-dH6_fjT39krVSbbxV0jv4w-V3YacYDLVqKdvX1U6A-i63dy8AFPq8usvd4x1fMQNBruDl9HsJoQGQoaoaKEMYTMqDWa9Ca-MSGsz-s2NRArKV6UW9v7OEDZsQsuCgSLOM5v2fDetbh1S51HfbjaB9q139pIPvzo_z3yqea6IAUxUcp7A"/>
+</div>
+<div>
+<div class="font-label-md">V.K. Malhotra</div>
+<div class="font-label-sm text-outline">Director, Malhotra Logistics</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container text-on-primary-container w-full py-stack-xl border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col gap-4">
+<div class="font-headline-md text-headline-md text-surface-bright font-bold">Crazy Capital</div>
+<p class="font-body-md opacity-60">Empowering the next generation of Indian business leaders with technology and trust.</p>
+<div class="flex gap-4 mt-4">
+<span class="material-symbols-outlined cursor-pointer hover:text-surface-bright">public</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-surface-bright">alternate_email</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-surface-bright">phone_in_talk</span>
+</div>
+</div>
+<div>
+<h4 class="font-label-md text-surface-bright mb-6">Company</h4>
+<ul class="space-y-4 font-body-md">
+<li><a class="hover:text-surface-bright transition-colors" href="#">About Us</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Partner Program</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Office Locations</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Contact Support</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-surface-bright mb-6">Services</h4>
+<ul class="space-y-4 font-body-md">
+<li><a class="hover:text-surface-bright transition-colors" href="#">GST Registration</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Company Setup</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Wealth Management</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Insurance</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-surface-bright mb-6">Legal</h4>
+<ul class="space-y-4 font-body-md">
+<li><a class="hover:text-surface-bright transition-colors" href="#">Terms of Service</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Privacy Policy</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Regulatory Disclosure</a></li>
+</ul>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop mt-16 pt-8 border-t border-white/10 flex flex-col md:flex-row justify-between items-center gap-4 font-label-sm opacity-60">
+<div>© 2024 Crazy Capital Fintech. All rights reserved.</div>
+<div class="flex gap-8">
+<span>SEBI Registered Investment Advisor: INA0000XXXXX</span>
+<span>GSTIN: 29XXXXX0000X1Z1</span>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interaction for Sticky Nav
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('header');
+            if (window.scrollY > 20) {
+                header.classList.add('shadow-md');
+                header.classList.remove('shadow-sm');
+            } else {
+                header.classList.remove('shadow-md');
+                header.classList.add('shadow-sm');
+            }
+        });
+
+        // Hover animation for Dashboard Cards
+        const dashboardItems = document.querySelectorAll('.bg-surface-container-low');
+        dashboardItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                item.style.transform = 'scale(1.02)';
+                item.style.transition = 'transform 0.2s ease-out';
+            });
+            item.addEventListener('mouseleave', () => {
+                item.style.transform = 'scale(1)';
+            });
+        });
+    </script>
+</body></html>

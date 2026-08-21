@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Partner Hub | Crazy Capital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: #fcf8f9;
+            color: #1c1b1c;
+            -webkit-font-smoothing: antialiased;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .glass-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 12px 32px rgba(11, 14, 20, 0.08);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .active-icon {
+            font-variation-settings: 'FILL' 1;
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md overflow-x-hidden">
+<!-- Sidebar Navigation Shell -->
+<aside class="h-screen w-64 fixed left-0 top-0 bg-surface dark:bg-primary-container shadow-md flex flex-col p-stack-md gap-stack-sm z-40">
+<div class="mb-stack-lg">
+<h1 class="font-headline-sm text-headline-sm font-extrabold text-primary">Crazy Capital</h1>
+<p class="font-label-sm text-label-sm text-on-surface-variant opacity-70">Partner Hub</p>
+</div>
+<nav class="flex flex-col gap-2 flex-grow">
+<!-- Active State: Cases -->
+<a class="flex items-center gap-3 bg-secondary-container text-on-secondary-container rounded-lg px-4 py-3 active:scale-98 transition-transform" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">folder_shared</span>
+<span class="font-label-md text-label-md">Cases</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Customers</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">timeline</span>
+<span class="font-label-md text-label-md">Case Pipeline</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">leaderboard</span>
+<span class="font-label-md text-label-md">Leads</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="font-label-md text-label-md">Earnings</span>
+</a>
+<a class="flex items-center gap-3 text-on-surface-variant hover:bg-surface-variant rounded-lg px-4 py-3 hover:translate-x-1 transition-transform" href="#">
+<span class="material-symbols-outlined">school</span>
+<span class="font-label-md text-label-md">Training</span>
+</a>
+</nav>
+<div class="mt-auto pt-6 border-t border-outline-variant/30">
+<div class="flex items-center gap-3 p-2">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed flex items-center justify-center text-on-secondary-fixed font-bold">
+                    SA
+                </div>
+<div>
+<p class="font-label-md text-label-md text-on-surface">Strategic Advisor</p>
+<p class="text-[10px] uppercase tracking-wider text-on-surface-variant font-bold">Partner ID: CC-9921</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="ml-64 min-h-screen p-margin-desktop">
+<!-- Header & Action Bar -->
+<header class="flex justify-between items-end mb-stack-xl">
+<div>
+<h2 class="font-display-lg text-display-lg text-primary">Partner Dashboard</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Welcome back. You have <span class="text-secondary font-bold">12 cases</span> requiring attention today.</p>
+</div>
+<div class="flex gap-4">
+<button class="px-6 py-3 bg-surface-container border border-outline-variant rounded-xl font-label-md text-label-md flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined">download</span>
+                    Export Reports
+                </button>
+<button class="px-8 py-3 bg-primary text-on-primary rounded-xl font-label-md text-label-md flex items-center gap-2 shadow-lg hover:shadow-xl transition-all scale-100 active:scale-95" onclick="document.getElementById('upload-modal').classList.remove('hidden')">
+<span class="material-symbols-outlined">add_circle</span>
+                    Submit New Case
+                </button>
+</div>
+</header>
+<!-- KPI Bento Row -->
+<div class="bento-grid mb-gutter">
+<!-- Monthly Earnings -->
+<div class="col-span-12 md:col-span-3 glass-card rounded-3xl p-stack-md flex flex-col justify-between">
+<div>
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-secondary bg-secondary-fixed p-2 rounded-lg">payments</span>
+<span class="text-on-tertiary-container font-label-sm px-2 py-1 bg-tertiary/5 rounded-full">+14.2%</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Monthly Earnings</p>
+<h3 class="font-headline-md text-headline-md text-primary mt-1">₹4,28,500</h3>
+</div>
+<div class="mt-4 h-1 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-3/4"></div>
+</div>
+</div>
+<!-- Active Cases -->
+<div class="col-span-12 md:col-span-3 glass-card rounded-3xl p-stack-md">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-on-secondary-fixed-variant bg-secondary-fixed-dim p-2 rounded-lg">folder_open</span>
+<span class="material-symbols-outlined text-on-surface-variant/30">more_horiz</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Active Cases</p>
+<h3 class="font-headline-md text-headline-md text-primary mt-1">42</h3>
+<p class="text-label-sm font-label-sm text-secondary mt-2">8 pending signature</p>
+</div>
+<!-- Conversion Rate -->
+<div class="col-span-12 md:col-span-3 glass-card rounded-3xl p-stack-md">
+<div class="flex justify-between items-start mb-4">
+<span class="material-symbols-outlined text-on-tertiary-fixed-variant bg-tertiary-fixed p-2 rounded-lg">analytics</span>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest">Conversion Rate</p>
+<h3 class="font-headline-md text-headline-md text-primary mt-1">68.4%</h3>
+<div class="flex items-center gap-1 text-on-tertiary-container font-label-sm mt-2">
+<span class="material-symbols-outlined text-sm">trending_up</span>
+<span>Above region average</span>
+</div>
+</div>
+<!-- Case Pipeline Snapshot -->
+<div class="col-span-12 md:col-span-3 glass-card rounded-3xl p-stack-md bg-primary-container border-none text-on-primary">
+<p class="font-label-sm text-label-sm text-on-primary-container uppercase tracking-widest mb-4">Pipeline Value</p>
+<h3 class="font-headline-md text-headline-md text-surface-bright">₹1.2 Cr</h3>
+<div class="mt-6 flex flex-col gap-2">
+<div class="flex justify-between text-label-sm">
+<span>Underwriting</span>
+<span>₹45L</span>
+</div>
+<div class="w-full h-1 bg-white/10 rounded-full">
+<div class="h-full bg-secondary-fixed w-1/3"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Content Area -->
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Pending Documentation (Table Style) -->
+<div class="col-span-12 lg:col-span-8 glass-card rounded-3xl p-stack-lg">
+<div class="flex justify-between items-center mb-6">
+<h4 class="font-headline-sm text-headline-sm text-primary">Pending Documentation</h4>
+<a class="text-secondary font-label-md hover:underline" href="#">View all cases</a>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left">
+<thead>
+<tr class="border-b border-outline-variant/30 text-on-surface-variant font-label-sm uppercase tracking-widest">
+<th class="pb-4 font-medium">Customer</th>
+<th class="pb-4 font-medium">Case Type</th>
+<th class="pb-4 font-medium">Missing Doc</th>
+<th class="pb-4 font-medium">Urgency</th>
+<th class="pb-4 font-medium">Action</th>
+</tr>
+</thead>
+<tbody class="text-body-md">
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+<td class="py-5">
+<div class="font-bold">Aravind Exports Ltd</div>
+<div class="text-label-sm text-on-surface-variant">CC-ID: 4421</div>
+</td>
+<td class="py-5">MSME Credit</td>
+<td class="py-5">
+<span class="text-error font-medium">ITR FY 2023-24</span>
+</td>
+<td class="py-5">
+<span class="px-3 py-1 rounded-full bg-error/10 text-error text-label-sm font-bold">Critical</span>
+</td>
+<td class="py-5">
+<button class="p-2 rounded-full hover:bg-secondary-fixed text-secondary transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</td>
+</tr>
+<tr class="border-b border-outline-variant/10 hover:bg-surface-container-low transition-colors group">
+<td class="py-5">
+<div class="font-bold">Zenith Tech Soft</div>
+<div class="text-label-sm text-on-surface-variant">CC-ID: 4509</div>
+</td>
+<td class="py-5">Working Capital</td>
+<td class="py-5">GST Certificate</td>
+<td class="py-5">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-secondary text-label-sm font-bold">Normal</span>
+</td>
+<td class="py-5">
+<button class="p-2 rounded-full hover:bg-secondary-fixed text-secondary transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</td>
+</tr>
+<tr class="hover:bg-surface-container-low transition-colors group">
+<td class="py-5">
+<div class="font-bold">Mehta Logistics</div>
+<div class="text-label-sm text-on-surface-variant">CC-ID: 4612</div>
+</td>
+<td class="py-5">Term Loan</td>
+<td class="py-5">Property Paper</td>
+<td class="py-5">
+<span class="px-3 py-1 rounded-full bg-secondary-fixed text-secondary text-label-sm font-bold">Normal</span>
+</td>
+<td class="py-5">
+<button class="p-2 rounded-full hover:bg-secondary-fixed text-secondary transition-all">
+<span class="material-symbols-outlined">send</span>
+</button>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Customer Follow-ups (Feed Style) -->
+<div class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- Customer Follow-ups Widget -->
+<div class="glass-card rounded-3xl p-stack-lg flex-grow">
+<h4 class="font-headline-sm text-headline-sm text-primary mb-6">Today's Follow-ups</h4>
+<div class="space-y-6">
+<div class="flex gap-4 items-start border-l-4 border-secondary pl-4">
+<div class="flex-grow">
+<p class="font-label-md text-label-md">Call: Rajesh Kumar</p>
+<p class="text-label-sm text-on-surface-variant">Verify bank statements for Loan ID 882</p>
+<span class="text-secondary text-[10px] font-bold uppercase mt-1 inline-block">10:30 AM</span>
+</div>
+<button class="text-on-surface-variant hover:text-secondary"><span class="material-symbols-outlined">phone</span></button>
+</div>
+<div class="flex gap-4 items-start border-l-4 border-outline-variant pl-4">
+<div class="flex-grow">
+<p class="font-label-md text-label-md">Meeting: Priya Sharma</p>
+<p class="text-label-sm text-on-surface-variant">Franchise agreement sign-off</p>
+<span class="text-on-surface-variant text-[10px] font-bold uppercase mt-1 inline-block">02:00 PM</span>
+</div>
+<button class="text-on-surface-variant hover:text-secondary"><span class="material-symbols-outlined">calendar_today</span></button>
+</div>
+<div class="flex gap-4 items-start border-l-4 border-outline-variant pl-4 opacity-60">
+<div class="flex-grow">
+<p class="font-label-md text-label-md">Email: Amit Gupta</p>
+<p class="text-label-sm text-on-surface-variant">KYC Re-submission link</p>
+<span class="text-on-surface-variant text-[10px] font-bold uppercase mt-1 inline-block">04:30 PM</span>
+</div>
+<button class="text-on-surface-variant hover:text-secondary"><span class="material-symbols-outlined">mail</span></button>
+</div>
+</div>
+<button class="w-full mt-8 py-3 rounded-xl border border-dashed border-outline text-on-surface-variant font-label-md hover:border-secondary hover:text-secondary transition-colors">
+                        + Add Reminder
+                    </button>
+</div>
+<!-- Training & Knowledge Widget -->
+<div class="bg-secondary-fixed rounded-3xl p-stack-lg relative overflow-hidden group">
+<div class="relative z-10">
+<h4 class="font-label-md text-label-md text-on-secondary-fixed uppercase tracking-widest mb-2">New Training</h4>
+<p class="font-headline-sm text-headline-sm text-on-secondary-fixed mb-4">Mastering the New MSME Credit Policy</p>
+<button class="px-4 py-2 bg-secondary text-on-secondary rounded-lg font-label-md flex items-center gap-2 group-hover:gap-4 transition-all">
+                            Start Learning
+                            <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+<span class="material-symbols-outlined absolute -right-4 -bottom-4 text-9xl text-on-secondary-fixed/5 rotate-12 transition-transform group-hover:rotate-0">school</span>
+</div>
+</div>
+</div>
+<!-- Footer Shell -->
+<footer class="mt-stack-xl pt-stack-md border-t border-outline-variant/30 flex justify-between items-center text-on-surface-variant font-label-sm">
+<p>© 2024 Crazy Capital Fintech. All rights reserved.</p>
+<div class="flex gap-6">
+<a class="hover:text-primary transition-colors" href="#">Partner Support</a>
+<a class="hover:text-primary transition-colors" href="#">Guidelines</a>
+<a class="hover:text-primary transition-colors" href="#">Compliance</a>
+</div>
+</footer>
+</main>
+<!-- Modal: Submit New Case (Overlay) -->
+<div class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-primary/40 backdrop-blur-sm p-4" id="upload-modal">
+<div class="bg-surface-container-lowest w-full max-w-2xl rounded-3xl shadow-2xl overflow-hidden animate-in fade-in zoom-in duration-300">
+<div class="p-stack-lg border-b border-outline-variant/30 flex justify-between items-center">
+<h3 class="font-headline-sm text-headline-sm text-primary">New Case Submission</h3>
+<button class="p-2 hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors" onclick="document.getElementById('upload-modal').classList.add('hidden')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="p-stack-lg">
+<div class="grid grid-cols-2 gap-gutter mb-6">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Customer Type</label>
+<select class="w-full rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary">
+<option>New Customer</option>
+<option>Existing Customer</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Product Category</label>
+<select class="w-full rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary">
+<option>Business Loan</option>
+<option>Equipment Finance</option>
+<option>Working Capital</option>
+</select>
+</div>
+</div>
+<div class="border-2 border-dashed border-outline-variant rounded-3xl p-12 text-center group cursor-pointer hover:border-secondary hover:bg-secondary/5 transition-all">
+<span class="material-symbols-outlined text-5xl text-outline-variant group-hover:text-secondary mb-4 transition-colors">cloud_upload</span>
+<p class="font-headline-sm text-headline-sm text-primary">Upload Documents</p>
+<p class="font-body-md text-body-md text-on-surface-variant mt-2">Drag and drop GST, ITR, and Bank Statements here</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant mt-4">Supported formats: PDF, JPEG, PNG (Max 25MB per file)</p>
+</div>
+<div class="mt-8 flex justify-end gap-4">
+<button class="px-6 py-3 font-label-md text-on-surface-variant hover:text-primary" onclick="document.getElementById('upload-modal').classList.add('hidden')">Cancel</button>
+<button class="px-10 py-3 bg-secondary text-on-secondary rounded-xl font-label-md shadow-lg shadow-secondary/20 hover:shadow-xl hover:bg-on-secondary-fixed-variant transition-all">Process Case</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Background Atmospheric Effect -->
+<div class="fixed inset-0 -z-50 opacity-20 pointer-events-none">
+
+</div>
+<script>
+        // Simple Interaction logic
+        document.querySelectorAll('.glass-card').forEach(card => {
+            card.addEventListener('mousedown', () => card.classList.add('scale-98'));
+            card.addEventListener('mouseup', () => card.classList.remove('scale-98'));
+        });
+
+        // Close modal on escape
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.getElementById('upload-modal').classList.add('hidden');
+            }
+        });
+    </script>
+</body></html>

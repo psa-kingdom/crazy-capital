@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Invest &amp; Insure | Crazy Capital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 24px;
+        }
+        .dual-split {
+            background: linear-gradient(90deg, #fcf8f9 50%, #f1eded 50%);
+        }
+        @media (max-width: 1024px) {
+            .dual-split {
+                background: #fcf8f9;
+            }
+        }
+    </style>
+</head>
+<body class="bg-surface font-body-md text-on-surface">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 shadow-sm h-20 px-margin-desktop">
+<div class="max-w-container-max mx-auto flex justify-between items-center h-full">
+<div class="flex items-center gap-12">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Crazy Capital</span>
+<div class="hidden md:flex gap-8">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Business</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Personal</a>
+<a class="font-label-md text-label-md text-secondary font-bold border-b-2 border-secondary pb-1" href="#">Invest</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Insure</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<button class="bg-secondary text-on-secondary px-6 py-2.5 rounded-full font-label-md text-label-md hover:scale-95 transition-transform duration-200">Consult Expert</button>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-low p-2 rounded-full transition-colors">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:bg-surface-container-low p-2 rounded-full transition-colors">account_circle</span>
+</div>
+</div>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Split Layout -->
+<section class="relative dual-split min-h-[716px] flex items-center overflow-hidden">
+<div class="max-w-container-max mx-auto w-full px-margin-desktop grid grid-cols-1 lg:grid-cols-2 gap-0">
+<!-- Protect Side -->
+<div class="py-stack-xl pr-12">
+<div class="flex items-center gap-2 mb-4 text-on-tertiary-container">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">security</span>
+<span class="font-label-md text-label-md tracking-widest">FINANCIAL SHIELD</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary mb-6">Protect What <br/>Matters Most.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-md">Comprehensive insurance solutions for MSMEs and individuals. Secure your health, life, and enterprise against the unexpected.</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="glass-card p-6 rounded-xl hover:shadow-lg transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-secondary mb-4">medical_services</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Health</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Cashless in 10k+ hospitals</p>
+</div>
+<div class="glass-card p-6 rounded-xl hover:shadow-lg transition-all cursor-pointer group">
+<span class="material-symbols-outlined text-secondary mb-4">business_center</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Business</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Asset &amp; Liability cover</p>
+</div>
+</div>
+</div>
+<!-- Grow Side -->
+<div class="py-stack-xl pl-12">
+<div class="flex items-center gap-2 mb-4 text-secondary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">trending_up</span>
+<span class="font-label-md text-label-md tracking-widest">WEALTH ENGINE</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary mb-6">Grow Beyond <br/>Boundaries.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-8 max-w-md">Data-driven investment strategies. From Mutual Funds to Corporate Bonds, build a portfolio that works as hard as you do.</p>
+<div class="grid grid-cols-2 gap-4">
+<div class="bg-white/40 p-6 rounded-xl hover:shadow-lg transition-all cursor-pointer border border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary mb-4">account_balance</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Mutual Funds</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Curated high-alpha baskets</p>
+</div>
+<div class="bg-white/40 p-6 rounded-xl hover:shadow-lg transition-all cursor-pointer border border-outline-variant/30">
+<span class="material-symbols-outlined text-secondary mb-4">analytics</span>
+<h3 class="font-headline-sm text-headline-sm mb-1">Demat</h3>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Zero-fee equity accounts</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Decorative Element -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 hidden lg:block">
+<div class="w-16 h-16 bg-primary rounded-full flex items-center justify-center text-white shadow-xl z-10">
+<span class="material-symbols-outlined">sync_alt</span>
+</div>
+</div>
+</section>
+<!-- Goal-based Discovery (Bento Grid) -->
+<section class="py-stack-xl bg-surface">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="text-center mb-12">
+<h2 class="font-headline-md text-headline-md mb-2">Invest for Your Goals</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">India's first outcome-linked wealth management interface.</p>
+</div>
+<div class="bento-grid">
+<!-- Retirement -->
+<div class="col-span-12 lg:col-span-6 h-[400px] relative rounded-3xl overflow-hidden group cursor-pointer shadow-md">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="A serene landscape of a luxury beach villa in Kerala at sunset, featuring warm orange and purple hues. The scene includes a sophisticated elder couple walking hand-in-hand along the shore, symbolizing financial freedom and a peaceful retirement. The lighting is soft and cinematic, following a premium light-mode corporate aesthetic with deep indigo accents." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuAC4EyIz5bBFIH9_5VtXM169RUfeoU3hG1Sib-8z0QG1YSbZfspx1ub714iE3uCjAC7CGl4ED6mSXPy5uQYFXbvmg0njVa2wOXIkoefpb0WCiDApnfuJ_ESpECyjn57np8kEVIX8NYddzXyc7KWUA5vtpzCk3Mpx-RjG1lYkVphUcJ5wtXhj0cvL9p-bVLm_y6e6k6QnJ8MPvoStE8-PiD9TK3mbNcfJPD5TP6o8sWhiXIAVDhWLQmwxQ')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 text-white">
+<span class="inline-block bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm px-3 py-1 rounded-full mb-4">RETIREMENT</span>
+<h3 class="font-display-lg text-headline-md mb-2">Build a Corpus for <br/>Golden Years</h3>
+<p class="font-body-md opacity-80 mb-6 max-w-sm">Target ₹5 Cr+ inflation-adjusted corpus with low-risk debt and blue-chip equity.</p>
+<button class="flex items-center gap-2 font-label-md text-label-md hover:gap-4 transition-all">Explore Plan <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</div>
+<!-- Wealth Creation -->
+<div class="col-span-12 lg:col-span-6 h-[400px] relative rounded-3xl overflow-hidden group cursor-pointer shadow-md">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="A high-tech digital representation of a modern city skyline at night with glowing data streams and neon indigo lines connecting buildings. The style is tech-luxe and ambitious, representing aggressive wealth creation and market growth. The image uses sharp focus and vibrant dark-to-light gradients consistent with a premium fintech brand." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuBYxVYjI1TU4Twdsw_vJD5z1KspvwXeHPt4d6_V4ZrlxENZwamS6a7XUbpQI2_l9yZsUJU1etOW2gFCL_2Wz_s6vYh-N6oyvpDaxh5DKG1uG5be1vik0cTB7q0yHOpf0d0C-pD4RyDEz_vb4jJKYPFsJzxNXXlRqzQnq85scQk5hM4IHr1U0Dn3s0HK-XXvu9W4p6xs3JAkELSv8f3mWX-QetMruscx9G29nDTlUdkGC3lSOX25a9v3EA')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/80 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-8 text-white">
+<span class="inline-block bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm px-3 py-1 rounded-full mb-4">WEALTH CREATION</span>
+<h3 class="font-display-lg text-headline-md mb-2">Aggressive Growth <br/>Small-Cap Alpha</h3>
+<p class="font-body-md opacity-80 mb-6 max-w-sm">Optimized for high-risk appetites with 18% target CAGR over 5-7 years.</p>
+<button class="flex items-center gap-2 font-label-md text-label-md hover:gap-4 transition-all">Start Investing <span class="material-symbols-outlined">arrow_forward</span></button>
+</div>
+</div>
+<!-- Child Education -->
+<div class="col-span-12 lg:col-span-4 h-[300px] relative rounded-3xl overflow-hidden group cursor-pointer shadow-md">
+<div class="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" data-alt="A bright, airy library or high-end university campus with students collaborating. Soft natural light streams through large windows, highlighting a clean, optimistic atmosphere. The visual palette includes soft whites and rich indigo accents, representing ambition and a bright future through child education funding." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCBNDMfhnZ6NqL7t1oDp6wfwG9g8SQehjgC357Tb0Ihv7s_GvkBWdXd-N1MP3zNox72rfF3u893bR_JGP6z_uFYqCDwPxIY9NBL1vo2BQqPvWv2PILiYmtHWqSOwlemXoAFgOwkDw2PaFLveN_-wj5XSVeARismrtnVunVZRIamFOdWqZtQmQnI0x0kHe_sKAKnREWAhCYV9PBTcSAbcLE8nCWdj9i60jiJLxcvk5ufEkKXM6ByLa1aDg')"></div>
+<div class="absolute inset-0 bg-gradient-to-t from-primary/60 to-transparent"></div>
+<div class="absolute bottom-0 left-0 p-6 text-white">
+<h3 class="font-headline-sm text-headline-sm mb-1">Global Education</h3>
+<p class="font-label-sm text-label-sm opacity-90">International university funds</p>
+</div>
+</div>
+<!-- Tax Saving -->
+<div class="col-span-12 lg:col-span-4 h-[300px] bg-secondary-container rounded-3xl p-8 flex flex-col justify-between text-white shadow-md relative overflow-hidden">
+<span class="material-symbols-outlined text-6xl opacity-20 absolute -right-4 -bottom-4">account_balance_wallet</span>
+<div>
+<span class="bg-white/20 px-3 py-1 rounded-full font-label-sm text-label-sm">SAVE ₹46,800/YEAR</span>
+<h3 class="font-headline-sm text-headline-sm mt-4">ELSS Tax Savers</h3>
+</div>
+<p class="font-body-md opacity-90">Invest in Section 80C funds with the shortest lock-in period of 3 years.</p>
+<a class="font-label-md text-label-md underline decoration-2 underline-offset-4" href="#">Calculate Savings</a>
+</div>
+<!-- Emergency Fund -->
+<div class="col-span-12 lg:col-span-4 h-[300px] bg-surface-container-highest rounded-3xl p-8 flex flex-col justify-between border border-outline-variant shadow-md">
+<span class="material-symbols-outlined text-secondary text-4xl">umbrella</span>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary">Emergency Fund</h3>
+<p class="font-body-md text-on-surface-variant mt-2">Instant redemption liquid funds for life's surprises.</p>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<span class="flex items-center gap-1 font-label-sm text-label-sm"><span class="material-symbols-outlined text-lg">bolt</span> Instant Access</span>
+<span class="flex items-center gap-1 font-label-sm text-label-sm"><span class="material-symbols-outlined text-lg">verified</span> Stable Returns</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Calculators Section -->
+<section class="py-stack-xl bg-surface-container-low">
+<div class="max-w-container-max mx-auto px-margin-desktop">
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-gutter">
+<!-- SIP Calculator -->
+<div class="bg-white p-10 rounded-[32px] shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">SIP Calculator</h2>
+<span class="material-symbols-outlined text-secondary bg-secondary-container/10 p-3 rounded-2xl">calculate</span>
+</div>
+<div class="space-y-8 mb-10">
+<div>
+<div class="flex justify-between mb-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Monthly Investment</label>
+<span class="font-headline-sm text-headline-sm text-secondary">₹25,000</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="100000" min="500" step="500" type="range" value="25000"/>
+</div>
+<div>
+<div class="flex justify-between mb-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Expected Return Rate (p.a)</label>
+<span class="font-headline-sm text-headline-sm text-secondary">12%</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="30" min="1" step="1" type="range" value="12"/>
+</div>
+<div>
+<div class="flex justify-between mb-4">
+<label class="font-label-md text-label-md text-on-surface-variant">Time Period (Years)</label>
+<span class="font-headline-sm text-headline-sm text-secondary">10Y</span>
+</div>
+<input class="w-full h-2 bg-surface-container-highest rounded-lg appearance-none cursor-pointer accent-secondary" max="40" min="1" step="1" type="range" value="10"/>
+</div>
+</div>
+<div class="bg-surface-container-low p-6 rounded-2xl flex justify-between items-center">
+<div>
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">ESTIMATED RETURNS</p>
+<p class="font-display-lg text-headline-md text-primary">₹58,08,411</p>
+</div>
+<button class="bg-secondary text-on-secondary px-8 py-3 rounded-full font-label-md text-label-md hover:bg-on-secondary-fixed-variant transition-colors">Start SIP</button>
+</div>
+</div>
+<!-- Insurance Cover Calculator -->
+<div class="bg-white p-10 rounded-[32px] shadow-sm">
+<div class="flex justify-between items-center mb-8">
+<h2 class="font-headline-md text-headline-md text-primary">Term Life Cover</h2>
+<span class="material-symbols-outlined text-on-tertiary-container bg-tertiary-container/10 p-3 rounded-2xl">family_restroom</span>
+</div>
+<div class="space-y-6 mb-10">
+<div class="p-4 border border-outline-variant rounded-xl flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Annual Income</span>
+<input class="border-none focus:ring-0 text-right font-headline-sm text-headline-sm text-primary w-1/2" type="text" value="₹12,00,000"/>
+</div>
+<div class="p-4 border border-outline-variant rounded-xl flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Existing Liabilities (Loans)</span>
+<input class="border-none focus:ring-0 text-right font-headline-sm text-headline-sm text-primary w-1/2" type="text" value="₹45,00,000"/>
+</div>
+<div class="p-4 border border-outline-variant rounded-xl flex items-center justify-between">
+<span class="font-label-md text-label-md text-on-surface-variant">Current Age</span>
+<div class="flex gap-2">
+<button class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">-</button>
+<span class="w-12 h-10 flex items-center justify-center font-headline-sm text-headline-sm">30</span>
+<button class="w-10 h-10 rounded-lg bg-surface-container flex items-center justify-center">+</button>
+</div>
+</div>
+</div>
+<div class="bg-tertiary-container/5 border border-on-tertiary-container/20 p-6 rounded-2xl">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-on-tertiary-container text-sm">info</span>
+<p class="font-label-sm text-label-sm text-on-tertiary-container">HUMAN LIFE VALUE RECOMMENDATION</p>
+</div>
+<p class="font-display-lg text-headline-md text-primary">₹2.40 Crores</p>
+<p class="font-body-md text-on-surface-variant mt-2">Covers family lifestyle, debts, and children's future up to age 65.</p>
+<button class="w-full mt-6 bg-primary text-on-primary py-4 rounded-xl font-label-md text-label-md hover:opacity-90 transition-opacity">Compare Quotes</button>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Risk & Market Context -->
+<section class="py-stack-lg bg-surface border-y border-outline-variant/30">
+<div class="max-w-container-max mx-auto px-margin-desktop flex flex-col md:flex-row gap-gutter items-center">
+<div class="flex-1 border-r border-outline-variant/30 pr-gutter">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-error">warning</span>
+<h4 class="font-label-md text-label-md font-bold uppercase tracking-widest text-on-surface-variant">Risk Disclosure</h4>
+</div>
+<p class="font-label-sm text-label-sm text-on-surface-variant leading-relaxed">
+                        Mutual Fund investments are subject to market risks. Please read the offer document carefully before investing. Past performance is not an indicator of future returns. Insurance is a subject matter of solicitation. Standard T&amp;C apply.
+                    </p>
+</div>
+<div class="flex-1 flex gap-12">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">NIFTY 50</span>
+<span class="font-headline-sm text-headline-sm text-on-tertiary-container">22,453.15 (+0.45%)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">SENSEX</span>
+<span class="font-headline-sm text-headline-sm text-on-tertiary-container">73,876.82 (+0.38%)</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-on-surface-variant">GOLD (24k)</span>
+<span class="font-headline-sm text-headline-sm text-error">₹65,420 (-0.12%)</span>
+</div>
+</div>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-surface-container-lowest w-full py-stack-xl">
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-1 md:grid-cols-4 gap-gutter">
+<div class="col-span-1 md:col-span-1">
+<span class="font-headline-md text-headline-md text-surface-bright font-bold">Crazy Capital</span>
+<p class="mt-4 text-on-primary-container/80 font-body-md text-body-md">India's most trusted MSME fintech and wealth partner. Licensed by SEBI &amp; IRDAI.</p>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-surface-bright mb-6">Invest</h4>
+<ul class="space-y-4 font-body-md text-body-md text-on-primary-container/80">
+<li><a class="hover:text-surface-bright transition-colors" href="#">Direct Mutual Funds</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Corporate Bonds</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Global Equities</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Fixed Deposits</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-surface-bright mb-6">Support</h4>
+<ul class="space-y-4 font-body-md text-body-md text-on-primary-container/80">
+<li><a class="hover:text-surface-bright transition-colors" href="#">Partner Program</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Contact Support</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Office Locations</a></li>
+<li><a class="hover:text-surface-bright transition-colors" href="#">Privacy Policy</a></li>
+</ul>
+</div>
+<div>
+<h4 class="font-label-md text-label-md text-surface-bright mb-6">Newsletter</h4>
+<div class="flex gap-2">
+<input class="bg-surface-container-lowest/10 border-outline/30 rounded-lg px-4 py-2 w-full text-white" placeholder="Email address" type="email"/>
+<button class="bg-secondary text-white p-2 rounded-lg">
+<span class="material-symbols-outlined">send</span>
+</button>
+</div>
+<div class="flex gap-4 mt-8">
+<span class="material-symbols-outlined text-surface-bright cursor-pointer hover:text-secondary-fixed transition-colors">public</span>
+<span class="material-symbols-outlined text-surface-bright cursor-pointer hover:text-secondary-fixed transition-colors">account_balance</span>
+<span class="material-symbols-outlined text-surface-bright cursor-pointer hover:text-secondary-fixed transition-colors">shield</span>
+</div>
+</div>
+</div>
+<div class="max-w-container-max mx-auto px-margin-desktop mt-stack-xl pt-8 border-t border-outline-variant/20 flex flex-col md:flex-row justify-between items-center">
+<p class="text-on-primary-container/60 font-label-sm text-label-sm">© 2024 Crazy Capital Fintech. All rights reserved.</p>
+<div class="flex gap-6 mt-4 md:mt-0">
+<a class="text-on-primary-container/60 font-label-sm text-label-sm hover:text-surface-bright" href="#">Terms</a>
+<a class="text-on-primary-container/60 font-label-sm text-label-sm hover:text-surface-bright" href="#">Compliance</a>
+<a class="text-on-primary-container/60 font-label-sm text-label-sm hover:text-surface-bright" href="#">Cookies</a>
+</div>
+</div>
+</footer>
+<script>
+        // Micro-interactions for Range Sliders
+        const sliders = document.querySelectorAll('input[type="range"]');
+        sliders.forEach(slider => {
+            slider.addEventListener('input', (e) => {
+                const value = e.target.value;
+                const label = e.target.parentElement.querySelector('.text-secondary');
+                if (label) {
+                    if (e.target.max == 40) label.innerText = value + 'Y';
+                    else if (e.target.max == 30) label.innerText = value + '%';
+                    else label.innerText = '₹' + parseInt(value).toLocaleString('en-IN');
+                }
+            });
+        });
+    </script>
+</body></html>

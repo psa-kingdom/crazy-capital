@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Get Started | Crazy Capital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .step-transition {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .step-hidden {
+            display: none;
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        .step-active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+        input:focus, select:focus {
+            ring: 2px;
+            ring-color: #4b41e1;
+            border-color: #4b41e1;
+        }
+    </style>
+<!-- CSS and Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-tertiary-fixed": "#00201d",
+                      "surface-bright": "#fcf8f9",
+                      "secondary-container": "#645efb",
+                      "background": "#fcf8f9",
+                      "on-secondary-fixed": "#0f0069",
+                      "tertiary-container": "#00201d",
+                      "error": "#ba1a1a",
+                      "secondary": "#4b41e1",
+                      "surface": "#fcf8f9",
+                      "primary-fixed": "#e1e2eb",
+                      "on-error": "#ffffff",
+                      "surface-dim": "#dcd9d9",
+                      "surface-container-low": "#f6f3f3",
+                      "outline": "#76777b",
+                      "on-background": "#1c1b1c",
+                      "on-secondary-container": "#fffbff",
+                      "primary": "#000000",
+                      "on-surface-variant": "#45474b",
+                      "on-secondary-fixed-variant": "#3323cc",
+                      "inverse-surface": "#313031",
+                      "on-tertiary-container": "#0c9488",
+                      "on-primary": "#ffffff",
+                      "on-secondary": "#ffffff",
+                      "tertiary": "#000000",
+                      "primary-fixed-dim": "#c4c6cf",
+                      "surface-container-lowest": "#ffffff",
+                      "on-tertiary-fixed-variant": "#005049",
+                      "tertiary-fixed-dim": "#6bd8cb",
+                      "on-primary-fixed-variant": "#44474e",
+                      "surface-container-highest": "#e5e2e2",
+                      "on-surface": "#1c1b1c",
+                      "tertiary-fixed": "#89f5e7",
+                      "surface-tint": "#5c5e66",
+                      "secondary-fixed": "#e2dfff",
+                      "on-tertiary": "#ffffff",
+                      "inverse-primary": "#c4c6cf",
+                      "outline-variant": "#c6c6cb",
+                      "primary-container": "#191c22",
+                      "surface-container-high": "#ebe7e7",
+                      "surface-container": "#f1eded",
+                      "inverse-on-surface": "#f3f0f0",
+                      "secondary-fixed-dim": "#c3c0ff",
+                      "surface-variant": "#e5e2e2",
+                      "on-primary-container": "#81848c",
+                      "on-error-container": "#93000a",
+                      "on-primary-fixed": "#191c22",
+                      "error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "stack-md": "16px",
+                      "margin-mobile": "20px",
+                      "stack-xl": "64px",
+                      "gutter": "24px",
+                      "margin-desktop": "64px",
+                      "stack-lg": "32px",
+                      "container-max": "1280px",
+                      "stack-sm": "8px"
+              },
+              "fontFamily": {
+                      "body-lg": ["Inter"],
+                      "body-md": ["Inter"],
+                      "label-sm": ["Inter"],
+                      "headline-md": ["Manrope"],
+                      "display-lg": ["Manrope"],
+                      "display-lg-mobile": ["Manrope"],
+                      "label-md": ["Inter"],
+                      "headline-sm": ["Manrope"]
+              },
+              "fontSize": {
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                      "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+              }
+            },
+          },
+        }
+      </script>
+</head>
+<body class="bg-surface font-body-md text-on-surface antialiased">
+<!-- Top Navigation (Shell Suprresed for Task Focus but kept Minimal Branding) -->
+<header class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl border-b border-outline-variant/30 h-20 px-margin-desktop flex justify-between items-center">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Crazy Capital</div>
+<div class="flex items-center gap-4">
+<span class="font-label-md text-label-md text-on-surface-variant">Need help?</span>
+<button class="bg-secondary text-on-secondary px-4 py-2 rounded-lg font-label-md text-label-md hover:bg-secondary-container transition-colors">
+                Call Support
+            </button>
+</div>
+</header>
+<main class="pt-32 pb-stack-xl min-h-screen relative overflow-hidden">
+<!-- Background Animation Element -->
+
+<div class="max-w-container-max mx-auto px-margin-desktop grid grid-cols-12 gap-gutter items-start">
+<!-- Left Side: Trust Signals & Sidebar -->
+<aside class="col-span-12 lg:col-span-4 space-y-stack-lg">
+<div class="space-y-4">
+<h1 class="font-display-lg text-display-lg text-primary leading-tight">Let's craft your <span class="text-secondary">financial future.</span></h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-sm">Join 15,000+ MSMEs who scale their business with Crazy Capital's expert-led solutions.</p>
+</div>
+<!-- Trust Indicators -->
+<div class="bg-surface-container-lowest p-stack-md rounded-xl shadow-sm border border-outline-variant/30 space-y-4">
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">verified</span>
+</div>
+<div>
+<p class="font-label-md text-label-md">RBI Compliant</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Certified Financial Partner</p>
+</div>
+</div>
+<div class="flex items-center gap-3">
+<div class="h-10 w-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="material-symbols-outlined">security</span>
+</div>
+<div>
+<p class="font-label-md text-label-md">256-bit Encryption</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Your data is safe &amp; private</p>
+</div>
+</div>
+</div>
+<!-- Testimonial Mini Card -->
+<div class="bg-primary-container p-stack-md rounded-xl text-on-primary-container relative overflow-hidden">
+<p class="font-body-md text-body-md italic relative z-10">"Crazy Capital transformed our GST filing process from a nightmare into a seamless 5-minute task."</p>
+<div class="mt-4 flex items-center gap-2 relative z-10">
+<div class="w-8 h-8 rounded-full bg-surface-dim overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a young Indian entrepreneur in a white shirt, smiling confidently against a soft blue and grey studio backdrop. High-end lighting, corporate modern aesthetic, clean and reliable mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBYjKd3iNwGm_gp7tIaR4DZZva1GxHHe_FkGDqqRkfFvf6XLa4x6dQNzRgKioEprPyev-k26VzGn9jS18RO2VHoViiHfKjPVURHoAB3omgHBbh6JUtVqzGWvY9wkNtfjv77QutrV1hhJBKMZMZsVTwuMPioDR7-6_674pgWd_TgOxLCQjZuEIF6ULhFiJr4W2MRMWygOAyP8qBtO5glwyFRkmXiPdr5lNa4j-1ZbDmwliHH7WLDFdlVqw"/>
+</div>
+<span class="font-label-sm text-label-sm font-bold">Rajesh Kumar, Founder of TechSol</span>
+</div>
+</div>
+</aside>
+<!-- Right Side: The Multi-Step Form -->
+<div class="col-span-12 lg:col-span-8">
+<div class="glass-card p-stack-lg rounded-2xl shadow-lg min-h-[600px] flex flex-col relative">
+<!-- Progress Bar -->
+<div class="mb-stack-lg">
+<div class="flex justify-between items-center mb-2">
+<span class="font-label-md text-label-md text-secondary" id="step-label">Step 1 of 3: Intent</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant" id="progress-percentage">33% Complete</span>
+</div>
+<div class="w-full h-2 bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-secondary w-1/3 transition-all duration-500 ease-out" id="progress-bar"></div>
+</div>
+</div>
+<!-- Step 1: Help List -->
+<section class="step-transition step-active" id="step-1">
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6">What do you need help with?</h2>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<button class="flex items-center justify-between p-5 rounded-xl border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all text-left group" onclick="nextStep(2)">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center group-hover:bg-secondary/10">
+<span class="material-symbols-outlined text-secondary">account_balance</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Business Loans</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Unsecured working capital</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-5 rounded-xl border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all text-left group" onclick="nextStep(2)">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center group-hover:bg-secondary/10">
+<span class="material-symbols-outlined text-secondary">receipt_long</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">GST &amp; Tax Compliance</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Filing &amp; Audit assistance</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-5 rounded-xl border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all text-left group" onclick="nextStep(2)">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center group-hover:bg-secondary/10">
+<span class="material-symbols-outlined text-secondary">monitoring</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Investment Portfolio</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Wealth management for MSMEs</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary">chevron_right</span>
+</button>
+<button class="flex items-center justify-between p-5 rounded-xl border border-outline-variant hover:border-secondary hover:bg-secondary/5 transition-all text-left group" onclick="nextStep(2)">
+<div class="flex items-center gap-4">
+<div class="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center group-hover:bg-secondary/10">
+<span class="material-symbols-outlined text-secondary">shield</span>
+</div>
+<div>
+<p class="font-label-md text-label-md text-primary">Corporate Insurance</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Group health &amp; Asset protection</p>
+</div>
+</div>
+<span class="material-symbols-outlined text-outline-variant group-hover:text-secondary">chevron_right</span>
+</button>
+</div>
+</section>
+<!-- Step 2: Entity Type -->
+<section class="step-transition step-hidden" id="step-2">
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-secondary mb-6 group" onclick="prevStep(1)">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span class="font-label-sm text-label-sm">Back</span>
+</button>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6">Select your entity type</h2>
+<div class="flex flex-col gap-4">
+<label class="relative flex items-center p-6 rounded-xl border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-all has-[:checked]:border-secondary has-[:checked]:bg-secondary/5">
+<input checked="" class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="entity" type="radio"/>
+<div class="ml-4">
+<p class="font-label-md text-label-md text-primary">Business / MSME</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Registered private limited, LLP, or proprietorship.</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-on-surface-variant">business</span>
+</label>
+<label class="relative flex items-center p-6 rounded-xl border border-outline-variant cursor-pointer hover:bg-surface-container-low transition-all has-[:checked]:border-secondary has-[:checked]:bg-secondary/5">
+<input class="w-5 h-5 text-secondary border-outline-variant focus:ring-secondary" name="entity" type="radio"/>
+<div class="ml-4">
+<p class="font-label-md text-label-md text-primary">Individual / Freelancer</p>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Sole professional or high-net-worth individual.</p>
+</div>
+<span class="material-symbols-outlined ml-auto text-on-surface-variant">person</span>
+</label>
+</div>
+<button class="mt-10 w-full bg-primary text-on-primary font-headline-sm py-4 rounded-xl hover:bg-primary-container transition-all flex items-center justify-center gap-2" onclick="nextStep(3)">
+                            Continue
+                            <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</section>
+<!-- Step 3: Contact & Preference -->
+<section class="step-transition step-hidden" id="step-3">
+<button class="flex items-center gap-1 text-on-surface-variant hover:text-secondary mb-6 group" onclick="prevStep(2)">
+<span class="material-symbols-outlined text-sm">arrow_back</span>
+<span class="font-label-sm text-label-sm">Back</span>
+</button>
+<h2 class="font-headline-sm text-headline-sm text-primary mb-6">How should we reach you?</h2>
+<div class="space-y-stack-md">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Full Name</label>
+<input class="w-full px-4 py-3 rounded-lg border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all" placeholder="e.g. Rahul Sharma" type="text"/>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Mobile Number</label>
+<input class="w-full px-4 py-3 rounded-lg border-outline-variant bg-surface-container-lowest focus:ring-2 focus:ring-secondary focus:border-secondary outline-none transition-all" placeholder="+91 XXXXX XXXXX" type="tel"/>
+</div>
+</div>
+<div class="space-y-2">
+<label class="font-label-md text-label-md text-on-surface-variant">Consultation Preference</label>
+<div class="grid grid-cols-3 gap-3">
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant cursor-pointer hover:bg-secondary/5 has-[:checked]:border-secondary has-[:checked]:bg-secondary/5 group">
+<input checked="" class="hidden" name="pref" type="radio"/>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary mb-2">chat</span>
+<span class="font-label-sm text-label-sm">WhatsApp</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant cursor-pointer hover:bg-secondary/5 has-[:checked]:border-secondary has-[:checked]:bg-secondary/5 group">
+<input class="hidden" name="pref" type="radio"/>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary mb-2">call</span>
+<span class="font-label-sm text-label-sm">Call Back</span>
+</label>
+<label class="relative flex flex-col items-center justify-center p-4 rounded-xl border border-outline-variant cursor-pointer hover:bg-secondary/5 has-[:checked]:border-secondary has-[:checked]:bg-secondary/5 group">
+<input class="hidden" name="pref" type="radio"/>
+<span class="material-symbols-outlined text-on-surface-variant group-hover:text-secondary mb-2">location_on</span>
+<span class="font-label-sm text-label-sm">In Person</span>
+</label>
+</div>
+</div>
+</div>
+<button class="mt-10 w-full bg-secondary text-on-secondary font-headline-sm py-4 rounded-xl hover:bg-secondary-container transition-all flex items-center justify-center gap-2" onclick="finish()">
+                            Submit Request
+                            <span class="material-symbols-outlined">send</span>
+</button>
+<p class="mt-4 font-label-sm text-label-sm text-on-surface-variant text-center">By continuing, you agree to our <a class="text-secondary underline" href="#">Terms of Service</a> and <a class="text-secondary underline" href="#">Privacy Policy</a>.</p>
+</section>
+<!-- Success State -->
+<section class="step-transition step-hidden flex flex-col items-center justify-center text-center h-full py-10" id="success-state">
+<div class="w-20 h-20 bg-on-tertiary-container/10 rounded-full flex items-center justify-center text-on-tertiary-container mb-6">
+<span class="material-symbols-outlined text-5xl">check_circle</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-primary mb-2">All set, we've got you!</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto mb-10">An expert from Crazy Capital will reach out via your preferred method within 30 minutes.</p>
+<div class="w-full grid grid-cols-2 gap-4">
+<div class="p-4 bg-surface-container rounded-xl text-left border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Reference ID</p>
+<p class="font-label-md text-label-md font-bold">#CC-8921-X</p>
+</div>
+<div class="p-4 bg-surface-container rounded-xl text-left border border-outline-variant/30">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Wait Time</p>
+<p class="font-label-md text-label-md font-bold">~12 Minutes</p>
+</div>
+</div>
+<a class="mt-12 text-secondary font-label-md text-label-md hover:underline flex items-center gap-2" href="/">
+                            Return to Dashboard
+                            <span class="material-symbols-outlined text-sm">home</span>
+</a>
+</section>
+</div>
+</div>
+</div>
+</main>
+<!-- Simple Fixed Footer -->
+<footer class="w-full py-stack-md bg-surface border-t border-outline-variant/20 px-margin-desktop">
+<div class="max-w-container-max mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+<p class="font-label-sm text-label-sm text-on-surface-variant">© 2024 Crazy Capital Fintech. All rights reserved.</p>
+<div class="flex gap-stack-lg">
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Security</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Support</a>
+</div>
+</div>
+</footer>
+<script>
+        let currentStep = 1;
+        const totalSteps = 3;
+
+        function updateProgress() {
+            const bar = document.getElementById('progress-bar');
+            const label = document.getElementById('step-label');
+            const percent = document.getElementById('progress-percentage');
+            
+            const p = (currentStep / totalSteps) * 100;
+            bar.style.width = `${p}%`;
+            label.innerText = `Step ${currentStep} of ${totalSteps}: ${getStepName(currentStep)}`;
+            percent.innerText = `${Math.round(p)}% Complete`;
+
+            if (currentStep > 3) {
+                document.querySelector('.mb-stack-lg').style.display = 'none';
+            }
+        }
+
+        function getStepName(step) {
+            switch(step) {
+                case 1: return "Service Selection";
+                case 2: return "Entity Details";
+                case 3: return "Contact Preference";
+                default: return "Complete";
+            }
+        }
+
+        function nextStep(step) {
+            document.getElementById(`step-${currentStep}`).classList.remove('step-active');
+            document.getElementById(`step-${currentStep}`).classList.add('step-hidden');
+            
+            setTimeout(() => {
+                currentStep = step;
+                document.getElementById(`step-${currentStep}`).classList.remove('step-hidden');
+                document.getElementById(`step-${currentStep}`).classList.add('step-active');
+                updateProgress();
+            }, 50);
+        }
+
+        function prevStep(step) {
+            document.getElementById(`step-${currentStep}`).classList.remove('step-active');
+            document.getElementById(`step-${currentStep}`).classList.add('step-hidden');
+            
+            setTimeout(() => {
+                currentStep = step;
+                document.getElementById(`step-${currentStep}`).classList.remove('step-hidden');
+                document.getElementById(`step-${currentStep}`).classList.add('step-active');
+                updateProgress();
+            }, 50);
+        }
+
+        function finish() {
+            document.getElementById(`step-3`).classList.remove('step-active');
+            document.getElementById(`step-3`).classList.add('step-hidden');
+            
+            setTimeout(() => {
+                currentStep = 4;
+                document.getElementById('success-state').classList.remove('step-hidden');
+                document.getElementById('success-state').classList.add('step-active');
+                updateProgress();
+            }, 50);
+        }
+    </script>
+</body></html>

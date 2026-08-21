@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>All Services | Crazy Capital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .bento-item:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 32px rgba(11, 14, 20, 0.08);
+        }
+        .active-tab-indicator {
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background-color: #4b41e1;
+        }
+    </style>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body-md">
+<!-- TopNavBar -->
+<header class="bg-surface/80 backdrop-blur-xl fixed top-0 w-full z-50 border-b border-outline-variant/30 shadow-sm">
+<nav class="flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-stack-lg">
+<span class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Crazy Capital</span>
+<div class="hidden md:flex gap-6">
+<a class="text-secondary font-bold border-b-2 border-secondary pb-1 font-label-md text-label-md" href="#">Business</a>
+<a class="text-on-surface-variant hover:text-secondary font-label-md text-label-md transition-colors" href="#">Personal</a>
+<a class="text-on-surface-variant hover:text-secondary font-label-md text-label-md transition-colors" href="#">Invest</a>
+<a class="text-on-surface-variant hover:text-secondary font-label-md text-label-md transition-colors" href="#">Insure</a>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="hidden lg:flex items-center bg-surface-container rounded-full px-4 py-2 border border-outline-variant/50">
+<span class="material-symbols-outlined text-on-surface-variant mr-2">search</span>
+<input class="bg-transparent border-none focus:ring-0 text-label-md w-48" placeholder="Find a service..." type="text"/>
+</div>
+<button class="bg-primary text-on-primary px-6 py-2.5 rounded-full font-label-md text-label-md hover:opacity-90 transition-opacity">Consult Expert</button>
+<div class="flex gap-4 text-on-surface-variant">
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">notifications</span>
+<span class="material-symbols-outlined cursor-pointer hover:text-primary">account_circle</span>
+</div>
+</div>
+</nav>
+</header>
+<main class="pt-24 pb-stack-xl px-margin-desktop max-w-container-max mx-auto">
+<!-- Hero Section -->
+<section class="py-stack-lg flex flex-col gap-4">
+<div class="inline-flex items-center gap-2 px-3 py-1 bg-secondary-container/10 text-secondary rounded-full w-fit">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-label-sm text-label-sm">Comprehensive Financial Ecosystem</span>
+</div>
+<h1 class="font-display-lg text-display-lg text-primary max-w-2xl">Financial Services Designed for Ambition.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-xl">From initial incorporation to scaling globally, Crazy Capital provides the institutional-grade infrastructure your business deserves.</p>
+</section>
+<!-- Dynamic Filter & Search -->
+<div class="sticky top-20 z-40 bg-surface/95 backdrop-blur-md py-6 border-b border-outline-variant/20 mb-stack-lg">
+<div class="flex flex-col gap-6">
+<!-- Main Category Tabs -->
+<div class="flex gap-8 border-b border-outline-variant/30">
+<button class="relative pb-4 font-label-md text-label-md text-secondary font-bold">
+                        Business Services
+                        <div class="active-tab-indicator"></div>
+</button>
+<button class="pb-4 font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors">
+                        Personal Finance
+                    </button>
+</div>
+<!-- Sub-filters (Bento Style pill filters) -->
+<div class="flex flex-wrap gap-3">
+<button class="px-5 py-2 rounded-full bg-primary text-on-primary font-label-sm text-label-sm shadow-sm">All Services</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Start</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Borrow</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Comply</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Protect</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Invest</button>
+<button class="px-5 py-2 rounded-full bg-surface-container-lowest border border-outline-variant/50 text-on-surface-variant hover:bg-surface-variant font-label-sm text-label-sm transition-all">Trade</button>
+</div>
+</div>
+</div>
+<div class="grid grid-cols-12 gap-gutter">
+<!-- Left Column: Service Grid -->
+<div class="col-span-12 lg:col-span-8 flex flex-col gap-gutter">
+<!-- Service Grid (Bento Style) -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter">
+<!-- Card 1: Private Limited Incorporation -->
+<div class="glass-card bento-item p-6 rounded-xl flex flex-col gap-4 transition-all duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary">business</span>
+</div>
+<span class="px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container font-label-sm text-label-sm rounded-full">Start</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Private Limited Incorporation</h3>
+<p class="text-on-surface-variant font-body-md text-body-md line-clamp-2">Register your startup as a legal entity with full compliance and ROC registration.</p>
+</div>
+<div class="space-y-3 pt-2 border-t border-outline-variant/20">
+<div>
+<span class="font-label-md text-label-md text-primary">Who it's for:</span>
+<p class="text-on-surface-variant text-label-sm">Founders aiming for VC funding and scalability.</p>
+</div>
+<div>
+<span class="font-label-md text-label-md text-primary">Documents needed:</span>
+<p class="text-on-surface-variant text-label-sm italic">PAN, Aadhaar, Utility Bills, NOC.</p>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-surface-container-highest text-primary font-label-md text-label-md rounded-lg hover:bg-secondary hover:text-on-secondary transition-all">Apply Now</button>
+</div>
+<!-- Card 2: MSME Working Capital -->
+<div class="glass-card bento-item p-6 rounded-xl flex flex-col gap-4 transition-all duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary">account_balance</span>
+</div>
+<span class="px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container font-label-sm text-label-sm rounded-full">Borrow</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">MSME Working Capital</h3>
+<p class="text-on-surface-variant font-body-md text-body-md line-clamp-2">Collateral-free loans for inventory, payroll, and operational expenses.</p>
+</div>
+<div class="space-y-3 pt-2 border-t border-outline-variant/20">
+<div>
+<span class="font-label-md text-label-md text-primary">Who it's for:</span>
+<p class="text-on-surface-variant text-label-sm">Udyam registered businesses with 1yr+ ops.</p>
+</div>
+<div>
+<span class="font-label-md text-label-md text-primary">Documents needed:</span>
+<p class="text-on-surface-variant text-label-sm italic">GST Returns, ITR, Bank Statements.</p>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-secondary text-on-secondary font-label-md text-label-md rounded-lg shadow-md hover:opacity-90 transition-all">Check Eligibility</button>
+</div>
+<!-- Card 3: GST Monthly Compliance -->
+<div class="glass-card bento-item p-6 rounded-xl flex flex-col gap-4 transition-all duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary">gavel</span>
+</div>
+<span class="px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container font-label-sm text-label-sm rounded-full">Comply</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">GST Monthly Compliance</h3>
+<p class="text-on-surface-variant font-body-md text-body-md line-clamp-2">Automated filing and reconciliation for GSTR-1, GSTR-3B, and annual returns.</p>
+</div>
+<div class="space-y-3 pt-2 border-t border-outline-variant/20">
+<div>
+<span class="font-label-md text-label-md text-primary">Who it's for:</span>
+<p class="text-on-surface-variant text-label-sm">Any registered business avoiding penalties.</p>
+</div>
+<div>
+<span class="font-label-md text-label-md text-primary">Documents needed:</span>
+<p class="text-on-surface-variant text-label-sm italic">Purchase &amp; Sales Invoices.</p>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-surface-container-highest text-primary font-label-md text-label-md rounded-lg hover:bg-secondary hover:text-on-secondary transition-all">Start Filing</button>
+</div>
+<!-- Card 4: Corporate Fixed Deposits -->
+<div class="glass-card bento-item p-6 rounded-xl flex flex-col gap-4 transition-all duration-300">
+<div class="flex justify-between items-start">
+<div class="p-3 bg-secondary/10 rounded-lg">
+<span class="material-symbols-outlined text-secondary">trending_up</span>
+</div>
+<span class="px-3 py-1 bg-on-tertiary-container/10 text-on-tertiary-container font-label-sm text-label-sm rounded-full">Invest</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-primary mb-2">Corporate Fixed Deposits</h3>
+<p class="text-on-surface-variant font-body-md text-body-md line-clamp-2">High-yield treasury management for idle company funds with flexible liquidity.</p>
+</div>
+<div class="space-y-3 pt-2 border-t border-outline-variant/20">
+<div>
+<span class="font-label-md text-label-md text-primary">Who it's for:</span>
+<p class="text-on-surface-variant text-label-sm">Companies with excess cash reserves.</p>
+</div>
+<div>
+<span class="font-label-md text-label-md text-primary">Documents needed:</span>
+<p class="text-on-surface-variant text-label-sm italic">Board Resolution, Entity KYC.</p>
+</div>
+</div>
+<button class="mt-auto w-full py-3 bg-surface-container-highest text-primary font-label-md text-label-md rounded-lg hover:bg-secondary hover:text-on-secondary transition-all">Invest Now</button>
+</div>
+</div>
+<!-- Expert Assistance Banner -->
+<div class="bg-primary-container text-on-primary-container p-8 rounded-2xl flex flex-col md:flex-row items-center gap-8 overflow-hidden relative">
+<div class="relative z-10 flex-1">
+<h2 class="font-headline-md text-headline-md mb-2">Struggling with complex regulations?</h2>
+<p class="font-body-md text-on-primary-container/70 mb-6">Our senior financial consultants are available for one-on-one sessions to help you optimize your capital structure.</p>
+<button class="px-8 py-3 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md hover:scale-105 transition-transform">Book a Free Consultation</button>
+</div>
+<div class="relative w-full md:w-64 h-48 rounded-xl overflow-hidden shadow-xl">
+<img class="w-full h-full object-cover" data-alt="A professional financial advisor in a sleek, modern glass-walled office in Mumbai. Warm evening sunlight filters through, casting soft shadows. The advisor is wearing a sharp charcoal suit, looking into a tablet with a confident smile. The atmosphere is sophisticated, trustworthy, and high-end corporate." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2nJ8WUGHXm6nQZEAXUNoRXvgIf3WUiJ3iHz3wPch2fgVFsfCrleeaRIrlSWWqLsPIs3zWCt1GY8Qzylwc-NWLVyjF_fAsTt-H1Uzi_nWQmVmLVQv-bNyhZOVqOxuJbEWeWkI1jSYUZxNlXiMyB80xmMreQOT5JqUWad-5LqlBu8iRMlKUCfAT7gMRnoOr1ivXVyPyKtAxncTY_mCdZz4ggjis4-f7KvGl4Xdcg7RDd5-Kg2IH6ndrHg"/>
+</div>
+</div>
+</div>
+<!-- Right Column: Recommendation Quiz & Sidebar -->
+<aside class="col-span-12 lg:col-span-4 flex flex-col gap-gutter">
+<!-- Service Recommendation Quiz Widget -->
+<div class="bg-secondary-fixed text-on-secondary-fixed p-8 rounded-2xl shadow-md border border-secondary/20 sticky top-48">
+<div class="flex items-center gap-3 mb-4">
+<span class="material-symbols-outlined text-secondary">psychology</span>
+<h3 class="font-headline-sm text-headline-sm">Service Matchmaker</h3>
+</div>
+<p class="text-on-secondary-fixed-variant font-body-md mb-8">Not sure where to start? Answer 3 questions and we'll build your custom roadmap.</p>
+<div class="space-y-6" id="quiz-container">
+<div class="quiz-step" id="step-1">
+<p class="font-label-md text-label-md mb-3">1. What is your primary objective?</p>
+<div class="grid gap-3">
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(2)">Setting up a new venture</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(2)">Managing existing compliance</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(2)">Raising capital or borrowing</button>
+</div>
+</div>
+<div class="quiz-step hidden" id="step-2">
+<p class="font-label-md text-label-md mb-3">2. What is your business type?</p>
+<div class="grid gap-3">
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(3)">Tech / SaaS Startup</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(3)">Manufacturing / MSME</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="nextStep(3)">E-commerce / Retail</button>
+</div>
+</div>
+<div class="quiz-step hidden" id="step-3">
+<p class="font-label-md text-label-md mb-3">3. Current annual revenue?</p>
+<div class="grid gap-3">
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="showResult()">Pre-revenue / Idea</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="showResult()">₹50L - ₹5Cr</button>
+<button class="text-left p-4 rounded-xl border border-secondary/30 bg-white/50 hover:bg-white transition-all text-label-md" onclick="showResult()">Above ₹5Cr</button>
+</div>
+</div>
+<div class="quiz-result hidden" id="quiz-result">
+<div class="p-4 bg-on-tertiary-container/10 rounded-xl mb-4 border border-on-tertiary-container/20">
+<p class="font-label-sm text-label-sm text-on-tertiary-container mb-1">RECOMMENDED FOR YOU</p>
+<p class="font-headline-sm text-[20px] text-primary">Venture Growth Bundle</p>
+<ul class="mt-2 space-y-1 text-label-sm opacity-80">
+<li>• Startup India Recognition</li>
+<li>• IP &amp; Trademark Filing</li>
+<li>• Monthly CFO Services</li>
+</ul>
+</div>
+<button class="w-full py-3 bg-primary text-on-primary rounded-xl font-label-md" onclick="resetQuiz()">Get Started with Bundle</button>
+<button class="w-full mt-2 text-label-sm text-secondary underline" onclick="resetQuiz()">Restart Quiz</button>
+</div>
+</div>
+</div>
+<!-- Trust Badges -->
+<div class="bg-surface-container-low p-6 rounded-2xl flex flex-col gap-4">
+<h4 class="font-label-md text-label-md text-on-surface-variant">WHY CRAZY CAPITAL?</h4>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary">security</span>
+<div>
+<p class="font-label-md text-label-md text-primary">Bank-Grade Security</p>
+<p class="text-label-sm text-on-surface-variant">256-bit AES encryption for all your financial data.</p>
+</div>
+</div>
+<div class="flex items-start gap-3">
+<span class="material-symbols-outlined text-secondary">flash_on</span>
+<div>
+<p class="font-label-md text-label-md text-primary">24h Turnaround</p>
+<p class="text-label-sm text-on-surface-variant">First response and basic processing within 1 business day.</p>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container py-stack-xl mt-stack-xl">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop max-w-container-max mx-auto">
+<div class="flex flex-col gap-4">
+<span class="font-headline-md text-headline-md text-surface-bright font-bold">Crazy Capital</span>
+<p class="text-on-primary-container/80 text-body-md">Empowering the next generation of Indian MSMEs with smart capital and seamless compliance.</p>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="text-surface-bright font-label-md">Company</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">About Us</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Partner Program</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Office Locations</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="text-surface-bright font-label-md">Legal</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Terms of Service</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Privacy Policy</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Cookie Policy</a>
+</div>
+<div class="flex flex-col gap-3">
+<h5 class="text-surface-bright font-label-md">Support</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Contact Support</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">Knowledge Base</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright text-label-sm" href="#">API Documentation</a>
+</div>
+</div>
+<div class="mt-stack-lg pt-stack-md border-t border-outline-variant/20 px-margin-desktop max-w-container-max mx-auto text-center">
+<p class="text-on-primary-container/60 text-label-sm">© 2024 Crazy Capital Fintech. All rights reserved.</p>
+</div>
+</footer>
+<script>
+        function nextStep(step) {
+            document.querySelectorAll('.quiz-step').forEach(el => el.classList.add('hidden'));
+            document.getElementById('step-' + step).classList.remove('hidden');
+        }
+
+        function showResult() {
+            document.querySelectorAll('.quiz-step').forEach(el => el.classList.add('hidden'));
+            document.getElementById('quiz-result').classList.remove('hidden');
+        }
+
+        function resetQuiz() {
+            document.getElementById('quiz-result').classList.add('hidden');
+            document.getElementById('step-1').classList.remove('hidden');
+        }
+
+        // Search Bar micro-interaction
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('focus', () => {
+            searchInput.parentElement.classList.add('border-secondary');
+        });
+        searchInput.addEventListener('blur', () => {
+            searchInput.parentElement.classList.remove('border-secondary');
+        });
+    </script>
+</body></html>

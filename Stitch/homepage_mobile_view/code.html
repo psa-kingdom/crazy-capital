@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Crazy Capital | Ambitious Reliability</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body { -webkit-tap-highlight-color: transparent; }
+        .glass-header { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .bento-card { transition: transform 0.2s ease-out, box-shadow 0.2s ease-out; }
+        .bento-card:active { transform: scale(0.98); }
+        .scroll-hide::-webkit-scrollbar { display: none; }
+        .scroll-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .glow-button { box-shadow: 0 0 20px rgba(75, 65, 225, 0.3); }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md selection:bg-secondary-fixed selection:text-on-secondary-fixed pb-32">
+<!-- Top Navigation Anchor -->
+<header class="fixed top-0 w-full z-50 glass-header bg-surface/80 border-b border-outline-variant/30 h-16 flex items-center justify-between px-5">
+<span class="font-headline-sm text-headline-sm font-bold tracking-tight text-primary">Crazy Capital</span>
+<div class="flex items-center gap-4">
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">notifications</span>
+</button>
+<button class="w-10 h-10 flex items-center justify-center rounded-full hover:bg-surface-container-low transition-colors">
+<span class="material-symbols-outlined text-on-surface-variant">account_circle</span>
+</button>
+</div>
+</header>
+<main class="pt-20 px-5 space-y-stack-xl">
+<!-- Hero Section -->
+<section class="space-y-4">
+<h1 class="font-display-lg-mobile text-display-lg-mobile text-primary leading-tight">
+                Ambitious capital for <span class="text-secondary">visionary</span> MSMEs.
+            </h1>
+<p class="font-body-md text-body-md text-on-surface-variant">
+                Experience institutional-grade financial reliability with a global tech-luxe edge.
+            </p>
+<div class="pt-2">
+<button class="bg-secondary text-on-secondary font-label-md text-label-md px-6 py-4 rounded-xl flex items-center gap-2 glow-button active:scale-95 transition-transform">
+                    Consult Expert
+                    <span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</div>
+</section>
+<!-- Trust Strip -->
+<section class="bg-surface-container-lowest rounded-2xl p-6 border border-outline-variant/20 shadow-sm overflow-hidden">
+<p class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-widest mb-6 text-center">Trusted by 500+ Indian Enterprises</p>
+<div class="flex justify-around items-center gap-8 opacity-60 grayscale overflow-x-auto scroll-hide">
+<img class="h-6" data-alt="A clean, minimalist logo of a modern Indian fintech company, rendered in sleek black and white. The design is corporate yet tech-forward, fitting for a high-end financial institution's branding suite in a light-mode environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA5eh5bW7tq5OL52HLgB32GiKlxtKZe_JNchpTy4UCkXeTk5ZDBKLKzJWfFrgJzQlZG5T-gHTXdUAbpUeVh3yMWGMZrdXtbZtC3Im1RWCHhqo2KC0xusjYa6Y0xm1qz4St-2pozTy2FsJxA-TPnCcMXz2-Z_7fIG-geGhHxqxjrzzwQHcE965BH09Ga191CSlCZy6HVJWh6hStyUbpHs9RB8XVk6hsv5mND7dQQQAMsonStCdyK2F1HnQ"/>
+<img class="h-6" data-alt="A professional, corporate-style logo for an industrial manufacturing firm, presented in a sharp monochrome finish. The lighting is neutral and clear, emphasizing stability and ambitious reliability within a modern minimalist aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBgR26jNsujji300ceV9_juwYVFJOxNJp3bR1oNlucSU12wLOKIRXRWx_l0BiRUtwNs6bLW_pOdL578BP985btSN1LOLylywjPjocsjL7DmJI7p1vf6ccyWkP-95sNJRjg570iTwmpVooqYzlovl2p3Yh-szNrZaF2DRwDpVMZIFe0HUhby851qrgKE11pHzj5-whEn-vQC4TQoLsPRMWABL0kPoUGhkTrgedxf1MFxxNhV9wnXv0bWww"/>
+<img class="h-6" data-alt="An elegant, minimalist logo for a startup tech hub, showcasing contemporary typography and geometric simplicity. The image is designed for a premium UI, reflecting a sophisticated, data-driven financial ecosystem." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCW80MPXqj5h64LMmWJ5AOl3oEoY0-1h8_LepCMjciGuo3gvNl3rNiYeby2K6PWQmFMxqBzUVSPGV0UeDRdjbdrblZL4NWd07oezq7XFEcAqd6rQPo2--1w-KWz2b8J4-wCyO8iy4aD9sYVYOZhcgl7SdPDNRQCve9_5JsJnmZmWjr6Mhk9rXqJZac6wqqfAr6CNrmiF9wCWOnoNBDUu10eWkZC2GXPt-IIjxMIg4REA0L3JqWUEMRLOw"/>
+</div>
+</section>
+<!-- India Map / Regional Trust -->
+<section class="space-y-4">
+<div class="flex items-center justify-between">
+<h2 class="font-headline-sm text-headline-sm text-primary">Nationwide Presence</h2>
+<span class="text-on-tertiary-container bg-tertiary-fixed/30 font-label-sm text-label-sm px-3 py-1 rounded-full">Live Coverage</span>
+</div>
+<div class="relative bg-surface-container rounded-3xl p-4 overflow-hidden h-[300px] flex items-center justify-center">
+<img class="w-full h-full object-contain" data-alt="A highly detailed, stylized digital map of India focusing on major financial hubs like Mumbai, Delhi, and Bangalore. The map is rendered with elegant light-mode tones, using soft grays and rich indigo glowing nodes to represent activity. The aesthetic is sophisticated, modern, and high-tech, fitting for a premium fintech application." data-location="India" src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5Lrsmm4_fsANDemBSGSMbUOjpzLwTJPCFCA2MqEKiiN3q0zfVatZ6suKiu_ZhD07WB-8KyBp6SO1af7j_fOGMZ4HC-xp5ArQgK07g9n2PsMwSSbAGrdXhXWiVRuj94oBnoyp5QQ9l4lLoQ9Xk1jUreRvsslec4bIduM6Kf3q8KAi6hZ5zPMRENcA0QYvfrL1L4v0qQsiKDx0xbvIvPxdjFHHSr3WIb_dyDELlSZL3WvyEIdZMuGeDnw"/>
+<div class="absolute bottom-6 left-6 right-6 flex gap-2">
+<div class="bg-surface/90 backdrop-blur-md p-3 rounded-xl border border-outline-variant/30 flex-1">
+<p class="font-label-sm text-label-sm text-on-surface-variant">Assets Managed</p>
+<p class="font-headline-sm text-headline-sm text-primary">₹12,400Cr</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Bento Grid Services -->
+<section class="space-y-4">
+<h2 class="font-headline-sm text-headline-sm text-primary">Our Ecosystem</h2>
+<div class="grid grid-cols-2 gap-4">
+<!-- Large Vertical Card -->
+<div class="col-span-2 bg-primary-container text-on-primary-container p-6 rounded-3xl flex flex-col justify-between min-h-[220px] relative overflow-hidden bento-card">
+<div class="relative z-10">
+<span class="material-symbols-outlined text-4xl mb-4 text-on-secondary-fixed">account_balance_wallet</span>
+<h3 class="font-headline-sm text-headline-sm mb-2">MSME Growth Credits</h3>
+<p class="font-body-md text-body-md opacity-80">Flexible credit lines up to ₹50Cr with 24h disbursal.</p>
+</div>
+<button class="relative z-10 w-fit mt-4 bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg font-label-md text-label-md transition-colors">Apply Now</button>
+<div class="absolute -right-10 -bottom-10 w-40 h-40 bg-secondary/20 rounded-full blur-3xl"></div>
+</div>
+<!-- Square Cards -->
+<div class="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/30 bento-card shadow-sm">
+<div class="w-10 h-10 rounded-full bg-tertiary-fixed/20 flex items-center justify-center mb-3 text-on-tertiary-fixed-variant">
+<span class="material-symbols-outlined text-xl">description</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-1">Corporate Tax</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Automated filing &amp; strategy.</p>
+</div>
+<div class="bg-surface-container-lowest p-5 rounded-3xl border border-outline-variant/30 bento-card shadow-sm">
+<div class="w-10 h-10 rounded-full bg-secondary-fixed/30 flex items-center justify-center mb-3 text-secondary">
+<span class="material-symbols-outlined text-xl">shield</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-1">Risk Insure</h4>
+<p class="font-label-sm text-label-sm text-on-surface-variant">Dynamic asset protection.</p>
+</div>
+<!-- Wide Card -->
+<div class="col-span-2 bg-secondary text-on-secondary p-6 rounded-3xl bento-card flex items-center justify-between">
+<div>
+<h3 class="font-headline-sm text-headline-sm mb-1">Expert Hub</h3>
+<p class="font-body-md text-body-md opacity-90">Talk to a Strategic Advisor now.</p>
+</div>
+<span class="material-symbols-outlined text-3xl">support_agent</span>
+</div>
+</div>
+</section>
+<!-- Lifecycle Journey (Vertical Timeline) -->
+<section class="space-y-stack-lg">
+<h2 class="font-headline-sm text-headline-sm text-primary">Your Journey to Growth</h2>
+<div class="relative pl-8 space-y-12">
+<!-- Timeline Line -->
+<div class="absolute left-3 top-2 bottom-2 w-px bg-outline-variant"></div>
+<!-- Step 1 -->
+<div class="relative">
+<div class="absolute -left-[25px] top-1 w-5 h-5 rounded-full border-4 border-surface bg-secondary ring-2 ring-secondary-container/20"></div>
+<h4 class="font-label-md text-label-md text-primary mb-1">Onboarding</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Seamless digital KYC and corporate profiling in under 10 minutes.</p>
+<div class="mt-3 flex gap-2">
+<span class="text-[10px] font-bold bg-tertiary-fixed/20 text-on-tertiary-fixed-variant px-2 py-0.5 rounded-full">ACTIVE</span>
+</div>
+</div>
+<!-- Step 2 -->
+<div class="relative opacity-60">
+<div class="absolute -left-[25px] top-1 w-5 h-5 rounded-full border-4 border-surface bg-outline-variant"></div>
+<h4 class="font-label-md text-label-md text-primary mb-1">Credit Approval</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">AI-driven underwriting providing real-time credit limits and risk scorecards.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative opacity-60">
+<div class="absolute -left-[25px] top-1 w-5 h-5 rounded-full border-4 border-surface bg-outline-variant"></div>
+<h4 class="font-label-md text-label-md text-primary mb-1">Disbursal &amp; Management</h4>
+<p class="font-body-md text-body-md text-on-surface-variant">Funds available in your nodal account for instant vendor payments.</p>
+</div>
+</div>
+</section>
+<!-- Footer Simulation -->
+<footer class="pb-12 space-y-6">
+<div class="h-px bg-outline-variant/30 w-full"></div>
+<div class="space-y-4">
+<span class="font-headline-sm text-headline-sm font-bold text-primary">Crazy Capital</span>
+<p class="font-body-md text-body-md text-on-surface-variant">© 2024 Crazy Capital Fintech. All rights reserved.</p>
+<div class="flex flex-wrap gap-x-6 gap-y-2">
+<a class="font-label-sm text-label-sm text-on-surface-variant" href="#">Terms of Service</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant" href="#">Privacy Policy</a>
+<a class="font-label-sm text-label-sm text-on-surface-variant" href="#">Support</a>
+</div>
+</div>
+</footer>
+</main>
+<!-- Sticky Bottom CTA -->
+<div class="fixed bottom-24 left-5 right-5 z-40">
+<button class="w-full bg-primary-container text-surface-bright font-label-md text-label-md py-4 px-6 rounded-2xl shadow-xl flex items-center justify-between active:scale-95 transition-transform">
+<span>Find a Service</span>
+<span class="material-symbols-outlined">search</span>
+</button>
+</div>
+<!-- Bottom Navigation Bar -->
+<nav class="fixed bottom-0 left-0 w-full bg-surface/90 backdrop-blur-lg border-t border-outline-variant/20 z-50 flex justify-around items-center px-4 pb-8 pt-2">
+<a class="flex flex-col items-center justify-center bg-secondary-container text-on-secondary-container rounded-xl px-4 py-2 transition-all active:scale-90 duration-150" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">home</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Home</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-all active:bg-surface-variant rounded-xl" href="#">
+<span class="material-symbols-outlined">grid_view</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Services</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-all active:bg-surface-variant rounded-xl" href="#">
+<span class="material-symbols-outlined">pie_chart</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Portfolio</span>
+</a>
+<a class="flex flex-col items-center justify-center text-on-surface-variant p-2 transition-all active:bg-surface-variant rounded-xl" href="#">
+<span class="material-symbols-outlined">person</span>
+<span class="font-label-sm-mobile text-label-sm-mobile mt-1">Profile</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions and scroll behavior
+        let lastScrollTop = 0;
+        const cta = document.querySelector('.fixed.bottom-24');
+        
+        window.addEventListener('scroll', function() {
+            let st = window.pageYOffset || document.documentElement.scrollTop;
+            if (st > lastScrollTop) {
+                // Downscroll
+                cta.style.transform = 'translateY(10px) scale(0.98)';
+                cta.style.opacity = '0.9';
+            } else {
+                // Upscroll
+                cta.style.transform = 'translateY(0) scale(1)';
+                cta.style.opacity = '1';
+            }
+            lastScrollTop = st <= 0 ? 0 : st;
+        }, false);
+    </script>
+</body></html>

@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+
+<html class="scroll-smooth" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Become a Partner | Crazy Capital</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Manrope:wght@700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind Config Verbatim -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-tertiary-fixed": "#00201d",
+                    "surface-bright": "#fcf8f9",
+                    "secondary-container": "#645efb",
+                    "background": "#fcf8f9",
+                    "on-secondary-fixed": "#0f0069",
+                    "tertiary-container": "#00201d",
+                    "error": "#ba1a1a",
+                    "secondary": "#4b41e1",
+                    "surface": "#fcf8f9",
+                    "primary-fixed": "#e1e2eb",
+                    "on-error": "#ffffff",
+                    "surface-dim": "#dcd9d9",
+                    "surface-container-low": "#f6f3f3",
+                    "outline": "#76777b",
+                    "on-background": "#1c1b1c",
+                    "on-secondary-container": "#fffbff",
+                    "primary": "#000000",
+                    "on-surface-variant": "#45474b",
+                    "on-secondary-fixed-variant": "#3323cc",
+                    "inverse-surface": "#313031",
+                    "on-tertiary-container": "#0c9488",
+                    "on-primary": "#ffffff",
+                    "on-secondary": "#ffffff",
+                    "tertiary": "#000000",
+                    "primary-fixed-dim": "#c4c6cf",
+                    "surface-container-lowest": "#ffffff",
+                    "on-tertiary-fixed-variant": "#005049",
+                    "tertiary-fixed-dim": "#6bd8cb",
+                    "on-primary-fixed-variant": "#44474e",
+                    "surface-container-highest": "#e5e2e2",
+                    "on-surface": "#1c1b1c",
+                    "tertiary-fixed": "#89f5e7",
+                    "surface-tint": "#5c5e66",
+                    "secondary-fixed": "#e2dfff",
+                    "on-tertiary": "#ffffff",
+                    "inverse-primary": "#c4c6cf",
+                    "outline-variant": "#c6c6cb",
+                    "primary-container": "#191c22",
+                    "surface-container-high": "#ebe7e7",
+                    "surface-container": "#f1eded",
+                    "inverse-on-surface": "#f3f0f0",
+                    "secondary-fixed-dim": "#c3c0ff",
+                    "surface-variant": "#e5e2e2",
+                    "on-primary-container": "#81848c",
+                    "on-error-container": "#93000a",
+                    "on-primary-fixed": "#191c22",
+                    "error-container": "#ffdad6"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "stack-md": "16px",
+                    "margin-mobile": "20px",
+                    "stack-xl": "64px",
+                    "gutter": "24px",
+                    "margin-desktop": "64px",
+                    "stack-lg": "32px",
+                    "container-max": "1280px",
+                    "stack-sm": "8px"
+            },
+            "fontFamily": {
+                    "body-lg": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-sm": ["Inter"],
+                    "headline-md": ["Manrope"],
+                    "display-lg": ["Manrope"],
+                    "display-lg-mobile": ["Manrope"],
+                    "label-md": ["Inter"],
+                    "headline-sm": ["Manrope"]
+            },
+            "fontSize": {
+                    "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "label-sm": ["12px", {"lineHeight": "16px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                    "headline-md": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "display-lg-mobile": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.02em", "fontWeight": "800"}],
+                    "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.01em", "fontWeight": "600"}],
+                    "headline-sm": ["24px", {"lineHeight": "32px", "fontWeight": "700"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        .bento-inner {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .bento-inner:hover {
+            transform: translateY(-4px);
+            box-shadow: 0px 12px 32px rgba(11, 14, 20, 0.08);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md">
+<!-- TopNavBar -->
+<nav class="fixed top-0 w-full z-50 bg-surface/80 backdrop-blur-xl shadow-sm border-b border-outline-variant/30 flex justify-between items-center h-20 px-margin-desktop max-w-container-max mx-auto left-0 right-0">
+<div class="font-headline-md text-headline-md font-bold tracking-tight text-primary">Crazy Capital</div>
+<div class="hidden md:flex items-center gap-stack-lg">
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Business</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Personal</a>
+<a class="font-label-md text-label-md text-on-surface-variant hover:text-secondary transition-colors" href="#">Invest</a>
+<a class="font-label-md text-label-md text-secondary font-bold border-b-2 border-secondary pb-1" href="#">Partner Program</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="bg-secondary-container text-on-secondary-container font-label-md text-label-md px-6 py-2.5 rounded-lg hover:opacity-90 transition-all active:scale-95">Consult Expert</button>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">notifications</span>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer">account_circle</span>
+</div>
+</nav>
+<main class="pt-20">
+<!-- Hero Section -->
+<section class="relative overflow-hidden pt-stack-xl pb-24 px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-gutter items-center">
+<div class="z-10">
+<span class="inline-block bg-secondary/10 text-secondary font-label-md text-label-md px-4 py-1 rounded-full mb-6">Partnership Opportunities</span>
+<h1 class="font-display-lg text-display-lg mb-6 leading-[1.1]">Turn your local trust into a complete <span class="text-secondary">financial-services</span> business.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-lg">Empower your community with loans, insurance, and investment products while building a scalable revenue stream with India's fastest-growing fintech partner network.</p>
+<div class="flex gap-4">
+<a class="bg-primary text-on-primary font-label-md text-label-md px-8 py-4 rounded-lg hover:opacity-90 transition-all shadow-lg" href="#apply">Start Application</a>
+<a class="border border-primary text-primary font-label-md text-label-md px-8 py-4 rounded-lg hover:bg-surface-container transition-all" href="#tiers">Explore Tiers</a>
+</div>
+</div>
+<div class="relative">
+<div class="absolute -top-20 -right-20 w-96 h-96 bg-secondary/10 rounded-full blur-3xl"></div>
+<div class="glass-card rounded-3xl p-6 relative z-10 shadow-2xl">
+<img class="w-full h-[400px] object-cover rounded-2xl" data-alt="A professional Indian financial consultant sitting in a modern glass-walled office in Mumbai, shaking hands with a small business owner. The atmosphere is optimistic and high-tech, with digital financial dashboards visible in the background. The lighting is bright and warm, emphasizing professional trust and technological advancement." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA9mZLX9XST4Or8FgkmZ8ByFcgVIyBfgve-6g2VzQYkG1PRID0dIxXlrfI8GuAuCcNmYrgqIEUb3wbTC2HcdQGkkFbVsOe_gXNslkmY4p2edckNxWJxtdlbl-HR0Jq7leATe_tm4UMQVNiuvIGFAVEjePJ5sRtvTXBVFQdlyCrgsg6ORG4k3yp_YX-f2wBSj5gw_9QD7drSFRyuKImmFwAWOLRoNKpqC9WFdBRGKYb46XhxKaiH1MFpNQ"/>
+</div>
+</div>
+</div>
+</section>
+<!-- Partner Tiers: Bento Grid -->
+<section class="py-stack-xl px-margin-desktop max-w-container-max mx-auto bg-surface-container-lowest rounded-[40px]" id="tiers">
+<div class="text-center mb-16">
+<h2 class="font-headline-md text-headline-md mb-4">Choose Your Partnership Tier</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Tailored models for every entrepreneur, from neighborhood shops to corporate advisors.</p>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-gutter">
+<!-- Retail Point -->
+<div class="bento-inner glass-card p-8 rounded-3xl flex flex-col h-full border-t-4 border-t-secondary">
+<div class="mb-6 flex justify-between items-start">
+<div class="p-3 bg-secondary/10 rounded-xl">
+<span class="material-symbols-outlined text-secondary">storefront</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant/60">Entry Level</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-3">Retail Point</h3>
+<p class="text-on-surface-variant mb-6 flex-grow">Transform your existing shop into a financial hub. Ideal for kiranas, stationery, or mobile shops.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Basic Lead Generation</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Instant Payouts</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Marketing Kit Included</li>
+</ul>
+<div class="bg-surface-container-low p-4 rounded-xl">
+<p class="text-label-sm text-on-surface-variant">Best for:</p>
+<p class="font-label-md">Small Shop Owners &amp; Micro-Entrepreneurs</p>
+</div>
+</div>
+<!-- Service Partner -->
+<div class="bento-inner glass-card p-8 rounded-3xl flex flex-col h-full border-t-4 border-t-secondary-container">
+<div class="mb-6 flex justify-between items-start">
+<div class="p-3 bg-secondary-container/10 rounded-xl">
+<span class="material-symbols-outlined text-secondary-container">handshake</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-secondary-container font-bold">Most Popular</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-3">Service Partner</h3>
+<p class="text-on-surface-variant mb-6 flex-grow">Full-scale financial agency model. Manage your own team and direct customer relationships.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Full Product Portfolio</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> CRM Access</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Dedicated Relationship Manager</li>
+</ul>
+<div class="bg-secondary-container/5 p-4 rounded-xl border border-secondary-container/10">
+<p class="text-label-sm text-on-surface-variant">Best for:</p>
+<p class="font-label-md">DSA, Insurance Agents &amp; Financial Planners</p>
+</div>
+</div>
+<!-- Professional Partner -->
+<div class="bento-inner glass-card p-8 rounded-3xl flex flex-col h-full border-t-4 border-t-primary">
+<div class="mb-6 flex justify-between items-start">
+<div class="p-3 bg-primary/10 rounded-xl">
+<span class="material-symbols-outlined text-primary">workspace_premium</span>
+</div>
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant/60">Elite Tier</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm mb-3">Professional Partner</h3>
+<p class="text-on-surface-variant mb-6 flex-grow">White-label and API integration solutions for corporate entities and high-scale advisories.</p>
+<ul class="space-y-3 mb-8">
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Custom Branding Options</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> API Integration</li>
+<li class="flex items-center gap-2 text-label-md"><span class="material-symbols-outlined text-teal-600 text-sm">check_circle</span> Priority Support &amp; Pricing</li>
+</ul>
+<div class="bg-primary/5 p-4 rounded-xl border border-primary/10">
+<p class="text-label-sm text-on-surface-variant">Best for:</p>
+<p class="font-label-md">CAs, Wealth Management Firms &amp; Tech Platforms</p>
+</div>
+</div>
+</div>
+</section>
+<!-- Dashboard Preview Section -->
+<section class="py-stack-xl px-margin-desktop max-w-container-max mx-auto">
+<div class="grid grid-cols-1 lg:grid-cols-5 gap-gutter items-center">
+<div class="lg:col-span-2">
+<h2 class="font-headline-md text-headline-md mb-6 leading-tight">Advanced tools to grow your business.</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-8">Every partner gets access to the Partner Hub—a powerful command center to track every lead, case, and commission in real-time.</p>
+<div class="space-y-6">
+<div class="flex gap-4 items-start">
+<div class="text-secondary mt-1"><span class="material-symbols-outlined">analytics</span></div>
+<div>
+<h4 class="font-label-md text-label-md mb-1">Real-time Analytics</h4>
+<p class="text-sm text-on-surface-variant">Track your team's performance and conversion rates instantly.</p>
+</div>
+</div>
+<div class="flex gap-4 items-start">
+<div class="text-secondary mt-1"><span class="material-symbols-outlined">payments</span></div>
+<div>
+<h4 class="font-label-md text-label-md mb-1">Seamless Commissions</h4>
+<p class="text-sm text-on-surface-variant">Direct bank transfers with automated TDS compliance.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="lg:col-span-3">
+<div class="bg-primary-container rounded-3xl p-8 shadow-2xl relative overflow-hidden">
+<!-- Simulated Dashboard -->
+<div class="flex justify-between items-center mb-8 border-b border-outline-variant/20 pb-4">
+<h5 class="text-surface-bright font-headline-sm text-headline-sm">Partner Hub</h5>
+<div class="flex gap-2">
+<span class="bg-secondary px-3 py-1 rounded text-xs text-white">Live Dashboard</span>
+</div>
+</div>
+<div class="grid grid-cols-3 gap-4 mb-8">
+<div class="bg-surface/5 p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-on-primary-container text-xs mb-1">New Leads</p>
+<p class="text-2xl font-bold text-white">24</p>
+<span class="text-teal-400 text-xs flex items-center mt-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> +12%</span>
+</div>
+<div class="bg-surface/5 p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-on-primary-container text-xs mb-1">Active Cases</p>
+<p class="text-2xl font-bold text-white">156</p>
+<span class="text-teal-400 text-xs flex items-center mt-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> +5%</span>
+</div>
+<div class="bg-surface/5 p-4 rounded-2xl border border-outline-variant/10">
+<p class="text-on-primary-container text-xs mb-1">Earnings (Jan)</p>
+<p class="text-2xl font-bold text-secondary-fixed">₹84,200</p>
+<span class="text-teal-400 text-xs flex items-center mt-1"><span class="material-symbols-outlined text-[14px]">trending_up</span> +22%</span>
+</div>
+</div>
+<div class="space-y-4">
+<div class="bg-surface/5 p-4 rounded-2xl flex justify-between items-center border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary-fixed">AK</div>
+<div>
+<p class="text-sm font-medium text-white">Anil Kumar - Home Loan</p>
+<p class="text-xs text-on-primary-container">Lead ID: #98223</p>
+</div>
+</div>
+<span class="bg-indigo-900/40 text-indigo-300 text-[10px] px-2 py-1 rounded-full uppercase tracking-widest border border-indigo-400/20">Active</span>
+</div>
+<div class="bg-surface/5 p-4 rounded-2xl flex justify-between items-center border border-outline-variant/10">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-secondary-container/20 flex items-center justify-center text-secondary-fixed">PS</div>
+<div>
+<p class="text-sm font-medium text-white">Priya Sharma - Term Insurance</p>
+<p class="text-xs text-on-primary-container">Lead ID: #98224</p>
+</div>
+</div>
+<span class="bg-teal-900/40 text-teal-300 text-[10px] px-2 py-1 rounded-full uppercase tracking-widest border border-teal-400/20">Filed</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Journey Section -->
+<section class="py-stack-xl px-margin-desktop max-w-container-max mx-auto bg-surface">
+<div class="text-center mb-16">
+<h2 class="font-headline-md text-headline-md">Your 3-Step Journey</h2>
+<p class="text-on-surface-variant">Simple, transparent, and designed for speed.</p>
+</div>
+<div class="relative flex flex-col md:flex-row justify-between gap-gutter">
+<!-- Connectors for Desktop -->
+<div class="hidden md:block absolute top-12 left-0 w-full h-[2px] bg-outline-variant/30 z-0"></div>
+<!-- Step 1 -->
+<div class="relative z-10 flex flex-col items-center text-center flex-1">
+<div class="w-24 h-24 bg-surface rounded-full border-4 border-secondary flex items-center justify-center mb-6 shadow-xl">
+<span class="material-symbols-outlined text-secondary text-4xl">edit_document</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2">Apply</h4>
+<p class="text-sm text-on-surface-variant px-4">Fill out the digital application with your professional credentials and KYC documents.</p>
+</div>
+<!-- Step 2 -->
+<div class="relative z-10 flex flex-col items-center text-center flex-1">
+<div class="w-24 h-24 bg-surface rounded-full border-4 border-secondary flex items-center justify-center mb-6 shadow-xl">
+<span class="material-symbols-outlined text-secondary text-4xl">school</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2">Train</h4>
+<p class="text-sm text-on-surface-variant px-4">Complete our interactive certification modules on product compliance and selling skills.</p>
+</div>
+<!-- Step 3 -->
+<div class="relative z-10 flex flex-col items-center text-center flex-1">
+<div class="w-24 h-24 bg-surface rounded-full border-4 border-secondary flex items-center justify-center mb-6 shadow-xl">
+<span class="material-symbols-outlined text-secondary text-4xl">rocket_launch</span>
+</div>
+<h4 class="font-headline-sm text-headline-sm mb-2">Serve</h4>
+<p class="text-sm text-on-surface-variant px-4">Get access to your dashboard and start serving customers immediately. Earn as they grow.</p>
+</div>
+</div>
+</section>
+<!-- Application Form Section -->
+<section class="py-stack-xl px-margin-desktop max-w-container-max mx-auto mb-20" id="apply">
+<div class="max-w-3xl mx-auto bg-white rounded-[32px] p-10 shadow-2xl border border-outline-variant/20">
+<div class="text-center mb-10">
+<h2 class="font-headline-md text-headline-md mb-2">Partner Application Form</h2>
+<p class="text-on-surface-variant">Please provide accurate details to expedite the verification process.</p>
+</div>
+<form class="space-y-8">
+<!-- Personal Info -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Full Name</label>
+<input class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="As per PAN Card" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Email Address</label>
+<input class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="example@business.com" type="email"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Phone Number</label>
+<input class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="+91 00000 00000" type="tel"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Preferred Tier</label>
+<select class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3">
+<option>Retail Point</option>
+<option>Service Partner</option>
+<option>Professional Partner</option>
+</select>
+</div>
+</div>
+<!-- Business Info -->
+<div class="space-y-6 pt-6 border-t border-outline-variant/30">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Current Business/Occupation</label>
+<textarea class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="Describe what you currently do..." rows="3"></textarea>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Business Location (City)</label>
+<input class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="e.g. Hyderabad" type="text"/>
+</div>
+<div class="flex flex-col gap-2">
+<label class="font-label-md text-label-md text-on-surface">Years of Experience</label>
+<input class="rounded-xl border-outline-variant focus:ring-secondary focus:border-secondary p-3" placeholder="Years" type="number"/>
+</div>
+</div>
+</div>
+<!-- KYC Checkbox -->
+<div class="flex items-start gap-3 bg-surface-container-low p-4 rounded-xl">
+<input class="mt-1 rounded text-secondary focus:ring-secondary" type="checkbox"/>
+<p class="text-sm text-on-surface-variant">I authorize Crazy Capital to conduct a credit and background check as part of the partnership onboarding process. I agree to the <a class="text-secondary underline" href="#">Partner Terms and Conditions</a>.</p>
+</div>
+<button class="w-full bg-secondary text-white font-label-md text-headline-sm py-4 rounded-xl shadow-lg hover:bg-secondary/90 transition-all active:scale-[0.98]" type="submit">Submit Application</button>
+</form>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="bg-primary-container dark:bg-surface-container-lowest w-full py-stack-xl border-t border-outline-variant">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter px-margin-desktop max-w-container-max mx-auto">
+<div class="md:col-span-1">
+<div class="font-headline-md text-headline-md text-surface-bright mb-6">Crazy Capital</div>
+<p class="text-on-primary-container/80 text-sm mb-6">Democratizing financial services for Bharat through technology and local trust.</p>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-surface-bright font-bold">Programs</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Retail Point</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Service Partner</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Strategic Advisor</a>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-surface-bright font-bold">Company</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">About Us</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Partner Program</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Terms of Service</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Privacy Policy</a>
+</div>
+<div class="flex flex-col gap-4">
+<h5 class="text-surface-bright font-bold">Support</h5>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Partner Help Center</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Office Locations</a>
+<a class="text-on-primary-container/80 hover:text-surface-bright transition-colors text-sm" href="#">Contact Support</a>
+</div>
+</div>
+<div class="border-t border-outline-variant/10 mt-12 pt-8 text-center text-on-primary-container/60 text-xs">
+            © 2024 Crazy Capital Fintech. All rights reserved.
+        </div>
+</footer>
+<!-- Script for Interactions -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Form Submission Interaction
+            const form = document.querySelector('form');
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                const btn = form.querySelector('button');
+                btn.innerHTML = 'Processing Application...';
+                btn.disabled = true;
+                setTimeout(() => {
+                    btn.innerHTML = 'Application Received!';
+                    btn.classList.add('bg-teal-600');
+                }, 1500);
+            });
+
+            // Intersection Observer for scroll animations
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('opacity-100', 'translate-y-0');
+                        entry.target.classList.remove('opacity-0', 'translate-y-10');
+                    }
+                });
+            }, { threshold: 0.1 });
+
+            document.querySelectorAll('.bento-inner, #apply').forEach(el => {
+                el.classList.add('transition-all', 'duration-700', 'opacity-0', 'translate-y-10');
+                observer.observe(el);
+            });
+        });
+    </script>
+</body></html>
