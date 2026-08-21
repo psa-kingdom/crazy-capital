@@ -133,6 +133,28 @@ Update rule: update this document in the same change as a relevant implementatio
 | Background job infrastructure for SLA tracking | Assumption: BullMQ on Railway | Required for Phase 2 SLA features | Confirm before Phase 2 |
 | Insurance/loan distribution requires licensed partner | Regulatory constraint | Must route through licensed partners only | Already accounted for in business model |
 | Phase 1 targets: 5,000 customers, 50 employees, 100 partners | Scale assumption | Drives infrastructure sizing | Revisit at 80% capacity |
+| MongoDB Prohibitions | **Architecture Invariant** | MongoDB is NOT part of the Crazy Capital persistence architecture. PostgreSQL + Prisma is authoritative. MongoDB should not be introduced. | Enforce strictly |
+| UI/UX Design Decisions | **Governance Invariant** | Stop and ask founder for design direction, references, and interaction preferences before implementing new UI/UX surfaces. | Enforce strictly |
+
+---
+
+## 8.1 Infrastructure & Dependency Activation Map
+
+| Dependency | Activation Point | Current Status | Setup Trigger & Notes |
+|---|---|---|---|
+| **GitHub** | **Sprint 2 Gate (Now)** | **Active Baseline (main branch)** | Monorepo source control baseline committed. |
+| **PostgreSQL** | **Sprint 1 / 2 (Now)** | **Active (Prisma ORM)** | Authoritative relational persistence layer. |
+| **Railway** | **Staging Gate (Now)** | **Prepared for Staging** | NestJS Backend API runtime & PostgreSQL hosting. |
+| **Vercel** | **Staging Gate (Now)** | **Prepared for Staging** | Next.js 15 Admin (`@cc/admin`) and Web (`@cc/web`) portals. |
+| **Cloudflare R2** | Sprint 4 (Vertical Slice 1.7) | Not yet required | Activated when Document Vault S3-compatible signed URLs are needed. |
+| **Razorpay** | Sprint 5 (Vertical Slice 1.8) | Not yet required | Activated when customer payment orders and invoice settlement begin. |
+| **Resend** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when event-driven transactional email dispatch is required. |
+| **MSG91** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when transactional SMS/OTP notification delivery is required. |
+| **Interakt** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when WhatsApp template notifications are required. |
+| **Redis / BullMQ** | Phase 2 (SLA & Background Tasks) | Not yet required | Activated only when SLA escalations and background job queues are built. |
+| **RazorpayX** | Phase 2 (Partner Payouts) | Not yet required | Activated for automated channel partner commission disbursements. |
+| **OCR / Document AI** | Phase 4 (AI Automations) | Not yet required | Activated during automated KYC document extraction. |
+| **AI Infrastructure** | Phase 4 (AI Automations) | Not yet required | Activated for conversational AI advisors. |
 
 ---
 

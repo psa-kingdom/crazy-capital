@@ -7,6 +7,7 @@ import { AuthModule } from './modules/auth/auth.module';
 import { UsersModule } from './modules/users/users.module';
 import { CrmModule } from './modules/crm/crm.module';
 import { CustomersModule } from './modules/customers/customers.module';
+import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
 
@@ -23,6 +24,7 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     CrmModule,
     CustomersModule,
   ],
+  controllers: [AppController],
   providers: [
     {
       provide: APP_GUARD,
