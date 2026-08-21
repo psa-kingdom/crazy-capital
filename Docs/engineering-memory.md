@@ -117,6 +117,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | ADR-013 | Lead sources are configurable by Admin (lead_sources table), not a hardcoded enum. | **Founder Confirmed** | Do not hardcode lead source values in application code |
 | ADR-014 | Full payment collected from customer via Razorpay. Commission paid to partner separately after Admin approval. No split payment at collection time. | **Founder Confirmed** | Phase 1: manual payout tracking. Phase 2+: RazorpayX for automated payouts |
 | ADR-015 | Strict adherence to the 5-Phase Vertical Slice Architecture Blueprint across all development sprints. | **Approved** | Single source of truth: Docs/Technical/13-master-implementation-plan-and-vertical-slices.md |
+| ADR-016 | Stitch Design Intelligence as Inspiration Library; Customization via Design Tokens | **Approved** | Stitch is a non-authoritative reference library. Semantic Design Tokens in @cc/ui and Tailwind are the authoritative customization layer. Single source of truth: Docs/stitch-inspiration-map.md |
 
 ---
 
@@ -196,4 +197,6 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | Master 5-Phase Vertical Slice Implementation Plan locked | ADR-015 | Docs/Technical/13-master-implementation-plan-and-vertical-slices.md |
 | Aug 2026 | **Sprint 2 Completed**: CRM Lead Engine (Slice 1.2) & Customer 360 (Slice 1.3) delivered across API, Prisma, Admin & Web frontends (24 acceptance tests) | ADR-013, ADR-015, Rule L1, L5, C3 | engineering-memory.md, apps/api, apps/admin, apps/web |
 | Aug 2026 | **Sprint 3 Core Delivered**: Service Catalog Engine (Slice 1.4), Configurable Workflow Engine (Slice 1.5 - ADR-012), Application Lifecycle Matrix (Slice 1.6 - CC-YYYY-XXXXXX). 54/54 automated tests passing across 6 suites. | ADR-012, ADR-015, Slice 1.4, 1.5, 1.6 | engineering-memory.md, apps/api, @cc/types, @cc/validation |
+| Aug 2026 | **Design Intelligence & UI Foundation Gate Completed**: 13 Stitch references audited, inspiration map & when-to-use guide documented, semantic design token architecture established. | ADR-016 | Docs/stitch-inspiration-map.md, engineering-memory.md |
+
 
