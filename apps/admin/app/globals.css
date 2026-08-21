@@ -2,6 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  /* Semantic Surface & Canvas */
+  --cc-bg: #f9fafb;
+  --cc-surface: #ffffff;
+  --cc-surface-elevated: #ffffff;
+  --cc-surface-muted: #f3f4f6;
+  --cc-surface-container: #f1eded;
+
+  /* Typography & Authority */
+  --cc-text-primary: #0b0e14;
+  --cc-text-secondary: #4b5563;
+  --cc-text-muted: #9ca3af;
+
+  /* Brand Accents */
+  --cc-brand-primary: #4f46e5;
+  --cc-brand-primary-hover: #4338ca;
+  --cc-brand-gold: #d97706;
+  --cc-brand-teal: #0d9488;
+  --cc-brand-error: #dc2626;
+
+  /* Borders & Shadows */
+  --cc-border: #e5e7eb;
+  --cc-border-strong: #d1d5db;
+  --cc-radius-sm: 0.375rem;
+  --cc-radius-md: 0.75rem;
+  --cc-radius-lg: 1.0rem;
+  --cc-radius-xl: 1.5rem;
+  --cc-radius-full: 9999px;
+  --cc-shadow-card: 0 4px 20px rgba(11, 14, 20, 0.04);
+  --cc-shadow-elevated: 0 12px 32px rgba(11, 14, 20, 0.08);
+}
+
+.dark {
+  --cc-bg: #0b0e14;
+  --cc-surface: #131722;
+  --cc-surface-elevated: #1a202c;
+  --cc-surface-muted: #1e2538;
+  --cc-surface-container: #1e2538;
+  --cc-text-primary: #f9fafb;
+  --cc-text-secondary: #9ca3af;
+  --cc-text-muted: #6b7280;
+  --cc-border: #2d3748;
+  --cc-border-strong: #4a5568;
+}
+
 @layer base {
   * {
     box-sizing: border-box;
@@ -12,7 +57,7 @@
   }
 
   body {
-    background-color: #f8fafc;
-    color: #0f172a;
+    background-color: var(--cc-bg);
+    color: var(--cc-text-primary);
   }
 }

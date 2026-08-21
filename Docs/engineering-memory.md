@@ -118,6 +118,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | ADR-014 | Full payment collected from customer via Razorpay. Commission paid to partner separately after Admin approval. No split payment at collection time. | **Founder Confirmed** | Phase 1: manual payout tracking. Phase 2+: RazorpayX for automated payouts |
 | ADR-015 | Strict adherence to the 5-Phase Vertical Slice Architecture Blueprint across all development sprints. | **Approved** | Single source of truth: Docs/Technical/13-master-implementation-plan-and-vertical-slices.md |
 | ADR-016 | Stitch Design Intelligence as Inspiration Library; Customization via Design Tokens | **Approved** | Stitch is a non-authoritative reference library. Semantic Design Tokens in @cc/ui and Tailwind are the authoritative customization layer. Single source of truth: Docs/stitch-inspiration-map.md |
+| ADR-017 | CLI-First Staging Infrastructure Topology (Railway + Vercel + PostgreSQL) | **Approved** | Railway API + PostgreSQL staging established via CLI. Vercel Web & Admin staging linked. Single source of truth: Docs/staging-infrastructure.md |
 
 ---
 
@@ -143,10 +144,10 @@ Update rule: update this document in the same change as a relevant implementatio
 
 | Dependency | Activation Point | Current Status | Setup Trigger & Notes |
 |---|---|---|---|
-| **GitHub** | **Sprint 2 Gate (Now)** | **Active Baseline (main branch)** | Monorepo source control baseline committed. |
-| **PostgreSQL** | **Sprint 1 / 2 (Now)** | **Active (Prisma ORM)** | Authoritative relational persistence layer. |
-| **Railway** | **Staging Gate (Now)** | **Prepared for Staging** | NestJS Backend API runtime & PostgreSQL hosting. |
-| **Vercel** | **Staging Gate (Now)** | **Prepared for Staging** | Next.js 15 Admin (`@cc/admin`) and Web (`@cc/web`) portals. |
+| **GitHub** | **Sprint 2 Gate (Now)** | **Active Baseline (main branch)** | Monorepo source control baseline committed (`origin/main`). |
+| **PostgreSQL** | **Sprint 1 / 2 (Now)** | **Active (Railway Staging + Prisma)** | Authoritative relational persistence layer on Railway internal VPC. |
+| **Railway** | **Staging Gate (Now)** | **Active Staging Project** | Project `crazy-capital` (staging env, API service, PostgreSQL 18 SSL). |
+| **Vercel** | **Staging Gate (Now)** | **Active Staging Linked** | Projects `web` and `admin` linked with `NEXT_PUBLIC_API_URL`. |
 | **Cloudflare R2** | Sprint 4 (Vertical Slice 1.7) | Not yet required | Activated when Document Vault S3-compatible signed URLs are needed. |
 | **Razorpay** | Sprint 5 (Vertical Slice 1.8) | Not yet required | Activated when customer payment orders and invoice settlement begin. |
 | **Resend** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when event-driven transactional email dispatch is required. |
@@ -198,5 +199,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | **Sprint 2 Completed**: CRM Lead Engine (Slice 1.2) & Customer 360 (Slice 1.3) delivered across API, Prisma, Admin & Web frontends (24 acceptance tests) | ADR-013, ADR-015, Rule L1, L5, C3 | engineering-memory.md, apps/api, apps/admin, apps/web |
 | Aug 2026 | **Sprint 3 Core Delivered**: Service Catalog Engine (Slice 1.4), Configurable Workflow Engine (Slice 1.5 - ADR-012), Application Lifecycle Matrix (Slice 1.6 - CC-YYYY-XXXXXX). 54/54 automated tests passing across 6 suites. | ADR-012, ADR-015, Slice 1.4, 1.5, 1.6 | engineering-memory.md, apps/api, @cc/types, @cc/validation |
 | Aug 2026 | **Design Intelligence & UI Foundation Gate Completed**: 13 Stitch references audited, inspiration map & when-to-use guide documented, semantic design token architecture established. | ADR-016 | Docs/stitch-inspiration-map.md, engineering-memory.md |
+| Aug 2026 | **Staging Infrastructure & Token Activation Gate Completed**: Railway Staging Project & PostgreSQL 18 provisioned via CLI, Vercel web/admin linked, UI primitives harmonized in @cc/ui, Slice 1.7 prepared. | ADR-017 | Docs/staging-infrastructure.md, railway.json, @cc/ui |
+
 
 

@@ -44,5 +44,10 @@ coverage/
 # TypeScript
 *.tsbuildinfo
 
+# Deployment & Infrastructure
+.vercel/
+.railway/
+
 # Misc
 *.pem
+
