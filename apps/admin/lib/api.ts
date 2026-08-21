@@ -96,3 +96,97 @@ export const customerApi = {
     return apiClient.post(`/customers/${customerId}/contacts`, contact);
   },
 };
+
+// Service Catalog API Services
+export const servicesApi = {
+  getCategories: async (onlyActive = true) => {
+    return apiClient.get('/service-categories', { params: { onlyActive } });
+  },
+  createCategory: async (data: Record<string, any>) => {
+    return apiClient.post('/service-categories', data);
+  },
+  updateCategory: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/service-categories/${id}`, data);
+  },
+  getServices: async (params?: Record<string, any>) => {
+    return apiClient.get('/services', { params });
+  },
+  getServiceById: async (id: string) => {
+    return apiClient.get(`/services/${id}`);
+  },
+  createService: async (data: Record<string, any>) => {
+    return apiClient.post('/services', data);
+  },
+  updateService: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/services/${id}`, data);
+  },
+  updateServiceStatus: async (id: string, isActive: boolean) => {
+    return apiClient.patch(`/services/${id}/status`, { isActive });
+  },
+  addPricing: async (serviceId: string, data: Record<string, any>) => {
+    return apiClient.post(`/services/${serviceId}/pricing`, data);
+  },
+  addRequiredDocument: async (serviceId: string, data: Record<string, any>) => {
+    return apiClient.post(`/services/${serviceId}/documents`, data);
+  },
+  removeRequiredDocument: async (serviceId: string, documentTypeId: string) => {
+    return apiClient.delete(`/services/${serviceId}/documents/${documentTypeId}`);
+  },
+};
+
+// Workflow Engine API Services (ADR-012)
+export const workflowsApi = {
+  createWorkflow: async (data: Record<string, any>) => {
+    return apiClient.post('/workflows', data);
+  },
+  getWorkflowById: async (id: string) => {
+    return apiClient.get(`/workflows/${id}`);
+  },
+  getWorkflowByServiceId: async (serviceId: string) => {
+    return apiClient.get(`/services/${serviceId}/workflow`);
+  },
+  updateWorkflow: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/workflows/${id}`, data);
+  },
+  addStage: async (workflowId: string, data: Record<string, any>) => {
+    return apiClient.post(`/workflows/${workflowId}/stages`, data);
+  },
+  addTransition: async (workflowId: string, data: Record<string, any>) => {
+    return apiClient.post(`/workflows/${workflowId}/transitions`, data);
+  },
+  addRule: async (stageId: string, data: Record<string, any>) => {
+    return apiClient.post(`/workflows/stages/${stageId}/rules`, data);
+  },
+  transitionInstance: async (instanceId: string, targetStageId: string, remarks?: string) => {
+    return apiClient.post(`/workflow-instances/${instanceId}/transition`, { targetStageId, remarks });
+  },
+  getHistory: async (instanceId: string) => {
+    return apiClient.get(`/workflow-instances/${instanceId}/history`);
+  },
+};
+
+// Application Lifecycle API Services
+export const applicationsApi = {
+  getApplications: async (params?: Record<string, any>) => {
+    return apiClient.get('/applications', { params });
+  },
+  getApplicationById: async (id: string) => {
+    return apiClient.get(`/applications/${id}`);
+  },
+  createApplication: async (data: Record<string, any>) => {
+    return apiClient.post('/applications', data);
+  },
+  assignApplication: async (id: string, assignedToUserId: string, remarks?: string) => {
+    return apiClient.patch(`/applications/${id}/assign`, { assignedToUserId, remarks });
+  },
+  createTask: async (applicationId: string, data: Record<string, any>) => {
+    return apiClient.post(`/applications/${applicationId}/tasks`, data);
+  },
+  updateTask: async (taskId: string, data: Record<string, any>) => {
+    return apiClient.patch(`/applications/tasks/${taskId}`, data);
+  },
+  addActivity: async (applicationId: string, activityType: string, notes: string) => {
+    return apiClient.post(`/applications/${applicationId}/activities`, { activityType, notes });
+  },
+};
+

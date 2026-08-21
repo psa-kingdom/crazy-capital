@@ -207,3 +207,153 @@ export const queryCustomersSchema = paginationSchema.extend({
 });
 
 export type QueryCustomersInput = z.infer<typeof queryCustomersSchema>;
+
+// ─── Service Catalog Validation Schemas (Vertical Slice 1.4) ─────────────────
+
+export const pricingTypeEnum = z.enum(['STANDARD', 'PARTNER', 'PROMOTIONAL']);
+
+export const createServiceCategorySchema = z.object({
+  parentId: z.string().uuid().optional().nullable(),
+  name: z.string().min(2, 'Category name must be at least 2 characters'),
+  slug: z.string().optional(),
+  description: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+});
+
+export const updateServiceCategorySchema = createServiceCategorySchema.partial();
+
+export const createServicePricingSchema = z.object({
+  pricingType: pricingTypeEnum.default('STANDARD'),
+  amount: z.number().nonnegative('Amount must be zero or positive'),
+  effectiveFrom: z.string().optional(),
+  effectiveTo: z.string().optional().nullable(),
+});
+
+export const createServiceDocumentSchema = z.object({
+  documentTypeId: z.string().uuid('Valid Document Type ID is required'),
+  isMandatory: z.boolean().default(true),
+});
+
+export const createServiceSchema = z.object({
+  categoryId: z.string().uuid('Valid Category ID is required'),
+  name: z.string().min(2, 'Service name must be at least 2 characters'),
+  slug: z.string().optional(),
+  description: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+  standardPrice: z.number().nonnegative().optional(),
+  partnerPrice: z.number().nonnegative().optional(),
+  requiredDocumentTypeIds: z
+    .array(
+      z.object({
+        documentTypeId: z.string().uuid(),
+        isMandatory: z.boolean().default(true),
+      }),
+    )
+    .optional(),
+});
+
+export const updateServiceSchema = createServiceSchema.partial();
+
+export const queryServicesSchema = paginationSchema.extend({
+  categoryId: z.string().uuid().optional(),
+  isActive: z.boolean().optional(),
+});
+
+// ─── Workflow Engine Validation Schemas (Vertical Slice 1.5 - ADR-012) ───────
+
+export const workflowStageTypeEnum = z.enum(['START', 'PROCESSING', 'APPROVAL', 'COMPLETION', 'REJECTION']);
+export const workflowRuleTypeEnum = z.enum(['DOCUMENT_GATE', 'PAYMENT_GATE', 'APPROVAL_GATE']);
+
+export const createWorkflowStageSchema = z.object({
+  name: z.string().min(1, 'Stage name is required'),
+  code: z.string().min(1, 'Stage code is required'),
+  stageOrder: z.number().int().positive('Stage order must be a positive integer'),
+  stageType: workflowStageTypeEnum.default('PROCESSING'),
+  isStartStage: z.boolean().default(false),
+  isEndStage: z.boolean().default(false),
+  isMandatory: z.boolean().default(true),
+  slaHours: z.number().int().positive().optional().nullable(),
+});
+
+export const createWorkflowTransitionSchema = z.object({
+  fromStageId: z.string().uuid('Valid From Stage ID is required'),
+  toStageId: z.string().uuid('Valid To Stage ID is required'),
+  requiresApproval: z.boolean().default(false),
+});
+
+export const createWorkflowRuleSchema = z.object({
+  ruleType: workflowRuleTypeEnum,
+  ruleConfig: z.record(z.any()),
+});
+
+export const createWorkflowSchema = z.object({
+  serviceId: z.string().uuid('Valid Service ID is required'),
+  name: z.string().min(2, 'Workflow name must be at least 2 characters'),
+  code: z.string().optional(),
+  description: z.string().optional().nullable(),
+  isActive: z.boolean().default(true),
+  stages: z.array(createWorkflowStageSchema).optional(),
+});
+
+export const updateWorkflowSchema = createWorkflowSchema.partial();
+
+export const transitionWorkflowInstanceSchema = z.object({
+  targetStageId: z.string().uuid('Target stage ID is required'),
+  remarks: z.string().optional().nullable(),
+});
+
+// ─── Application Lifecycle Validation Schemas (Vertical Slice 1.6) ───────────
+
+export const applicationStatusEnum = z.enum([
+  'DRAFT',
+  'SUBMITTED',
+  'IN_PROGRESS',
+  'COMPLETED',
+  'CANCELLED',
+  'REJECTED',
+]);
+
+export const taskStatusEnum = z.enum(['PENDING', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']);
+export const approvalStatusEnum = z.enum(['PENDING', 'APPROVED', 'REJECTED']);
+
+export const createApplicationSchema = z.object({
+  customerId: z.string().uuid('Valid Customer ID is required'),
+  serviceId: z.string().uuid('Valid Service ID is required'),
+  branchId: z.string().uuid().optional().nullable(),
+  assignedToId: z.string().uuid().optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+export const assignApplicationSchema = z.object({
+  assignedToUserId: z.string().uuid('Valid Employee User ID is required'),
+  remarks: z.string().optional().nullable(),
+});
+
+export const createTaskSchema = z.object({
+  title: z.string().min(1, 'Task title is required'),
+  description: z.string().optional().nullable(),
+  workflowStageId: z.string().uuid().optional().nullable(),
+  assignedToId: z.string().uuid().optional().nullable(),
+  dueDate: z.string().optional().nullable(),
+});
+
+export const updateTaskSchema = z.object({
+  title: z.string().optional(),
+  description: z.string().optional().nullable(),
+  status: taskStatusEnum.optional(),
+  assignedToId: z.string().uuid().optional().nullable(),
+  dueDate: z.string().optional().nullable(),
+});
+
+export const createApplicationActivitySchema = z.object({
+  activityType: z.string().default('NOTE'),
+  notes: z.string().min(1, 'Activity notes are required'),
+});
+
+export const queryApplicationsSchema = paginationSchema.extend({
+  customerId: z.string().uuid().optional(),
+  serviceId: z.string().uuid().optional(),
+  branchId: z.string().uuid().optional(),
+  assignedToId: z.string().uuid().optional(),
+  status: applicationStatusEnum.optional(),
+});

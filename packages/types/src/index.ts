@@ -465,3 +465,393 @@ export interface QueryCustomersInput {
   sortBy?: string;
   sortOrder?: 'asc' | 'desc';
 }
+
+// ─── Service Catalog Domain Types (Vertical Slice 1.4) ───────────────────────
+
+export enum PricingType {
+  STANDARD = 'STANDARD',
+  PARTNER = 'PARTNER',
+  PROMOTIONAL = 'PROMOTIONAL',
+}
+
+export interface DocumentTypeDto {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface ServiceCategoryDto {
+  id: string;
+  parentId: string | null;
+  name: string;
+  slug: string;
+  description: string | null;
+  isActive: boolean;
+  parent?: ServiceCategoryDto | null;
+  children?: ServiceCategoryDto[];
+  services?: ServiceDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ServicePricingDto {
+  id: string;
+  serviceId: string;
+  pricingType: PricingType | string;
+  amount: number;
+  effectiveFrom: string;
+  effectiveTo: string | null;
+  createdAt: string;
+}
+
+export interface ServiceDocumentDto {
+  id: string;
+  serviceId: string;
+  documentTypeId: string;
+  isMandatory: boolean;
+  documentType?: DocumentTypeDto;
+}
+
+export interface ServiceDto {
+  id: string;
+  categoryId: string;
+  name: string;
+  slug: string;
+  description: string | null;
+  isActive: boolean;
+  category?: ServiceCategoryDto;
+  pricing?: ServicePricingDto[];
+  requiredDocuments?: ServiceDocumentDto[];
+  workflow?: WorkflowDto | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateServiceCategoryInput {
+  parentId?: string | null;
+  name: string;
+  slug?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface UpdateServiceCategoryInput {
+  parentId?: string | null;
+  name?: string;
+  slug?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface CreateServiceInput {
+  categoryId: string;
+  name: string;
+  slug?: string;
+  description?: string;
+  isActive?: boolean;
+  standardPrice?: number;
+  partnerPrice?: number;
+  requiredDocumentTypeIds?: { documentTypeId: string; isMandatory?: boolean }[];
+}
+
+export interface UpdateServiceInput {
+  categoryId?: string;
+  name?: string;
+  slug?: string;
+  description?: string;
+  isActive?: boolean;
+}
+
+export interface CreateServicePricingInput {
+  pricingType: PricingType | string;
+  amount: number;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+}
+
+export interface CreateServiceDocumentInput {
+  documentTypeId: string;
+  isMandatory?: boolean;
+}
+
+export interface QueryServicesInput {
+  page?: number;
+  limit?: number;
+  categoryId?: string;
+  isActive?: boolean;
+  search?: string;
+}
+
+// ─── Workflow Engine Domain Types (Vertical Slice 1.5 - ADR-012) ─────────────
+
+export enum WorkflowRuleType {
+  DOCUMENT_GATE = 'DOCUMENT_GATE',
+  PAYMENT_GATE = 'PAYMENT_GATE',
+  APPROVAL_GATE = 'APPROVAL_GATE',
+}
+
+export interface WorkflowRuleConfig {
+  mandatoryDocumentTypeIds?: string[];
+  requireAllVerified?: boolean;
+  minPaymentPercentage?: number;
+  requiredRole?: UserRole | string;
+  [key: string]: any;
+}
+
+export interface WorkflowRuleDto {
+  id: string;
+  stageId: string;
+  ruleType: WorkflowRuleType | string;
+  ruleConfig: WorkflowRuleConfig;
+}
+
+export interface WorkflowTransitionDto {
+  id: string;
+  workflowId: string;
+  fromStageId: string;
+  toStageId: string;
+  requiresApproval: boolean;
+  fromStage?: WorkflowStageDto;
+  toStage?: WorkflowStageDto;
+  createdAt: string;
+}
+
+export interface WorkflowStageDto {
+  id: string;
+  workflowId: string;
+  name: string;
+  code: string;
+  stageOrder: number;
+  stageType: WorkflowStageType | string;
+  isStartStage: boolean;
+  isEndStage: boolean;
+  isMandatory: boolean;
+  slaHours: number | null;
+  rules?: WorkflowRuleDto[];
+  fromTransitions?: WorkflowTransitionDto[];
+  toTransitions?: WorkflowTransitionDto[];
+  createdAt: string;
+}
+
+export interface WorkflowDto {
+  id: string;
+  serviceId: string;
+  name: string;
+  code: string;
+  description: string | null;
+  isActive: boolean;
+  stages?: WorkflowStageDto[];
+  transitions?: WorkflowTransitionDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateWorkflowInput {
+  serviceId: string;
+  name: string;
+  code?: string;
+  description?: string;
+  isActive?: boolean;
+  stages?: {
+    name: string;
+    code: string;
+    stageOrder: number;
+    stageType?: WorkflowStageType;
+    isStartStage?: boolean;
+    isEndStage?: boolean;
+    isMandatory?: boolean;
+    slaHours?: number;
+  }[];
+}
+
+export interface CreateWorkflowStageInput {
+  name: string;
+  code: string;
+  stageOrder: number;
+  stageType?: WorkflowStageType;
+  isStartStage?: boolean;
+  isEndStage?: boolean;
+  isMandatory?: boolean;
+  slaHours?: number;
+}
+
+export interface CreateWorkflowTransitionInput {
+  fromStageId: string;
+  toStageId: string;
+  requiresApproval?: boolean;
+}
+
+export interface CreateWorkflowRuleInput {
+  ruleType: WorkflowRuleType | string;
+  ruleConfig: WorkflowRuleConfig;
+}
+
+export interface WorkflowHistoryDto {
+  id: string;
+  workflowInstanceId: string;
+  fromStageId: string;
+  toStageId: string;
+  performedById: string | null;
+  remarks: string | null;
+  fromStage?: WorkflowStageDto;
+  toStage?: WorkflowStageDto;
+  performedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  createdAt: string;
+}
+
+export interface WorkflowInstanceDto {
+  id: string;
+  workflowId: string;
+  applicationId: string;
+  currentStageId: string;
+  currentStage?: WorkflowStageDto;
+  workflow?: WorkflowDto;
+  startedAt: string;
+  completedAt: string | null;
+  history?: WorkflowHistoryDto[];
+}
+
+export interface TransitionWorkflowInstanceInput {
+  targetStageId: string;
+  remarks?: string;
+}
+
+// ─── Application Lifecycle Domain Types (Vertical Slice 1.6) ────────────────
+
+export enum ApprovalStatus {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  REJECTED = 'REJECTED',
+}
+
+export interface TaskDto {
+  id: string;
+  applicationId: string;
+  workflowStageId: string | null;
+  assignedToId: string | null;
+  title: string;
+  description: string | null;
+  status: TaskStatus | string;
+  dueDate: string | null;
+  completedAt: string | null;
+  assignedTo?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  createdAt: string;
+}
+
+export interface ApprovalDto {
+  id: string;
+  workflowInstanceId: string;
+  stageId: string;
+  requestedById: string;
+  approvedById: string | null;
+  status: ApprovalStatus | string;
+  remarks: string | null;
+  createdAt: string;
+  decidedAt: string | null;
+}
+
+export interface ApplicationActivityDto {
+  id: string;
+  applicationId: string;
+  performedById: string | null;
+  activityType: string;
+  notes: string | null;
+  performedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  createdAt: string;
+}
+
+export interface ApplicationDto {
+  id: string;
+  organizationId: string;
+  branchId: string | null;
+  customerId: string;
+  serviceId: string;
+  applicationNumber: string;
+  status: ApplicationStatus | string;
+  assignedToId: string | null;
+  customer?: CustomerDto;
+  service?: ServiceDto;
+  branch?: {
+    id: string;
+    name: string;
+    code: string;
+    city: string;
+  } | null;
+  assignedTo?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile: string;
+  } | null;
+  workflowInstance?: WorkflowInstanceDto | null;
+  tasks?: TaskDto[];
+  activities?: ApplicationActivityDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateApplicationInput {
+  customerId: string;
+  serviceId: string;
+  branchId?: string;
+  assignedToId?: string;
+  notes?: string;
+}
+
+export interface AssignApplicationInput {
+  assignedToUserId: string;
+  remarks?: string;
+}
+
+export interface CreateTaskInput {
+  title: string;
+  description?: string;
+  workflowStageId?: string;
+  assignedToId?: string;
+  dueDate?: string;
+}
+
+export interface UpdateTaskInput {
+  title?: string;
+  description?: string;
+  status?: TaskStatus;
+  assignedToId?: string;
+  dueDate?: string;
+}
+
+export interface CreateApplicationActivityInput {
+  activityType: string;
+  notes: string;
+}
+
+export interface QueryApplicationsInput {
+  page?: number;
+  limit?: number;
+  customerId?: string;
+  serviceId?: string;
+  branchId?: string;
+  assignedToId?: string;
+  status?: ApplicationStatus | string;
+  search?: string;
+  sortBy?: string;
+  sortOrder?: 'asc' | 'desc';
+}
+

@@ -194,4 +194,6 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | Initial engineering memory populated from documentation review | All ADRs 001–010 | This file |
 | Aug 2026 | Founder confirmed OQ-001 through OQ-004 | ADR-011, ADR-012, ADR-013, ADR-014 | engineering-memory.md, adr/ADR-011 through ADR-014 |
 | Aug 2026 | Master 5-Phase Vertical Slice Implementation Plan locked | ADR-015 | Docs/Technical/13-master-implementation-plan-and-vertical-slices.md |
-| Aug 2026 | **Sprint 2 Completed**: CRM Lead Engine (Slice 1.2) & Customer 360 (Slice 1.3) delivered across API, Prisma, Admin & Web frontends | ADR-013, ADR-015, Rule L1, L5, C3 | engineering-memory.md, apps/api, apps/admin, apps/web |
+| Aug 2026 | **Sprint 2 Completed**: CRM Lead Engine (Slice 1.2) & Customer 360 (Slice 1.3) delivered across API, Prisma, Admin & Web frontends (24 acceptance tests) | ADR-013, ADR-015, Rule L1, L5, C3 | engineering-memory.md, apps/api, apps/admin, apps/web |
+| Aug 2026 | **Sprint 3 Core Delivered**: Service Catalog Engine (Slice 1.4), Configurable Workflow Engine (Slice 1.5 - ADR-012), Application Lifecycle Matrix (Slice 1.6 - CC-YYYY-XXXXXX). 54/54 automated tests passing across 6 suites. | ADR-012, ADR-015, Slice 1.4, 1.5, 1.6 | engineering-memory.md, apps/api, @cc/types, @cc/validation |
+
