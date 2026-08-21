@@ -357,3 +357,54 @@ export const queryApplicationsSchema = paginationSchema.extend({
   assignedToId: z.string().uuid().optional(),
   status: applicationStatusEnum.optional(),
 });
+
+// ─── Domain 7: Document Types & Vault Schemas ────────────────────────────────
+
+export const documentStatusEnum = z.enum(['PENDING', 'UPLOADED', 'VERIFIED', 'REJECTED']);
+
+export const allowedMimeTypes = [
+  'application/pdf',
+  'image/jpeg',
+  'image/png',
+  'image/jpg',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+];
+
+export const createDocumentTypeSchema = z.object({
+  name: z.string().min(2, 'Document type name is required'),
+  code: z.string().min(2, 'Document type code is required').regex(/^[A-Z0-9_]+$/, 'Code must be uppercase alphanumeric and underscores'),
+  description: z.string().optional().nullable(),
+});
+
+export const requestPresignedUploadSchema = z.object({
+  customerId: z.string().uuid('Valid Customer ID is required'),
+  applicationId: z.string().uuid().optional().nullable(),
+  documentTypeId: z.string().uuid('Valid Document Type ID is required'),
+  fileName: z.string().min(1, 'File name is required').max(255, 'File name is too long'),
+  fileSize: z.number().int().positive('File size must be positive').max(15 * 1024 * 1024, 'File size cannot exceed 15MB'),
+  mimeType: z.string().refine((val) => allowedMimeTypes.includes(val), {
+    message: 'Unsupported file type. Allowed: PDF, JPG, PNG, DOC, DOCX',
+  }),
+});
+
+export const confirmUploadSchema = z.object({
+  fileSize: z.number().int().positive().optional(),
+  checksumSha256: z.string().optional(),
+});
+
+export const verifyDocumentSchema = z.object({
+  remarks: z.string().optional().nullable(),
+});
+
+export const rejectDocumentSchema = z.object({
+  rejectionReason: z.string().min(3, 'Structured rejection reason is required'),
+});
+
+export const queryDocumentsSchema = paginationSchema.extend({
+  customerId: z.string().uuid().optional(),
+  applicationId: z.string().uuid().optional(),
+  documentTypeId: z.string().uuid().optional(),
+  status: documentStatusEnum.optional(),
+});
+

@@ -119,6 +119,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | ADR-015 | Strict adherence to the 5-Phase Vertical Slice Architecture Blueprint across all development sprints. | **Approved** | Single source of truth: Docs/Technical/13-master-implementation-plan-and-vertical-slices.md |
 | ADR-016 | Stitch Design Intelligence as Inspiration Library; Customization via Design Tokens | **Approved** | Stitch is a non-authoritative reference library. Semantic Design Tokens in @cc/ui and Tailwind are the authoritative customization layer. Single source of truth: Docs/stitch-inspiration-map.md |
 | ADR-017 | CLI-First Staging Infrastructure Topology (Railway + Vercel + PostgreSQL) | **Approved** | Railway API + PostgreSQL staging established via CLI. Vercel Web & Admin staging linked. Single source of truth: Docs/staging-infrastructure.md |
+| ADR-018 | Secure Document Vault Architecture (ObjectStorageProvider + S3/R2 Presigned URLs + PostgreSQL Metadata + DOCUMENT_GATE) | **Approved** | Direct client-to-storage signed binary uploads, metadata & verification audit in PostgreSQL, gate validation in workflow engine. |
 
 ---
 
@@ -147,8 +148,8 @@ Update rule: update this document in the same change as a relevant implementatio
 | **GitHub** | **Sprint 2 Gate (Now)** | **Active Baseline (main branch)** | Monorepo source control baseline committed (`origin/main`). |
 | **PostgreSQL** | **Sprint 1 / 2 (Now)** | **Active (Railway Staging + Prisma)** | Authoritative relational persistence layer on Railway internal VPC. |
 | **Railway** | **Staging Gate (Now)** | **Active Staging Project** | Project `crazy-capital` (staging env, API service, PostgreSQL 18 SSL). |
-| **Vercel** | **Staging Gate (Now)** | **Active Staging Linked** | Projects `web` and `admin` linked with `NEXT_PUBLIC_API_URL`. |
-| **Cloudflare R2** | Sprint 4 (Vertical Slice 1.7) | Not yet required | Activated when Document Vault S3-compatible signed URLs are needed. |
+| **Vercel** | **Staging Gate (Now)** | **Active Staging Linked** | Projects `crazy-capital-web` and `crazy-capital-admin` linked with `NEXT_PUBLIC_API_URL`. |
+| **Cloudflare R2** | **Sprint 4 (Slice 1.7 - Ready)** | **Provider Layer Ready** | `R2StorageService` & `ObjectStorageProvider` operational with staging mock fallback. Credentials activate live bucket. |
 | **Razorpay** | Sprint 5 (Vertical Slice 1.8) | Not yet required | Activated when customer payment orders and invoice settlement begin. |
 | **Resend** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when event-driven transactional email dispatch is required. |
 | **MSG91** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when transactional SMS/OTP notification delivery is required. |
@@ -200,6 +201,8 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | **Sprint 3 Core Delivered**: Service Catalog Engine (Slice 1.4), Configurable Workflow Engine (Slice 1.5 - ADR-012), Application Lifecycle Matrix (Slice 1.6 - CC-YYYY-XXXXXX). 54/54 automated tests passing across 6 suites. | ADR-012, ADR-015, Slice 1.4, 1.5, 1.6 | engineering-memory.md, apps/api, @cc/types, @cc/validation |
 | Aug 2026 | **Design Intelligence & UI Foundation Gate Completed**: 13 Stitch references audited, inspiration map & when-to-use guide documented, semantic design token architecture established. | ADR-016 | Docs/stitch-inspiration-map.md, engineering-memory.md |
 | Aug 2026 | **Staging Infrastructure & Token Activation Gate Completed**: Railway Staging Project & PostgreSQL 18 provisioned via CLI, Vercel web/admin linked, UI primitives harmonized in @cc/ui, Slice 1.7 prepared. | ADR-017 | Docs/staging-infrastructure.md, railway.json, @cc/ui |
+| Aug 2026 | **Sprint 4 / Vertical Slice 1.7 Delivered (Secure Document Vault)**: Presigned S3/R2 upload & preview flows, DocumentType master registry & seeding, verification/rejection workbench with audit trails, DOCUMENT_GATE workflow integration, 65/65 unit tests passing. | ADR-018, Slice 1.7 | Docs/engineering-memory.md, apps/api/src/modules/documents |
+
 
 
 

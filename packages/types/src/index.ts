@@ -855,3 +855,94 @@ export interface QueryApplicationsInput {
   sortOrder?: 'asc' | 'desc';
 }
 
+// ─── Domain 7: Document Types & Secure Vault ─────────────────────────────────
+
+export interface DocumentTypeDto {
+  id: string;
+  name: string;
+  code: string;
+  description: string | null;
+  createdAt: string;
+}
+
+export interface DocumentDto {
+  id: string;
+  organizationId: string;
+  branchId: string | null;
+  customerId: string;
+  applicationId: string | null;
+  documentTypeId: string;
+  fileName: string;
+  filePath: string;
+  fileSize: number;
+  mimeType: string;
+  status: DocumentStatus;
+  uploadedById: string | null;
+  createdAt: string;
+  updatedAt: string;
+  documentType?: DocumentTypeDto;
+  verifications?: DocumentVerificationDto[];
+}
+
+export interface DocumentVerificationDto {
+  id: string;
+  documentId: string;
+  verifiedById: string | null;
+  status: 'VERIFIED' | 'REJECTED';
+  remarks: string | null;
+  verifiedAt: string;
+  verifiedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  };
+}
+
+export interface PresignedUploadResponse {
+  uploadUrl: string;
+  documentId: string;
+  storageKey: string;
+  expiresInSeconds: number;
+}
+
+export interface PresignedDownloadResponse {
+  downloadUrl: string;
+  fileName: string;
+  mimeType: string;
+  expiresInSeconds: number;
+}
+
+export interface RequestPresignedUploadInput {
+  customerId: string;
+  applicationId?: string;
+  documentTypeId: string;
+  fileName: string;
+  fileSize: number;
+  mimeType: string;
+}
+
+export interface ConfirmUploadInput {
+  fileSize?: number;
+  checksumSha256?: string;
+}
+
+export interface VerifyDocumentInput {
+  remarks?: string;
+}
+
+export interface RejectDocumentInput {
+  rejectionReason: string;
+}
+
+export interface QueryDocumentsInput {
+  page?: number;
+  limit?: number;
+  customerId?: string;
+  applicationId?: string;
+  documentTypeId?: string;
+  status?: DocumentStatus;
+  search?: string;
+}
+
+
