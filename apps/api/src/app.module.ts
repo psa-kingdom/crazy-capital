@@ -1,0 +1,37 @@
+import { Module } from '@nestjs/common';
+import { ConfigModule } from '@nestjs/config';
+import { APP_GUARD } from '@nestjs/core';
+import configuration from './config/configuration';
+import { PrismaModule } from './common/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
+import { CrmModule } from './modules/crm/crm.module';
+import { CustomersModule } from './modules/customers/customers.module';
+import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
+import { RbacGuard } from './modules/auth/guards/rbac.guard';
+
+@Module({
+  imports: [
+    ConfigModule.forRoot({
+      isGlobal: true,
+      load: [configuration],
+      envFilePath: ['.env.local', '.env'],
+    }),
+    PrismaModule,
+    AuthModule,
+    UsersModule,
+    CrmModule,
+    CustomersModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: JwtAuthGuard,
+    },
+    {
+      provide: APP_GUARD,
+      useClass: RbacGuard,
+    },
+  ],
+})
+export class AppModule {}
