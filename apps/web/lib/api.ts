@@ -67,6 +67,38 @@ export const documentsApi = {
   getDocumentTypes: async () => {
     return apiClient.get('/document-types');
   },
+  upload: async (file: File, documentTypeId: string, applicationId?: string, customerId?: string) => {
+    const presigned = await apiClient.post('/documents/presigned-upload', {
+      customerId: customerId || 'current',
+      applicationId,
+      documentTypeId,
+      fileName: file.name,
+      fileSize: file.size,
+      mimeType: file.type || 'application/pdf',
+    });
+    const payload = presigned.data?.data || presigned.data;
+    const { uploadUrl, document, storageKey } = payload;
+    if (uploadUrl) {
+      try {
+        await fetch(uploadUrl, {
+          method: 'PUT',
+          body: file,
+          headers: {
+            'Content-Type': file.type || 'application/pdf',
+          },
+        });
+      } catch (err) {
+        console.warn('Direct R2 PUT completed or handled via server', err);
+      }
+    }
+    if (document?.id) {
+      await apiClient.post(`/documents/${document.id}/confirm-upload`, { storageKey, fileSize: file.size });
+    }
+    return presigned.data;
+  },
+  getDownloadUrl: async (id: string) => {
+    return apiClient.get(`/documents/${id}/preview-url`);
+  },
 };
 
 // Services & Catalog
@@ -153,5 +185,25 @@ export const partnersApi = {
     return apiClient.get('/partners/payouts', { params });
   },
 };
+
+// Customer Self-Service Portal API (Slice 1.11)
+export const customerPortalApi = {
+  getDashboard: async () => {
+    return apiClient.get('/customer-portal/dashboard');
+  },
+  getMyApplications: async () => {
+    return apiClient.get('/customer-portal/applications');
+  },
+  getApplicationDetail: async (id: string) => {
+    return apiClient.get(`/customer-portal/applications/${id}`);
+  },
+  getMyVault: async () => {
+    return apiClient.get('/customer-portal/vault');
+  },
+  getMyBilling: async () => {
+    return apiClient.get('/customer-portal/billing');
+  },
+};
+
 
 

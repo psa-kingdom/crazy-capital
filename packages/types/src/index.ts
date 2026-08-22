@@ -1270,4 +1270,93 @@ export interface QueryPayoutsInput {
   search?: string;
 }
 
+// ─── DOMAIN 11: CUSTOMER SELF-SERVICE PORTAL (Slice 1.11) ───────────────────
+
+export interface CustomerStageProgressDto {
+  id: string;
+  name: string;
+  stageOrder: number;
+  stageType: string;
+  isCurrent: boolean;
+  isCompleted: boolean;
+}
+
+export interface CustomerDocumentRequirementDto {
+  documentTypeId: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  isMandatory: boolean;
+  uploadedDocument?: {
+    id: string;
+    fileName: string;
+    fileSize?: number | null;
+    fileType?: string | null;
+    status: string; // PENDING_VERIFICATION, VERIFIED, REJECTED
+    rejectionReason?: string | null;
+    uploadedAt: string;
+  } | null;
+}
+
+export interface CustomerApplicationDetailDto {
+  id: string;
+  applicationNumber: string;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  service: {
+    id: string;
+    name: string;
+    slug?: string;
+    description?: string | null;
+  };
+  currentStage: {
+    id: string;
+    name: string;
+    stageOrder: number;
+    stageType: string;
+  };
+  stages: CustomerStageProgressDto[];
+  progressPercent: number;
+  documents: CustomerDocumentRequirementDto[];
+  invoices: InvoiceDto[];
+  assignedTo?: {
+    name: string;
+    email: string;
+  } | null;
+}
+
+export interface CustomerDashboardDto {
+  customer: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile: string;
+    companyName?: string | null;
+  };
+  stats: {
+    totalApplications: number;
+    activeApplications: number;
+    completedApplications: number;
+    missingDocumentsCount: number;
+    unpaidInvoicesCount: number;
+    unpaidAmount: number;
+  };
+  activeApplications: {
+    id: string;
+    applicationNumber: string;
+    serviceName: string;
+    status: string;
+    currentStageName: string;
+    progressPercent: number;
+    missingDocsCount: number;
+    createdAt: string;
+  }[];
+  recentInvoices: InvoiceDto[];
+}
+
+
+
+
 
