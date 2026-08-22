@@ -127,3 +127,31 @@ export const notificationsApi = {
   },
 };
 
+// Partner Portal API (Slice 1.9 / ADR-011 / ADR-014)
+export const partnersApi = {
+  submitLead: async (data: {
+    firstName: string;
+    lastName: string;
+    mobile: string;
+    email?: string;
+    companyName?: string;
+    serviceInterest?: string;
+    notes?: string;
+  }) => {
+    return apiClient.post('/partners/leads', data);
+  },
+  getCases: async (params?: Record<string, any>) => {
+    return apiClient.get('/partners/cases', { params });
+  },
+  getStats: async () => {
+    return apiClient.get('/partners/stats');
+  },
+  getCommissions: async (params?: Record<string, any>) => {
+    return apiClient.get('/partners/commissions', { params });
+  },
+  getPayouts: async (params?: Record<string, any>) => {
+    return apiClient.get('/partners/payouts', { params });
+  },
+};
+
+

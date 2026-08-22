@@ -270,6 +270,149 @@ export function compileNotificationTemplate(
       };
     }
 
+    case 'commission.created': {
+      const commAmount = data.commissionAmount || data.amount !== undefined ? `₹${Number(data.commissionAmount || data.amount).toLocaleString('en-IN')}` : '₹0';
+      const subject = `New Commission Accrued: ${commAmount} for Case ${appNumber}`;
+      const body = `Dear Partner, a commission of ${commAmount} for referred case ${appNumber} (${serviceName}) has been logged and queued for Admin approval.`;
+      const html = wrapHtmlEmail(
+        `Commission Accrued — ${appNumber}`,
+        `New Referral Commission Queued`,
+        `
+        <p>A new referral commission has been generated for your referred client application <strong>${appNumber}</strong> (${serviceName}).</p>
+        <div class="card" style="background:#f0fdf4; border-color:#bbf7d0;">
+          <table style="width:100%; font-size:13px; color:#166534;">
+            <tr><td><strong>Case Ref:</strong></td><td style="text-align:right; font-family:monospace;">${appNumber}</td></tr>
+            <tr><td><strong>Service:</strong></td><td style="text-align:right;">${serviceName}</td></tr>
+            <tr><td><strong>Commission Amount:</strong></td><td style="text-align:right; font-weight:bold; font-size:16px; color:#15803d;">${commAmount}</td></tr>
+            <tr><td><strong>Status:</strong></td><td style="text-align:right; font-weight:bold;">PENDING APPROVAL</td></tr>
+          </table>
+        </div>
+        <p>Our Admin team will review and approve this payout in the next disbursement cycle.</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/partner" class="btn">View Partner Dashboard</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_commission_created',
+        templateData: { customerName, appNumber, serviceName, commAmount },
+      };
+    }
+
+    case 'commission.approved': {
+      const commAmount = data.commissionAmount || data.amount !== undefined ? `₹${Number(data.commissionAmount || data.amount).toLocaleString('en-IN')}` : '₹0';
+      const subject = `Commission Approved: ${commAmount} for Case ${appNumber}`;
+      const body = `Congratulations! Your commission of ${commAmount} for case ${appNumber} has been approved by Admin and queued for bank payout.`;
+      const html = wrapHtmlEmail(
+        `Commission Approved — ${appNumber}`,
+        `Commission Approved by Admin!`,
+        `
+        <p>Your referral commission for case <strong>${appNumber}</strong> has been officially approved by the Crazy Capital Admin team.</p>
+        <div class="card" style="background:#ecfdf5; border-color:#6ee7b7;">
+          <table style="width:100%; font-size:13px; color:#065f46;">
+            <tr><td><strong>Case Number:</strong></td><td style="text-align:right; font-family:monospace;">${appNumber}</td></tr>
+            <tr><td><strong>Approved Amount:</strong></td><td style="text-align:right; font-weight:bold; font-size:16px; color:#059669;">${commAmount}</td></tr>
+            <tr><td><strong>Status:</strong></td><td style="text-align:right; font-weight:bold; color:#059669;">APPROVED FOR PAYOUT</td></tr>
+          </table>
+        </div>
+        <p>The funds will be disbursed to your registered bank account via NEFT / IMPS.</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/partner" class="btn" style="background:#059669;">Track Payout Status</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_commission_approved',
+        templateData: { customerName, appNumber, commAmount },
+      };
+    }
+
+    case 'commission.rejected': {
+      const reason = data.reason || 'Referral policy condition not met.';
+      const subject = `Commission Update: Case ${appNumber}`;
+      const body = `Dear Partner, the commission for case ${appNumber} could not be approved. Reason: ${reason}`;
+      const html = wrapHtmlEmail(
+        `Commission Status Update`,
+        `Commission Review Update`,
+        `
+        <p>During Admin review, the commission request for case <strong>${appNumber}</strong> was not approved:</p>
+        <div class="card" style="background:#fef2f2; border-color:#fecaca;">
+          <p style="margin:0; color:#991b1b; font-size:13px;"><strong>Reason:</strong> ${reason}</p>
+        </div>
+        <p>If you have questions regarding this decision, please reach out to our partner support desk.</p>
+        `,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_commission_rejected',
+        templateData: { customerName, appNumber, reason },
+      };
+    }
+
+    case 'payout.processed': {
+      const utr = data.referenceNumber || data.utr || 'UTR-PROCESSED';
+      const payoutAmount = data.amount !== undefined ? `₹${Number(data.amount).toLocaleString('en-IN')}` : '₹0';
+      const subject = `Payout Disbursed: ${payoutAmount} (UTR: ${utr})`;
+      const body = `Dear Partner, your payout of ${payoutAmount} has been disbursed to your bank account. Ref / UTR: ${utr}.`;
+      const html = wrapHtmlEmail(
+        `Partner Payout Disbursed`,
+        `Partner Payout Successfully Disbursed!`,
+        `
+        <p>We are happy to confirm that your referral commission payout has been successfully transferred to your bank account.</p>
+        <div class="card" style="background:#eff6ff; border-color:#bfdbfe;">
+          <table style="width:100%; font-size:13px; color:#1e40af;">
+            <tr><td><strong>Disbursed Amount:</strong></td><td style="text-align:right; font-weight:bold; font-size:16px;">${payoutAmount}</td></tr>
+            <tr><td><strong>Bank Ref / UTR:</strong></td><td style="text-align:right; font-family:monospace; font-weight:bold;">${utr}</td></tr>
+            <tr><td><strong>Payment Mode:</strong></td><td style="text-align:right;">${data.paymentMethod || 'BANK TRANSFER (NEFT/IMPS)'}</td></tr>
+            <tr><td><strong>Status:</strong></td><td style="text-align:right; font-weight:bold; color:#1d4ed8;">PAID</td></tr>
+          </table>
+        </div>
+        <p>Thank you for your valuable partnership with Crazy Capital!</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/partner" class="btn">View Earnings Summary</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_payout_disbursed',
+        templateData: { customerName, payoutAmount, utr },
+      };
+    }
+
+    case 'partner.lead_received': {
+      const leadName = data.leadName || 'Referred Prospect';
+      const subject = `Referral Received: ${leadName} (${serviceName})`;
+      const body = `Dear Partner, thank you for submitting referral "${leadName}" for ${serviceName}. Our sales desk is initiating contact.`;
+      const html = wrapHtmlEmail(
+        `Referral Lead Acknowledged`,
+        `Referral Successfully Received`,
+        `
+        <p>Thank you for submitting a new client referral to Crazy Capital!</p>
+        <div class="card">
+          <table style="width:100%; font-size:13px;">
+            <tr><td><strong>Client Name:</strong></td><td style="text-align:right; font-weight:bold;">${leadName}</td></tr>
+            <tr><td><strong>Service:</strong></td><td style="text-align:right;">${serviceName}</td></tr>
+            <tr><td><strong>Status:</strong></td><td style="text-align:right; font-weight:bold; color:#4f46e5;">ASSIGNED TO SALES</td></tr>
+          </table>
+        </div>
+        <p>You can track the live progress and conversion status from your Partner Portal.</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/partner" class="btn">Track Referral Status</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_partner_lead_received',
+        templateData: { customerName, leadName, serviceName },
+      };
+    }
+
     case 'test.dispatch':
     default: {
       const customMsg = data.customMessage || 'This is a test notification from the Crazy Capital Dispatch Matrix.';

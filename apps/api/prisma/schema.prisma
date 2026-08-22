@@ -114,6 +114,10 @@ model User {
   workflowTransitions   WorkflowHistory[]       @relation("UserWorkflowHistory")
   verifiedDocuments     DocumentVerification[]  @relation("UserVerifiedDocuments")
   approvedCommissions   Commission[]            @relation("AdminApprovedCommissions")
+  partnerCommissions    Commission[]            @relation("PartnerCommissions")
+  partnerPayouts        Payout[]                @relation("PartnerPayouts")
+  partnerLeads          Lead[]                  @relation("PartnerLeads")
+  partnerApplications   Application[]           @relation("PartnerApplications")
   assignedTasks         Task[]                  @relation("AssignedTasks")
 
   @@index([organizationId, email])
@@ -221,6 +225,7 @@ model Lead {
   leadScore      Int       @default(0) @map("lead_score")
   notes          String?
   campaign       String?
+  partnerId      String?   @map("partner_id") // userId with PARTNER role who referred lead
   convertedToId  String?   @map("converted_to_id") // customer_id if converted
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
@@ -230,11 +235,13 @@ model Lead {
   branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
   source       LeadSource?  @relation(fields: [sourceId], references: [id], onDelete: SetNull)
   assignedTo   User?        @relation("AssignedLeads", fields: [assignedToId], references: [id], onDelete: SetNull)
+  partner      User?        @relation("PartnerLeads", fields: [partnerId], references: [id], onDelete: SetNull)
   activities   LeadActivity[]
   assignments  LeadAssignment[]
 
   @@index([organizationId, status])
   @@index([organizationId, mobile])
+  @@index([partnerId])
   @@map("leads")
 }
 
@@ -403,6 +410,7 @@ model Application {
   applicationNumber String    @unique @map("application_number")
   status            String    @default("SUBMITTED") // DRAFT, SUBMITTED, IN_PROGRESS, COMPLETED, CANCELLED, REJECTED
   assignedToId      String?   @map("assigned_to_id")
+  partnerId         String?   @map("partner_id") // userId with PARTNER role who referred
   createdAt         DateTime  @default(now()) @map("created_at")
   updatedAt         DateTime  @updatedAt @map("updated_at")
   deletedAt         DateTime? @map("deleted_at")
@@ -412,6 +420,7 @@ model Application {
   customer     Customer              @relation(fields: [customerId], references: [id], onDelete: Cascade)
   service      Service               @relation(fields: [serviceId], references: [id], onDelete: Restrict)
   assignedTo   User?                 @relation("AssignedApplications", fields: [assignedToId], references: [id], onDelete: SetNull)
+  partner      User?                 @relation("PartnerApplications", fields: [partnerId], references: [id], onDelete: SetNull)
   workflowInstance WorkflowInstance?
   activities   ApplicationActivity[]
   documents    Document[]
@@ -420,6 +429,7 @@ model Application {
   tasks        Task[]
 
   @@index([organizationId, status])
+  @@index([partnerId])
   @@map("applications")
 }
 
@@ -684,9 +694,12 @@ model Commission {
 
   application Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
   service     Service     @relation(fields: [serviceId], references: [id], onDelete: Restrict)
+  partner     User        @relation("PartnerCommissions", fields: [partnerId], references: [id], onDelete: Cascade)
   approvedBy  User?       @relation("AdminApprovedCommissions", fields: [approvedById], references: [id], onDelete: SetNull)
   payouts     Payout[]
 
+  @@index([partnerId])
+  @@index([status])
   @@map("commissions")
 }
 
@@ -704,7 +717,10 @@ model Payout {
   createdAt       DateTime  @default(now()) @map("created_at")
 
   commission Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+  partner    User       @relation("PartnerPayouts", fields: [partnerId], references: [id], onDelete: Cascade)
 
+  @@index([partnerId])
+  @@index([status])
   @@map("payouts")
 }
 

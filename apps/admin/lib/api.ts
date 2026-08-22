@@ -307,4 +307,35 @@ export const notificationsApi = {
   },
 };
 
+// Partner Commissions & Payouts API Services (Slice 1.9 / ADR-011 / ADR-014)
+export const commissionsApi = {
+  getCommissions: async (params?: Record<string, any>) => {
+    return apiClient.get('/commissions', { params });
+  },
+  getCommissionById: async (id: string) => {
+    return apiClient.get(`/commissions/${id}`);
+  },
+  approveCommission: async (id: string, data?: { notes?: string }) => {
+    return apiClient.patch(`/commissions/${id}/approve`, data || {});
+  },
+  rejectCommission: async (id: string, data: { reason: string }) => {
+    return apiClient.patch(`/commissions/${id}/reject`, data);
+  },
+};
+
+export const payoutsApi = {
+  getPayouts: async (params?: Record<string, any>) => {
+    return apiClient.get('/payouts', { params });
+  },
+  recordManualPayout: async (data: {
+    commissionId: string;
+    referenceNumber: string;
+    paymentMethod?: string;
+    notes?: string;
+  }) => {
+    return apiClient.post('/payouts', data);
+  },
+};
+
+
 

@@ -1135,3 +1135,139 @@ export interface TestDispatchNotificationInput {
   customMessage?: string;
 }
 
+// ─── DOMAIN 9: PARTNER & COMMISSION TYPES (Slice 1.9 / ADR-011 / ADR-014) ────
+
+export type PayoutStatus = 'PENDING_PAYOUT' | 'PAID' | 'FAILED';
+export type PayoutMethod = 'BANK_TRANSFER' | 'RAZORPAYX' | 'CHEQUE' | 'UPI';
+
+export interface CommissionDto {
+  id: string;
+  applicationId: string;
+  serviceId: string;
+  partnerId: string;
+  baseAmount: number;
+  rate: number;
+  amount: number;
+  status: CommissionStatus;
+  approvedById?: string | null;
+  approvedAt?: string | null;
+  rejectionReason?: string | null;
+  createdAt: string;
+  application?: {
+    id: string;
+    applicationNumber: string;
+    status: string;
+    customer?: {
+      id: string;
+      fullName: string;
+      email?: string | null;
+      mobile: string;
+    } | null;
+  } | null;
+  service?: {
+    id: string;
+    name: string;
+    code?: string;
+    basePrice?: number;
+  } | null;
+  partner?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile?: string | null;
+  } | null;
+  approvedBy?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  payouts?: PayoutDto[];
+}
+
+export interface PayoutDto {
+  id: string;
+  commissionId: string;
+  partnerId: string;
+  amount: number;
+  paymentMethod: PayoutMethod | string;
+  status: PayoutStatus;
+  referenceNumber?: string | null;
+  paidAt?: string | null;
+  notes?: string | null;
+  createdAt: string;
+  commission?: CommissionDto | null;
+  partner?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+    mobile?: string | null;
+  } | null;
+}
+
+export interface PartnerCaseDto {
+  id: string;
+  applicationNumber: string;
+  serviceName: string;
+  customerName: string;
+  status: string;
+  currentStage?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PartnerStatsDto {
+  totalLeads: number;
+  convertedLeads: number;
+  activeCases: number;
+  totalCommissionEarned: number;
+  pendingCommission: number;
+  approvedCommission: number;
+  paidCommission: number;
+}
+
+export interface CreatePartnerLeadInput {
+  firstName: string;
+  lastName: string;
+  mobile: string;
+  email?: string;
+  companyName?: string;
+  serviceInterest?: string;
+  notes?: string;
+}
+
+export interface ApproveCommissionInput {
+  notes?: string;
+}
+
+export interface RejectCommissionInput {
+  reason: string;
+}
+
+export interface RecordPayoutInput {
+  commissionId: string;
+  paymentMethod?: PayoutMethod | string;
+  referenceNumber: string; // UTR Number / Bank Transaction ID
+  notes?: string;
+}
+
+export interface QueryCommissionsInput {
+  page?: number;
+  limit?: number;
+  status?: CommissionStatus;
+  partnerId?: string;
+  serviceId?: string;
+  search?: string;
+}
+
+export interface QueryPayoutsInput {
+  page?: number;
+  limit?: number;
+  status?: PayoutStatus;
+  partnerId?: string;
+  search?: string;
+}
+
+
