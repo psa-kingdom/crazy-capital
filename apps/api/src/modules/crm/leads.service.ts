@@ -97,8 +97,8 @@ export class LeadsService {
     };
 
     // Role-based scope isolation
-    const isSuperAdminOrAdmin = currentUser.roles.some((r) =>
-      [UserRole.SUPER_ADMIN, UserRole.ADMIN].includes(r),
+    const isSuperAdminOrAdmin = currentUser.roles.some(
+      (r) => r === UserRole.SUPER_ADMIN || r === UserRole.ADMIN,
     );
     const isBranchManager = currentUser.roles.includes(UserRole.BRANCH_MANAGER);
     const isEmployee = currentUser.roles.includes(UserRole.EMPLOYEE);
@@ -223,8 +223,8 @@ export class LeadsService {
     }
 
     // Role-based verification
-    const isSuperAdminOrAdmin = currentUser.roles.some((r) =>
-      [UserRole.SUPER_ADMIN, UserRole.ADMIN].includes(r),
+    const isSuperAdminOrAdmin = currentUser.roles.some(
+      (r) => r === UserRole.SUPER_ADMIN || r === UserRole.ADMIN,
     );
     if (!isSuperAdminOrAdmin) {
       if (currentUser.roles.includes(UserRole.BRANCH_MANAGER) && lead.branchId && lead.branchId !== currentUser.branchId) {

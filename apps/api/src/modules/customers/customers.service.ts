@@ -291,8 +291,8 @@ export class CustomersService {
     };
 
     // Branch isolation for branch managers/employees
-    const isSuperAdminOrAdmin = currentUser.roles.some((r) =>
-      [UserRole.SUPER_ADMIN, UserRole.ADMIN].includes(r),
+    const isSuperAdminOrAdmin = currentUser.roles.some(
+      (r) => r === UserRole.SUPER_ADMIN || r === UserRole.ADMIN,
     );
     if (!isSuperAdminOrAdmin && currentUser.branchId) {
       where.branchId = currentUser.branchId;

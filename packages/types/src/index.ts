@@ -1,79 +1,89 @@
-// ─── Enums ───────────────────────────────────────────────────────────────────
+// ─── Enums / Const Maps ────────────────────────────────────────────────────────
 
-export enum UserRole {
-  SUPER_ADMIN = 'SUPER_ADMIN',
-  ADMIN = 'ADMIN',
-  BRANCH_MANAGER = 'BRANCH_MANAGER',
-  EMPLOYEE = 'EMPLOYEE',
-  PARTNER = 'PARTNER',
-  CUSTOMER = 'CUSTOMER',
-}
+export const UserRole = {
+  SUPER_ADMIN: 'SUPER_ADMIN',
+  ADMIN: 'ADMIN',
+  BRANCH_MANAGER: 'BRANCH_MANAGER',
+  EMPLOYEE: 'EMPLOYEE',
+  PARTNER: 'PARTNER',
+  CUSTOMER: 'CUSTOMER',
+} as const;
+export type UserRole = (typeof UserRole)[keyof typeof UserRole];
 
-export enum LeadStatus {
-  NEW = 'NEW',
-  CONTACTED = 'CONTACTED',
-  QUALIFIED = 'QUALIFIED',
-  PROPOSAL = 'PROPOSAL',
-  CONVERTED = 'CONVERTED',
-  LOST = 'LOST',
-}
+export const LeadStatus = {
+  NEW: 'NEW',
+  CONTACTED: 'CONTACTED',
+  QUALIFIED: 'QUALIFIED',
+  PROPOSAL: 'PROPOSAL',
+  CONVERTED: 'CONVERTED',
+  LOST: 'LOST',
+} as const;
+export type LeadStatus = (typeof LeadStatus)[keyof typeof LeadStatus];
 
-export enum ApplicationStatus {
-  DRAFT = 'DRAFT',
-  SUBMITTED = 'SUBMITTED',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-  REJECTED = 'REJECTED',
-}
+export const ApplicationStatus = {
+  DRAFT: 'DRAFT',
+  SUBMITTED: 'SUBMITTED',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+  REJECTED: 'REJECTED',
+} as const;
+export type ApplicationStatus = (typeof ApplicationStatus)[keyof typeof ApplicationStatus];
 
-export enum WorkflowStageType {
-  START = 'START',
-  PROCESSING = 'PROCESSING',
-  APPROVAL = 'APPROVAL',
-  COMPLETION = 'COMPLETION',
-  REJECTION = 'REJECTION',
-}
+export const WorkflowStageType = {
+  START: 'START',
+  PROCESSING: 'PROCESSING',
+  APPROVAL: 'APPROVAL',
+  COMPLETION: 'COMPLETION',
+  REJECTION: 'REJECTION',
+} as const;
+export type WorkflowStageType = (typeof WorkflowStageType)[keyof typeof WorkflowStageType];
 
-export enum DocumentStatus {
-  PENDING = 'PENDING',
-  UPLOADED = 'UPLOADED',
-  VERIFIED = 'VERIFIED',
-  REJECTED = 'REJECTED',
-}
+export const DocumentStatus = {
+  PENDING: 'PENDING',
+  UPLOADED: 'UPLOADED',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+} as const;
+export type DocumentStatus = (typeof DocumentStatus)[keyof typeof DocumentStatus];
 
-export enum PaymentStatus {
-  PENDING = 'PENDING',
-  CAPTURED = 'CAPTURED',
-  FAILED = 'FAILED',
-  REFUNDED = 'REFUNDED',
-}
+export const PaymentStatus = {
+  PENDING: 'PENDING',
+  CAPTURED: 'CAPTURED',
+  FAILED: 'FAILED',
+  REFUNDED: 'REFUNDED',
+} as const;
+export type PaymentStatus = (typeof PaymentStatus)[keyof typeof PaymentStatus];
 
-export enum InvoiceStatus {
-  DRAFT = 'DRAFT',
-  SENT = 'SENT',
-  PAID = 'PAID',
-  CANCELLED = 'CANCELLED',
-}
+export const InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  SENT: 'SENT',
+  PAID: 'PAID',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type InvoiceStatus = (typeof InvoiceStatus)[keyof typeof InvoiceStatus];
 
-export enum CommissionStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-  PAID = 'PAID',
-}
+export const CommissionStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+  PAID: 'PAID',
+} as const;
+export type CommissionStatus = (typeof CommissionStatus)[keyof typeof CommissionStatus];
 
-export enum CustomerType {
-  INDIVIDUAL = 'INDIVIDUAL',
-  BUSINESS = 'BUSINESS',
-}
+export const CustomerType = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  BUSINESS: 'BUSINESS',
+} as const;
+export type CustomerType = (typeof CustomerType)[keyof typeof CustomerType];
 
-export enum TaskStatus {
-  PENDING = 'PENDING',
-  IN_PROGRESS = 'IN_PROGRESS',
-  COMPLETED = 'COMPLETED',
-  CANCELLED = 'CANCELLED',
-}
+export const TaskStatus = {
+  PENDING: 'PENDING',
+  IN_PROGRESS: 'IN_PROGRESS',
+  COMPLETED: 'COMPLETED',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
 // ─── Base Types ───────────────────────────────────────────────────────────────
 
@@ -586,11 +596,12 @@ export interface QueryServicesInput {
 
 // ─── Workflow Engine Domain Types (Vertical Slice 1.5 - ADR-012) ─────────────
 
-export enum WorkflowRuleType {
-  DOCUMENT_GATE = 'DOCUMENT_GATE',
-  PAYMENT_GATE = 'PAYMENT_GATE',
-  APPROVAL_GATE = 'APPROVAL_GATE',
-}
+export const WorkflowRuleType = {
+  DOCUMENT_GATE: 'DOCUMENT_GATE',
+  PAYMENT_GATE: 'PAYMENT_GATE',
+  APPROVAL_GATE: 'APPROVAL_GATE',
+} as const;
+export type WorkflowRuleType = (typeof WorkflowRuleType)[keyof typeof WorkflowRuleType];
 
 export interface WorkflowRuleConfig {
   mandatoryDocumentTypeIds?: string[];
@@ -725,11 +736,12 @@ export interface TransitionWorkflowInstanceInput {
 
 // ─── Application Lifecycle Domain Types (Vertical Slice 1.6) ────────────────
 
-export enum ApprovalStatus {
-  PENDING = 'PENDING',
-  APPROVED = 'APPROVED',
-  REJECTED = 'REJECTED',
-}
+export const ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  REJECTED: 'REJECTED',
+} as const;
+export type ApprovalStatus = (typeof ApprovalStatus)[keyof typeof ApprovalStatus];
 
 export interface TaskDto {
   id: string;
