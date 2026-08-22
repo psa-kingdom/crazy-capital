@@ -285,4 +285,26 @@ export const paymentsApi = {
   },
 };
 
+// Notifications & Alerts API Services (Slice 1.9)
+export const notificationsApi = {
+  getLogs: async (params?: Record<string, any>) => {
+    return apiClient.get('/notifications/logs', { params });
+  },
+  getLogById: async (id: string) => {
+    return apiClient.get(`/notifications/logs/${id}`);
+  },
+  retryLog: async (id: string) => {
+    return apiClient.post(`/notifications/logs/${id}/retry`);
+  },
+  testDispatch: async (data: {
+    channel: string;
+    recipient: string;
+    eventType?: string;
+    customMessage?: string;
+    subject?: string;
+  }) => {
+    return apiClient.post('/notifications/test-dispatch', data);
+  },
+};
+
 

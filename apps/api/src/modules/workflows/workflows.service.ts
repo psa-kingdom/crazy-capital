@@ -12,10 +12,14 @@ import { CreateWorkflowRuleDto } from './dto/create-workflow-rule.dto';
 import { TransitionWorkflowInstanceDto } from './dto/transition-instance.dto';
 import { UpdateWorkflowDto } from './dto/update-workflow.dto';
 import { ApplicationStatus, WorkflowRuleType, WorkflowStageType } from '@cc/types';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class WorkflowsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   private generateCode(name: string): string {
     return (
@@ -403,7 +407,7 @@ export class WorkflowsService {
     }
 
     // 3. Execute atomic transition
-    return this.prisma.$transaction(async (tx) => {
+    const result = await this.prisma.$transaction(async (tx) => {
       const isCompleted = targetStage.isEndStage;
 
       const updatedInstance = await tx.workflowInstance.update({
@@ -462,6 +466,36 @@ export class WorkflowsService {
         history,
       };
     });
+
+    // Non-blocking workflow stage advancement notification
+    Promise.resolve(
+      this.prisma.application.findUnique?.({
+        where: { id: instance.applicationId },
+        include: { customer: true, service: true },
+      }),
+    )
+      .then((app) => {
+        if (app && app.customer) {
+          this.notificationsService.dispatchMultiChannel(
+            'workflow.stage_changed',
+            { email: app.customer.email, mobile: app.customer.mobile },
+            {
+              customerName: `${app.customer.firstName} ${app.customer.lastName}`,
+              applicationNumber: app.applicationNumber,
+              stageName: targetStage.name,
+              serviceName: app.service?.name || 'Service Application',
+            },
+            {
+              organizationId: app.organizationId,
+              userId: app.customerId,
+              idempotencyPrefix: `workflow.stage_changed:${instanceId}:${dto.targetStageId}`,
+            },
+          );
+        }
+      })
+      .catch(() => {});
+
+    return result;
   }
 
   async getHistory(instanceId: string) {

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { InvoicesService } from './invoices.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InvoiceStatus, UserRole } from '@cc/types';
 
@@ -65,6 +66,13 @@ describe('InvoicesService', () => {
       providers: [
         InvoicesService,
         { provide: PrismaService, useValue: prisma },
+        {
+          provide: NotificationsService,
+          useValue: {
+            send: jest.fn().mockResolvedValue({ id: 'log-1', status: 'SENT' }),
+            dispatchMultiChannel: jest.fn().mockResolvedValue([{ id: 'log-1', status: 'SENT' }]),
+          },
+        },
       ],
     }).compile();
 

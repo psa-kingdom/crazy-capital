@@ -14,6 +14,7 @@ import { RejectDocumentDto } from './dto/reject-document.dto';
 import { QueryDocumentsDto } from './dto/query-documents.dto';
 import { UserRole } from '@cc/types';
 import { v4 as uuidv4 } from 'uuid';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class DocumentsService {
@@ -22,6 +23,7 @@ export class DocumentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storageService: R2StorageService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -228,6 +230,28 @@ export class DocumentsService {
         });
       }
 
+      // Non-blocking notification dispatch
+      Promise.resolve(this.prisma.customer.findUnique?.({ where: { id: updated.customerId } }))
+        .then((cust) => {
+          if (cust) {
+            this.notificationsService.dispatchMultiChannel(
+              'document.verified',
+              { email: cust.email, mobile: cust.mobile },
+              {
+                customerName: `${cust.firstName} ${cust.lastName}`,
+                documentTypeName: updated.documentType.name,
+                fileName: updated.fileName,
+              },
+              {
+                organizationId: updated.organizationId,
+                userId: updated.customerId,
+                idempotencyPrefix: `document.verified:${updated.id}`,
+              },
+            );
+          }
+        })
+        .catch(() => {});
+
       return updated;
     });
   }
@@ -276,6 +300,29 @@ export class DocumentsService {
           },
         });
       }
+
+      // Non-blocking notification dispatch
+      Promise.resolve(this.prisma.customer.findUnique?.({ where: { id: updated.customerId } }))
+        .then((cust) => {
+          if (cust) {
+            this.notificationsService.dispatchMultiChannel(
+              'document.rejected',
+              { email: cust.email, mobile: cust.mobile },
+              {
+                customerName: `${cust.firstName} ${cust.lastName}`,
+                documentTypeName: updated.documentType.name,
+                fileName: updated.fileName,
+                remarks: dto.rejectionReason,
+              },
+              {
+                organizationId: updated.organizationId,
+                userId: updated.customerId,
+                idempotencyPrefix: `document.rejected:${updated.id}`,
+              },
+            );
+          }
+        })
+        .catch(() => {});
 
       return updated;
     });

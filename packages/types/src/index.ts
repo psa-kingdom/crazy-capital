@@ -1062,3 +1062,76 @@ export interface RecordManualPaymentInput {
   referenceNumber: string; // UTR or Cheque number
   notes?: string;
 }
+
+// ─── DOMAIN 10: NOTIFICATION DOMAIN TYPES (SLICE 1.9) ───────────────────────
+
+export type NotificationChannel = 'EMAIL' | 'SMS' | 'WHATSAPP' | 'IN_APP';
+
+export type NotificationStatus = 'PENDING' | 'SENT' | 'FAILED' | 'DELIVERED';
+
+export type NotificationProvider = 'RESEND' | 'MSG91' | 'INTERAKT' | 'MOCK';
+
+export type NotificationEventType =
+  | 'invoice.created'
+  | 'invoice.sent'
+  | 'payment.captured'
+  | 'payment.failed'
+  | 'workflow.stage_changed'
+  | 'document.verified'
+  | 'document.rejected'
+  | 'lead.assigned'
+  | 'auth.otp'
+  | 'test.dispatch';
+
+export interface NotificationLogDto {
+  id: string;
+  organizationId: string | null;
+  userId: string | null;
+  channel: NotificationChannel;
+  eventType: NotificationEventType | string;
+  recipient: string;
+  subject?: string | null;
+  body: string;
+  status: NotificationStatus;
+  provider: NotificationProvider | string;
+  providerMessageId?: string | null;
+  idempotencyKey?: string | null;
+  attempts: number;
+  errorMessage?: string | null;
+  metadata?: Record<string, any> | null;
+  sentAt?: string | null;
+  createdAt: string;
+}
+
+export interface SendNotificationInput {
+  organizationId?: string;
+  userId?: string;
+  channel: NotificationChannel;
+  eventType: NotificationEventType | string;
+  recipient: string;
+  subject?: string;
+  body?: string;
+  templateId?: string;
+  templateData?: Record<string, any>;
+  idempotencyKey?: string;
+  metadata?: Record<string, any>;
+}
+
+export interface QueryNotificationLogsInput {
+  page?: number;
+  limit?: number;
+  channel?: NotificationChannel;
+  status?: NotificationStatus;
+  eventType?: string;
+  recipient?: string;
+  search?: string;
+}
+
+export interface TestDispatchNotificationInput {
+  channel: NotificationChannel;
+  recipient: string;
+  eventType?: NotificationEventType | string;
+  subject?: string;
+  customMessage?: string;
+}
+

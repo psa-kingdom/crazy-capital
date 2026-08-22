@@ -3,6 +3,7 @@ import { BadRequestException, ConflictException, NotFoundException } from '@nest
 import { WorkflowsService } from './workflows.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ApplicationStatus, WorkflowRuleType, WorkflowStageType } from '@cc/types';
+import { NotificationsService } from '../notifications/notifications.service';
 
 describe('Configurable Workflow Engine (Vertical Slice 1.5 - ADR-012)', () => {
   let workflowsService: WorkflowsService;
@@ -48,6 +49,7 @@ describe('Configurable Workflow Engine (Vertical Slice 1.5 - ADR-012)', () => {
     },
     application: {
       update: jest.fn(),
+      findUnique: jest.fn(),
     },
     applicationActivity: {
       create: jest.fn(),
@@ -60,6 +62,13 @@ describe('Configurable Workflow Engine (Vertical Slice 1.5 - ADR-012)', () => {
       providers: [
         WorkflowsService,
         { provide: PrismaService, useValue: mockPrisma },
+        {
+          provide: NotificationsService,
+          useValue: {
+            send: jest.fn().mockResolvedValue({ id: 'log-1', status: 'SENT' }),
+            dispatchMultiChannel: jest.fn().mockResolvedValue([{ id: 'log-1', status: 'SENT' }]),
+          },
+        },
       ],
     }).compile();
 

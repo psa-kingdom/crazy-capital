@@ -120,3 +120,10 @@ export const paymentsApi = {
   },
 };
 
+// Customer Notifications (Slice 1.9)
+export const notificationsApi = {
+  getMyNotifications: async () => {
+    return apiClient.get('/notifications/my');
+  },
+};
+

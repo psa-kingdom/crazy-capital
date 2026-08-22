@@ -11,12 +11,16 @@ import { UpdateInvoiceStatusDto } from './dto/update-invoice-status.dto';
 import { QueryInvoicesDto } from './dto/query-invoices.dto';
 import { InvoiceStatus, UserRole } from '@cc/types';
 import { Prisma } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class InvoicesService {
   private readonly logger = new Logger(InvoicesService.name);
 
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly notificationsService: NotificationsService,
+  ) {}
 
   /**
    * Generate next sequential invoice number in format: INV-YYYY-XXXXXX (e.g. INV-2026-000001)
@@ -110,6 +114,25 @@ export class InvoicesService {
 
     const customerName = `${customer.firstName} ${customer.lastName}`;
     this.logger.log(`Created Invoice '${invoiceNumber}' for customer '${customerName}' (Total: ₹${baseAmount + taxAmount})`);
+
+    // Non-blocking notification dispatch
+    this.notificationsService
+      .dispatchMultiChannel(
+        'invoice.created',
+        { email: customer.email, mobile: customer.mobile },
+        {
+          customerName,
+          invoiceNumber,
+          amount: baseAmount + taxAmount,
+          serviceName: invoice.application?.service?.name || 'Professional Services',
+        },
+        {
+          organizationId,
+          userId: customer.id,
+          idempotencyPrefix: `invoice.created:${invoice.id}`,
+        },
+      )
+      .catch((err) => this.logger.warn(`Failed to dispatch invoice notification: ${err.message}`));
 
     return this.mapToDto(invoice);
   }
@@ -240,6 +263,30 @@ export class InvoicesService {
     });
 
     this.logger.log(`Invoice '${invoice.invoiceNumber}' status transitioned: ${invoice.status} ➔ ${dto.status}`);
+
+    if (dto.status === InvoiceStatus.SENT) {
+      this.notificationsService
+        .dispatchMultiChannel(
+          'invoice.sent',
+          { email: updated.customer?.email, mobile: updated.customer?.mobile },
+          {
+            customerName: updated.customer
+              ? `${updated.customer.firstName} ${updated.customer.lastName}`
+              : 'Valued Customer',
+            invoiceNumber: updated.invoiceNumber,
+            amount: Number(updated.amount) + Number(updated.taxAmount),
+            serviceName: updated.application?.service?.name || 'Professional Services',
+          },
+          {
+            organizationId: updated.customer?.organizationId,
+            userId: updated.customerId,
+            idempotencyPrefix: `invoice.sent:${updated.id}`,
+          },
+        )
+        .catch((err) =>
+          this.logger.warn(`Failed to dispatch invoice sent notification: ${err.message}`),
+        );
+    }
 
     return this.mapToDto(updated);
   }

@@ -12,6 +12,7 @@ import { VerifyPaymentDto } from './dto/verify-payment.dto';
 import { RecordManualPaymentDto } from './dto/record-manual-payment.dto';
 import { InvoiceStatus, PaymentStatus, UserRole } from '@cc/types';
 import { Prisma } from '@prisma/client';
+import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
 export class PaymentsService {
@@ -20,6 +21,7 @@ export class PaymentsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly gateway: RazorpayGatewayService,
+    private readonly notificationsService: NotificationsService,
   ) {}
 
   /**
@@ -223,6 +225,29 @@ export class PaymentsService {
 
     this.logger.log(`✅ Payment successfully captured for Invoice '${invoice.invoiceNumber}' (Payment ID: ${dto.razorpayPaymentId})`);
 
+    // Non-blocking payment confirmation notification
+    this.notificationsService
+      .dispatchMultiChannel(
+        'payment.captured',
+        { email: invoice.customer?.email, mobile: invoice.customer?.mobile },
+        {
+          customerName: invoice.customer
+            ? `${invoice.customer.firstName} ${invoice.customer.lastName}`
+            : 'Valued Customer',
+          invoiceNumber: invoice.invoiceNumber,
+          amount: Number(result.payment.amount),
+          gatewayReference: dto.razorpayPaymentId,
+        },
+        {
+          organizationId,
+          userId: invoice.customerId,
+          idempotencyPrefix: `payment.captured:${result.payment.id}`,
+        },
+      )
+      .catch((err) =>
+        this.logger.warn(`Failed to dispatch payment notification: ${err.message}`),
+      );
+
     return {
       success: true,
       message: 'Payment verified and captured successfully',
@@ -311,6 +336,29 @@ export class PaymentsService {
     });
 
     this.logger.log(`Recorded manual payment (${dto.paymentMethod} - ${dto.referenceNumber}) for Invoice '${invoice.invoiceNumber}'`);
+
+    // Non-blocking payment confirmation notification
+    this.notificationsService
+      .dispatchMultiChannel(
+        'payment.captured',
+        { email: invoice.customer?.email, mobile: invoice.customer?.mobile },
+        {
+          customerName: invoice.customer
+            ? `${invoice.customer.firstName} ${invoice.customer.lastName}`
+            : 'Valued Customer',
+          invoiceNumber: invoice.invoiceNumber,
+          amount: Number(result.payment.amount),
+          gatewayReference: dto.referenceNumber,
+        },
+        {
+          organizationId,
+          userId: invoice.customerId,
+          idempotencyPrefix: `payment.captured:${result.payment.id}`,
+        },
+      )
+      .catch((err) =>
+        this.logger.warn(`Failed to dispatch manual payment notification: ${err.message}`),
+      );
 
     return {
       success: true,

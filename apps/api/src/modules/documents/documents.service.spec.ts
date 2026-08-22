@@ -3,6 +3,7 @@ import { NotFoundException, ForbiddenException, BadRequestException } from '@nes
 import { DocumentsService } from './documents.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { R2StorageService } from './storage/r2-storage.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { UserRole } from '@cc/types';
 
 describe('DocumentsService (Vertical Slice 1.7 - Secure Document Vault)', () => {
@@ -50,9 +51,11 @@ describe('DocumentsService (Vertical Slice 1.7 - Secure Document Vault)', () => 
     const mockPrismaService = {
       customer: {
         findFirst: jest.fn(),
+        findUnique: jest.fn(),
       },
       application: {
         findFirst: jest.fn(),
+        findUnique: jest.fn(),
       },
       documentType: {
         findUnique: jest.fn(),
@@ -92,6 +95,13 @@ describe('DocumentsService (Vertical Slice 1.7 - Secure Document Vault)', () => 
         DocumentsService,
         { provide: PrismaService, useValue: mockPrismaService },
         { provide: R2StorageService, useValue: mockStorageService },
+        {
+          provide: NotificationsService,
+          useValue: {
+            send: jest.fn().mockResolvedValue({ id: 'log-1', status: 'SENT' }),
+            dispatchMultiChannel: jest.fn().mockResolvedValue([{ id: 'log-1', status: 'SENT' }]),
+          },
+        },
       ],
     }).compile();
 

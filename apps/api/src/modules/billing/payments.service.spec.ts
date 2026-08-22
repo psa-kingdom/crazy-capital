@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { PaymentsService } from './payments.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { RazorpayGatewayService } from './gateway/razorpay-gateway.service';
+import { NotificationsService } from '../notifications/notifications.service';
 import { NotFoundException, BadRequestException, ForbiddenException } from '@nestjs/common';
 import { InvoiceStatus, PaymentStatus, UserRole } from '@cc/types';
 
@@ -74,6 +75,13 @@ describe('PaymentsService', () => {
         PaymentsService,
         { provide: PrismaService, useValue: prisma },
         { provide: RazorpayGatewayService, useValue: gateway },
+        {
+          provide: NotificationsService,
+          useValue: {
+            send: jest.fn().mockResolvedValue({ id: 'log-1', status: 'SENT' }),
+            dispatchMultiChannel: jest.fn().mockResolvedValue([{ id: 'log-1', status: 'SENT' }]),
+          },
+        },
       ],
     }).compile();
 

@@ -729,17 +729,26 @@ model AuditLog {
 }
 
 model NotificationLog {
-  id             String    @id @default(uuid())
-  organizationId String?   @map("organization_id")
-  userId         String?   @map("user_id")
-  channel        String    // EMAIL, SMS, WHATSAPP, IN_APP
-  recipient      String
-  subject        String?
-  body           String
-  status         String    @default("PENDING") // PENDING, SENT, FAILED
-  errorMessage   String?   @map("error_message")
-  sentAt         DateTime? @map("sent_at")
-  createdAt      DateTime  @default(now()) @map("created_at")
+  id                String    @id @default(uuid())
+  organizationId    String?   @map("organization_id")
+  userId            String?   @map("user_id")
+  channel           String    // EMAIL, SMS, WHATSAPP, IN_APP
+  eventType         String    @default("system.generic") @map("event_type")
+  recipient         String
+  subject           String?
+  body              String
+  status            String    @default("PENDING") // PENDING, SENT, FAILED, DELIVERED
+  provider          String    @default("MOCK") // RESEND, MSG91, INTERAKT, MOCK
+  providerMessageId String?   @map("provider_message_id")
+  idempotencyKey    String?   @unique @map("idempotency_key")
+  attempts          Int       @default(1)
+  errorMessage      String?   @map("error_message")
+  metadata          Json?
+  sentAt            DateTime? @map("sent_at")
+  createdAt         DateTime  @default(now()) @map("created_at")
 
+  @@index([organizationId, channel])
+  @@index([recipient])
+  @@index([status])
   @@map("notification_logs")
 }

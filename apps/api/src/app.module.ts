@@ -12,6 +12,7 @@ import { WorkflowsModule } from './modules/workflows/workflows.module';
 import { ApplicationsModule } from './modules/applications/applications.module';
 import { DocumentsModule } from './modules/documents/documents.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -33,6 +34,7 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     ApplicationsModule,
     DocumentsModule,
     BillingModule,
+    NotificationsModule,
   ],
   controllers: [AppController],
   providers: [
