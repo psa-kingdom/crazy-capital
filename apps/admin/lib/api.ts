@@ -240,3 +240,49 @@ export const documentTypesApi = {
   },
 };
 
+// Billing & Payments API Services (Slice 1.8)
+export const invoicesApi = {
+  getInvoices: async (params?: Record<string, any>) => {
+    return apiClient.get('/invoices', { params });
+  },
+  getInvoiceById: async (id: string) => {
+    return apiClient.get(`/invoices/${id}`);
+  },
+  createInvoice: async (data: {
+    customerId: string;
+    applicationId?: string;
+    baseAmount: number;
+    taxAmount?: number;
+    notes?: string;
+  }) => {
+    return apiClient.post('/invoices', data);
+  },
+  updateStatus: async (id: string, status: string, reason?: string) => {
+    return apiClient.patch(`/invoices/${id}/status`, { status, reason });
+  },
+};
+
+export const paymentsApi = {
+  createOrder: async (data: { invoiceId: string; paymentMethod?: string }) => {
+    return apiClient.post('/payments/create-order', data);
+  },
+  verifyPayment: async (data: {
+    invoiceId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) => {
+    return apiClient.post('/payments/verify', data);
+  },
+  recordManualPayment: async (data: {
+    invoiceId: string;
+    amount: number;
+    paymentMethod: string;
+    referenceNumber: string;
+    notes?: string;
+  }) => {
+    return apiClient.post('/payments/manual-record', data);
+  },
+};
+
+

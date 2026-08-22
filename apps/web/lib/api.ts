@@ -95,3 +95,28 @@ export const crmApi = {
     return apiClient.post('/leads', data);
   },
 };
+
+// Billing & Payments (Slice 1.8 - ADR-014)
+export const invoicesApi = {
+  getInvoices: async (params?: Record<string, any>) => {
+    return apiClient.get('/invoices', { params });
+  },
+  getInvoiceById: async (id: string) => {
+    return apiClient.get(`/invoices/${id}`);
+  },
+};
+
+export const paymentsApi = {
+  createOrder: async (data: { invoiceId: string; paymentMethod?: string }) => {
+    return apiClient.post('/payments/create-order', data);
+  },
+  verifyPayment: async (data: {
+    invoiceId: string;
+    razorpayOrderId: string;
+    razorpayPaymentId: string;
+    razorpaySignature: string;
+  }) => {
+    return apiClient.post('/payments/verify', data);
+  },
+};
+

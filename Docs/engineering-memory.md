@@ -120,6 +120,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | ADR-016 | Stitch Design Intelligence as Inspiration Library; Customization via Design Tokens | **Approved** | Stitch is a non-authoritative reference library. Semantic Design Tokens in @cc/ui and Tailwind are the authoritative customization layer. Single source of truth: Docs/stitch-inspiration-map.md |
 | ADR-017 | CLI-First Staging Infrastructure Topology (Railway + Vercel + PostgreSQL) | **Approved** | Railway API + PostgreSQL staging established via CLI. Vercel Web & Admin staging linked. Single source of truth: Docs/staging-infrastructure.md |
 | ADR-018 | Secure Document Vault Architecture (ObjectStorageProvider + S3/R2 Presigned URLs + PostgreSQL Metadata + DOCUMENT_GATE) | **Approved** | Direct client-to-storage signed binary uploads, metadata & verification audit in PostgreSQL, gate validation in workflow engine. |
+| ADR-019 | Payment Gateway & Invoicing Engine Architecture (PaymentGatewayProvider + Razorpay REST & Mock Fallback + GST Invoicing + Idempotent Webhooks + PAYMENT_GATE) | **Approved** | Sequential INV-YYYY-XXXXXX invoicing, 18% GST calculation, Razorpay HMAC-SHA256 signature verification with mock gateway fallback, offline UTR reconciliation, and automated PAYMENT_GATE workflow rule evaluation. |
 
 ---
 
@@ -149,8 +150,8 @@ Update rule: update this document in the same change as a relevant implementatio
 | **PostgreSQL** | **Sprint 1 / 2 (Now)** | **Active (Railway Staging + Prisma)** | Authoritative relational persistence layer on Railway internal VPC. |
 | **Railway** | **Staging Gate (Now)** | **Active Staging Project** | Project `crazy-capital` (staging env, API service, PostgreSQL 18 SSL). |
 | **Vercel** | **Staging Gate (Now)** | **Active Staging Linked** | Projects `crazy-capital-web` and `crazy-capital-admin` linked with `NEXT_PUBLIC_API_URL`. |
-| **Cloudflare R2** | **Sprint 4 (Slice 1.7 - Ready)** | **Provider Layer Ready** | `R2StorageService` & `ObjectStorageProvider` operational with staging mock fallback. Credentials activate live bucket. |
-| **Razorpay** | Sprint 5 (Vertical Slice 1.8) | Not yet required | Activated when customer payment orders and invoice settlement begin. |
+| **Cloudflare R2** | **Sprint 4 (Slice 1.7 - Activated)** | **Active Staging Storage** | Bucket `crazy-capital-staging-documents` authenticated and end-to-end verified with presigned upload/download lifecycle. |
+| **Razorpay** | **Sprint 5 (Vertical Slice 1.8 - Active)** | **Gateway Provider Active** | `RazorpayGatewayService` with REST order creation, HMAC-SHA256 signature verification, idempotent webhook processing, and graceful Mock fallback (`order_mock_...`). |
 | **Resend** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when event-driven transactional email dispatch is required. |
 | **MSG91** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when transactional SMS/OTP notification delivery is required. |
 | **Interakt** | Sprint 5 (Vertical Slice 1.9) | Not yet required | Activated when WhatsApp template notifications are required. |
@@ -205,6 +206,8 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | **Security Audit & Secret Rotation**: Staging `JWT_SECRET` and `JWT_REFRESH_SECRET` rotated via Railway CLI with cryptographically secure random strings without secret leakage. Zero credentials committed to Git. | Phase 1 Security Audit | Docs/engineering-memory.md, Docs/staging-infrastructure.md |
 | Aug 2026 | **Staging Deployment Topology Fix**: Corrected compiled monorepo entrypoint path in `railway.json` (`node apps/api/dist/apps/api/src/main.js`), verified clean Turborepo build across all 8 packages. | Phase 1 & 10 Build Verification | railway.json, apps/api/package.json |
 | Aug 2026 | **Cloudflare R2 Staging Activation & Verification**: Activated bucket `crazy-capital-staging-documents` on Railway Staging `api` service with bucket-scoped Object Read & Write credentials. 100% end-to-end verified with presigned upload/download/cleanup. Zero secrets leaked. | Slice 1.7 R2 Activation | Docs/engineering-memory.md, apps/api/src/modules/documents |
+| Aug 2026 | **Sprint 5 / Vertical Slice 1.8 Delivered (Payment Gateway & Invoicing Engine)**: Domain 8 Billing & Payments architecture, InvoicesService with sequential numbering (`INV-YYYY-XXXXXX`) and 18% GST computation, PaymentsService with Razorpay REST order generation, HMAC-SHA256 signature verification, mock gateway fallback, idempotent webhook handling, offline manual UTR reconciliation, automated `PAYMENT_GATE` workflow rule evaluation, Admin Invoices Workbench (`apps/admin/app/invoices`), Customer Checkout Portal (`apps/web/app/invoices`), 79/79 automated tests passing across 9 suites, clean monorepo build across all 8 packages. | ADR-014, ADR-019, Slice 1.8 | Docs/engineering-memory.md, apps/api/src/modules/billing, apps/admin/app/invoices, apps/web/app/invoices |
+
 
 
 

@@ -15,6 +15,7 @@ import {
   Menu,
   X,
   FileCheck2,
+  Receipt,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 
@@ -32,6 +33,7 @@ export function AdminShell({ children }: AdminShellProps) {
     { label: 'CRM Leads Engine', href: '/leads', icon: Users2, badge: 'Sprint 2' },
     { label: 'Customer 360 Hub', href: '/customers', icon: UserCheck, badge: 'Sprint 2' },
     { label: 'Document Vault (ADR-018)', href: '/documents', icon: FileCheck2, badge: 'Slice 1.7' },
+    { label: 'Billing & Invoices (ADR-014)', href: '/invoices', icon: Receipt, badge: 'Slice 1.8' },
     { label: 'Lead Sources (ADR-013)', href: '/settings/lead-sources', icon: Sliders },
   ];
 

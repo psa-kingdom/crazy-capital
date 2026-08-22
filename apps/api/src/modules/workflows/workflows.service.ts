@@ -375,6 +375,31 @@ export class WorkflowsService {
           }
         }
       }
+
+      if (rule.ruleType === WorkflowRuleType.PAYMENT_GATE || rule.ruleType === 'PAYMENT_GATE') {
+        const invoices = await this.prisma.invoice.findMany({
+          where: { applicationId: instance.applicationId },
+          include: { payments: true },
+        });
+
+        if (invoices.length === 0) {
+          throw new BadRequestException(
+            `Payment Gate check failed: No invoice has been generated for application '${instance.application.applicationNumber}'`,
+          );
+        }
+
+        const isPaid = invoices.some(
+          (inv) =>
+            inv.status === 'PAID' ||
+            inv.payments.some((p) => p.status === 'CAPTURED'),
+        );
+
+        if (!isPaid) {
+          throw new BadRequestException(
+            `Payment Gate check failed: Invoice payment must be completed before leaving '${instance.currentStage.name}'`,
+          );
+        }
+      }
     }
 
     // 3. Execute atomic transition

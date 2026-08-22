@@ -960,4 +960,105 @@ export interface QueryDocumentsInput {
   search?: string;
 }
 
+// ─── Domain 8: Payment Gateway & Invoicing (Vertical Slice 1.8) ─────────────
 
+export interface InvoiceDto {
+  id: string;
+  customerId: string;
+  applicationId: string | null;
+  invoiceNumber: string;
+  amount: number;
+  taxAmount: number;
+  totalAmount: number;
+  status: InvoiceStatus | string;
+  customer?: {
+    id: string;
+    fullName: string;
+    companyName: string | null;
+    email: string;
+    mobile: string;
+    gstin?: string | null;
+  };
+  application?: {
+    id: string;
+    applicationNumber: string;
+    service?: {
+      id: string;
+      name: string;
+      code: string;
+      basePrice: number;
+    };
+  } | null;
+  payments?: PaymentDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface PaymentDto {
+  id: string;
+  invoiceId: string;
+  gateway: string;
+  gatewayReference: string;
+  amount: number;
+  status: PaymentStatus | string;
+  rawPayload?: any;
+  createdAt: string;
+}
+
+export interface CreateInvoiceInput {
+  customerId: string;
+  applicationId?: string;
+  baseAmount: number;
+  taxAmount?: number;
+  notes?: string;
+}
+
+export interface UpdateInvoiceStatusInput {
+  status: InvoiceStatus | string;
+  reason?: string;
+}
+
+export interface QueryInvoicesInput {
+  page?: number;
+  limit?: number;
+  customerId?: string;
+  applicationId?: string;
+  status?: InvoiceStatus | string;
+  search?: string;
+  startDate?: string;
+  endDate?: string;
+}
+
+export interface CreatePaymentOrderInput {
+  invoiceId: string;
+  paymentMethod?: string;
+}
+
+export interface RazorpayOrderResponse {
+  orderId: string;
+  amount: number;
+  currency: string;
+  keyId: string;
+  invoiceId: string;
+  invoiceNumber: string;
+  customer: {
+    name: string;
+    email: string;
+    mobile: string;
+  };
+}
+
+export interface VerifyPaymentInput {
+  invoiceId: string;
+  razorpayOrderId: string;
+  razorpayPaymentId: string;
+  razorpaySignature: string;
+}
+
+export interface RecordManualPaymentInput {
+  invoiceId: string;
+  amount: number;
+  paymentMethod: string; // 'BANK_TRANSFER' | 'NEFT' | 'RTGS' | 'CHEQUE' | 'CASH'
+  referenceNumber: string; // UTR or Cheque number
+  notes?: string;
+}

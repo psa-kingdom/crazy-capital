@@ -16,6 +16,7 @@ import {
   Eye,
   AlertTriangle,
   Lock,
+  Receipt,
 } from 'lucide-react';
 import { Card, Button, Badge } from '@cc/ui';
 import { documentsApi } from '../../lib/api';
@@ -276,8 +277,18 @@ export default function CustomerDocumentVaultPage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-right">
+          <div className="flex items-center gap-3">
+            <Link href="/invoices">
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-slate-700 bg-slate-900/80 text-slate-300 hover:text-white hover:bg-slate-800 text-xs flex items-center gap-1.5"
+              >
+                <Receipt className="w-3.5 h-3.5 text-amber-400" />
+                Invoices & Billing
+              </Button>
+            </Link>
+            <div className="text-right border-l border-slate-800 pl-3">
               <div className="text-xs font-semibold text-slate-300">
                 Gate Progress: {mandatoryVerified}/{mandatoryCount} Verified
               </div>
