@@ -204,6 +204,7 @@ Update rule: update this document in the same change as a relevant implementatio
 | Aug 2026 | **Sprint 4 / Vertical Slice 1.7 Delivered (Secure Document Vault)**: Presigned S3/R2 upload & preview flows, DocumentType master registry & seeding, verification/rejection workbench with audit trails, DOCUMENT_GATE workflow integration, Customer Vault UI in @cc/web, Verification Workbench in @cc/admin, 65/65 unit tests passing. | ADR-018, Slice 1.7 | Docs/engineering-memory.md, apps/api/src/modules/documents, apps/web/app/documents, apps/admin/app/documents |
 | Aug 2026 | **Security Audit & Secret Rotation**: Staging `JWT_SECRET` and `JWT_REFRESH_SECRET` rotated via Railway CLI with cryptographically secure random strings without secret leakage. Zero credentials committed to Git. | Phase 1 Security Audit | Docs/engineering-memory.md, Docs/staging-infrastructure.md |
 | Aug 2026 | **Staging Deployment Topology Fix**: Corrected compiled monorepo entrypoint path in `railway.json` (`node apps/api/dist/apps/api/src/main.js`), verified clean Turborepo build across all 8 packages. | Phase 1 & 10 Build Verification | railway.json, apps/api/package.json |
+| Aug 2026 | **Cloudflare R2 Staging Activation & Verification**: Activated bucket `crazy-capital-staging-documents` on Railway Staging `api` service with bucket-scoped Object Read & Write credentials. 100% end-to-end verified with presigned upload/download/cleanup. Zero secrets leaked. | Slice 1.7 R2 Activation | Docs/engineering-memory.md, apps/api/src/modules/documents |
 
 
 

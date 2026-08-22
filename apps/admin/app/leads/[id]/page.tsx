@@ -51,7 +51,9 @@ export default function LeadDetailPage() {
     assignedTo: { id: 'u1', firstName: 'Priya', lastName: 'Verma', email: 'priya.verma@crazycapital.in' },
   });
 
-  const [activities, setActivities] = useState([
+  const [activities, setActivities] = useState<
+    { id: string; activityType: LeadActivityType | string; notes: string; performedBy: { firstName: string; lastName: string }; createdAt: string }[]
+  >([
     {
       id: 'act-3',
       activityType: LeadActivityType.STATUS_CHANGE,
