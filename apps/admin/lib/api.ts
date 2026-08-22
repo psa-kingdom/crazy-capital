@@ -190,3 +190,53 @@ export const applicationsApi = {
   },
 };
 
+// Document Vault & Verification API Services (ADR-018 - Slice 1.7)
+export const documentsApi = {
+  getDocuments: async (params?: Record<string, any>) => {
+    return apiClient.get('/documents', { params });
+  },
+  getDocumentById: async (id: string) => {
+    return apiClient.get(`/documents/${id}`);
+  },
+  requestPresignedUpload: async (data: {
+    customerId: string;
+    applicationId?: string;
+    documentTypeId: string;
+    fileName: string;
+    fileSize: number;
+    mimeType: string;
+  }) => {
+    return apiClient.post('/documents/presigned-upload', data);
+  },
+  confirmUpload: async (id: string, data?: { storageKey?: string; fileSize?: number }) => {
+    return apiClient.post(`/documents/${id}/confirm-upload`, data || {});
+  },
+  getPreviewUrl: async (id: string) => {
+    return apiClient.get(`/documents/${id}/preview-url`);
+  },
+  verifyDocument: async (id: string, remarks?: string) => {
+    return apiClient.patch(`/documents/${id}/verify`, { remarks });
+  },
+  rejectDocument: async (id: string, rejectionReason: string, remarks?: string) => {
+    return apiClient.patch(`/documents/${id}/reject`, { rejectionReason, remarks });
+  },
+  deleteDocument: async (id: string) => {
+    return apiClient.delete(`/documents/${id}`);
+  },
+};
+
+export const documentTypesApi = {
+  getDocumentTypes: async () => {
+    return apiClient.get('/document-types');
+  },
+  getDocumentTypeById: async (id: string) => {
+    return apiClient.get(`/document-types/${id}`);
+  },
+  createDocumentType: async (data: { code: string; name: string; description?: string }) => {
+    return apiClient.post('/document-types', data);
+  },
+  seedDefaults: async () => {
+    return apiClient.post('/document-types/seed-defaults', {});
+  },
+};
+

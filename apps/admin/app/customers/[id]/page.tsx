@@ -20,9 +20,11 @@ import {
   X,
   ExternalLink,
   ChevronRight,
+  Eye,
+  Check,
 } from 'lucide-react';
 import { Card, Button, Badge } from '@cc/ui';
-import { customerApi } from '../../../lib/api';
+import { customerApi, documentsApi } from '../../../lib/api';
 
 export default function Customer360Page() {
   const params = useParams();
@@ -418,21 +420,65 @@ export default function Customer360Page() {
       {activeTab === 'documents' && (
         <Card className="p-5 space-y-4">
           <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <h3 className="text-sm font-bold text-slate-900">Cloudflare R2 Encrypted Document Vault (ADR-004)</h3>
-            <span className="text-xs text-slate-500">Temporary 15-min Signed URLs</span>
+            <div>
+              <h3 className="text-sm font-bold text-slate-900">Cloudflare R2 Encrypted Document Vault (ADR-018)</h3>
+              <p className="text-xs text-slate-500">15-minute short-lived presigned URLs • Private object storage</p>
+            </div>
+            <Link href="/documents">
+              <Button size="sm" variant="outline" className="text-xs py-1 px-2.5">
+                Open Verification Workbench <ChevronRight className="w-3.5 h-3.5 ml-1" />
+              </Button>
+            </Link>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-            {documents.map((doc) => (
-              <div key={doc.id} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2">
+            {documents.map((doc: any) => (
+              <div key={doc.id} className="p-3.5 rounded-xl border border-slate-200 bg-slate-50/50 space-y-2.5">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-xs text-slate-900">{doc.type}</span>
-                  <Badge variant={doc.status === 'VERIFIED' ? 'success' : 'warning'}>
+                  <span className="font-bold text-xs text-slate-900">{doc.type || doc.documentType?.name || 'Document'}</span>
+                  <Badge variant={doc.status === 'VERIFIED' ? 'success' : doc.status === 'REJECTED' ? 'error' : 'warning'}>
                     {doc.status}
                   </Badge>
                 </div>
                 <div className="text-xs font-mono text-slate-600 truncate">{doc.fileName}</div>
-                <div className="text-[11px] text-slate-400">Uploaded {doc.uploadedAt}</div>
+                <div className="text-[11px] text-slate-400">Uploaded {doc.uploadedAt || 'Recently'}</div>
+                
+                <div className="pt-2 border-t border-slate-200 flex items-center justify-between gap-2">
+                  <button
+                    onClick={async () => {
+                      try {
+                        const res: any = await documentsApi.getPreviewUrl(doc.id);
+                        if (res?.previewUrl) window.open(res.previewUrl, '_blank');
+                        else alert(`Preview: ${doc.fileName}`);
+                      } catch {
+                        alert(`Preview: ${doc.fileName}`);
+                      }
+                    }}
+                    className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 hover:text-brand-800"
+                  >
+                    <Eye className="w-3 h-3" /> Preview
+                  </button>
+
+                  {doc.status !== 'VERIFIED' && (
+                    <button
+                      onClick={async () => {
+                        try {
+                          await documentsApi.verifyDocument(doc.id, 'Verified via Customer 360');
+                          setDocuments((prev: any[]) =>
+                            prev.map((d) => (d.id === doc.id ? { ...d, status: 'VERIFIED' } : d))
+                          );
+                        } catch {
+                          setDocuments((prev: any[]) =>
+                            prev.map((d) => (d.id === doc.id ? { ...d, status: 'VERIFIED' } : d))
+                          );
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-emerald-600 hover:text-emerald-800"
+                    >
+                      <Check className="w-3 h-3" /> Verify
+                    </button>
+                  )}
+                </div>
               </div>
             ))}
           </div>

@@ -43,7 +43,13 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="flex items-center gap-4 text-xs font-semibold">
+          <div className="flex items-center gap-3 text-xs font-semibold">
+            <Link
+              href="/documents"
+              className="px-3.5 py-1.5 rounded-lg bg-emerald-500/20 border border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/30 transition-colors flex items-center gap-1.5"
+            >
+              <FileCheck2 className="w-3.5 h-3.5" /> Customer Vault (Slice 1.7)
+            </Link>
             <Link
               href="/employee/leads"
               className="px-3.5 py-1.5 rounded-lg bg-brand-600/20 border border-brand-500/30 text-brand-400 hover:bg-brand-600/30 transition-colors flex items-center gap-1.5"
