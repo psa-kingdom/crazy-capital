@@ -155,20 +155,22 @@ export interface RequestScopeContext {
 
 // ─── CRM Domain Types ────────────────────────────────────────────────────────
 
-export enum LeadActivityType {
-  CALL = 'CALL',
-  EMAIL = 'EMAIL',
-  WHATSAPP = 'WHATSAPP',
-  MEETING = 'MEETING',
-  NOTE = 'NOTE',
-  STATUS_CHANGE = 'STATUS_CHANGE',
-}
+export const LeadActivityType = {
+  CALL: 'CALL',
+  EMAIL: 'EMAIL',
+  WHATSAPP: 'WHATSAPP',
+  MEETING: 'MEETING',
+  NOTE: 'NOTE',
+  STATUS_CHANGE: 'STATUS_CHANGE',
+} as const;
+export type LeadActivityType = (typeof LeadActivityType)[keyof typeof LeadActivityType];
 
-export enum CustomerAddressType {
-  REGISTERED = 'REGISTERED',
-  BILLING = 'BILLING',
-  MAILING = 'MAILING',
-}
+export const CustomerAddressType = {
+  REGISTERED: 'REGISTERED',
+  BILLING: 'BILLING',
+  MAILING: 'MAILING',
+} as const;
+export type CustomerAddressType = (typeof CustomerAddressType)[keyof typeof CustomerAddressType];
 
 export interface LeadSourceDto {
   id: string;
@@ -478,11 +480,12 @@ export interface QueryCustomersInput {
 
 // ─── Service Catalog Domain Types (Vertical Slice 1.4) ───────────────────────
 
-export enum PricingType {
-  STANDARD = 'STANDARD',
-  PARTNER = 'PARTNER',
-  PROMOTIONAL = 'PROMOTIONAL',
-}
+export const PricingType = {
+  STANDARD: 'STANDARD',
+  PARTNER: 'PARTNER',
+  PROMOTIONAL: 'PROMOTIONAL',
+} as const;
+export type PricingType = (typeof PricingType)[keyof typeof PricingType];
 
 export interface DocumentTypeDto {
   id: string;
