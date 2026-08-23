@@ -4,7 +4,7 @@ import * as argon2 from 'argon2';
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log('🌱 Starting database seeding for Crazy Capital...');
+  console.log('🌱 Starting comprehensive database seeding for Crazy Capital...');
 
   // 1. Organization
   const org = await prisma.organization.upsert({
@@ -54,7 +54,7 @@ async function main() {
         branchId: branches['HO'],
         name: deptName,
       },
-    }).catch(() => {}); // ignore duplicate in repeated seed
+    }).catch(() => {});
   }
 
   // 4. Roles
@@ -76,7 +76,6 @@ async function main() {
     });
     roles[r.code] = role.id;
   }
-  console.log(`✅ Roles seeded.`);
 
   // 5. Permissions
   const permissionsList = [
@@ -103,7 +102,7 @@ async function main() {
     // Commission permissions (ADR-011)
     { code: 'commission.view', name: 'View Commissions', module: 'commission' },
     { code: 'commission.approve', name: 'Approve or Reject Commissions', module: 'commission' },
-    // Admin permissions
+    // Admin & Reporting permissions (Slice 1.12)
     { code: 'user.manage', name: 'Manage Users & Roles', module: 'user' },
     { code: 'report.view', name: 'View Reports & Dashboards', module: 'report' },
     { code: 'report.export', name: 'Export Reports', module: 'report' },
@@ -118,10 +117,8 @@ async function main() {
     });
     permissionIds[p.code] = perm.id;
   }
-  console.log(`✅ Permissions seeded.`);
 
   // 6. Assign Permissions to Roles
-  // Super Admin & Admin get all permissions
   for (const permId of Object.values(permissionIds)) {
     await prisma.rolePermission.upsert({
       where: { roleId_permissionId: { roleId: roles['SUPER_ADMIN']!, permissionId: permId } },
@@ -135,8 +132,8 @@ async function main() {
     });
   }
 
-  // Branch Manager gets branch-level permissions (no commission.approve)
-  const branchManagerPerms = ['lead.create', 'lead.view', 'lead.update', 'lead.assign', 'customer.create', 'customer.view', 'customer.update', 'workflow.transition', 'document.upload', 'document.verify', 'payment.view', 'commission.view', 'report.view'];
+  // Branch Manager permissions (includes report.view and report.export)
+  const branchManagerPerms = ['lead.create', 'lead.view', 'lead.update', 'lead.assign', 'customer.create', 'customer.view', 'customer.update', 'workflow.transition', 'document.upload', 'document.verify', 'payment.view', 'commission.view', 'report.view', 'report.export'];
   for (const code of branchManagerPerms) {
     if (permissionIds[code]) {
       await prisma.rolePermission.upsert({
@@ -171,8 +168,14 @@ async function main() {
     }
   }
 
-  // 7. Super Admin User
-  const passwordHash = await argon2.hash('Admin@CrazyCapital2026!');
+  // 7. Seed Demo Users for Local Testing & QA
+  const adminPasswordHash = await argon2.hash('Admin@CrazyCapital2026!');
+  const bmPasswordHash = await argon2.hash('BranchManager@2026!');
+  const empPasswordHash = await argon2.hash('Employee@2026!');
+  const partnerPasswordHash = await argon2.hash('Partner@2026!');
+  const customerPasswordHash = await argon2.hash('Customer@2026!');
+
+  // Super Admin
   const adminUser = await prisma.user.upsert({
     where: { email: 'admin@crazycapital.in' },
     update: {},
@@ -183,17 +186,142 @@ async function main() {
       lastName: 'Admin',
       email: 'admin@crazycapital.in',
       mobile: '9999999999',
-      passwordHash,
+      passwordHash: adminPasswordHash,
       status: 'ACTIVE',
     },
   });
-
   await prisma.userRole.upsert({
     where: { userId_roleId: { userId: adminUser.id, roleId: roles['SUPER_ADMIN']! } },
     update: {},
     create: { userId: adminUser.id, roleId: roles['SUPER_ADMIN']! },
   });
-  console.log(`✅ Super Admin created: admin@crazycapital.in / Admin@CrazyCapital2026!`);
+
+  // Branch Manager - Noida
+  const bmNoidaUser = await prisma.user.upsert({
+    where: { email: 'bm.noida@crazycapital.in' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['NOIDA_01'],
+      firstName: 'Vikram',
+      lastName: 'Sharma',
+      email: 'bm.noida@crazycapital.in',
+      mobile: '9811001100',
+      passwordHash: bmPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: bmNoidaUser.id, roleId: roles['BRANCH_MANAGER']! } },
+    update: {},
+    create: { userId: bmNoidaUser.id, roleId: roles['BRANCH_MANAGER']! },
+  });
+
+  // Branch Manager - HO
+  const bmHoUser = await prisma.user.upsert({
+    where: { email: 'amit.kumar@crazycapital.in' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['HO'],
+      firstName: 'Amit',
+      lastName: 'Kumar',
+      email: 'amit.kumar@crazycapital.in',
+      mobile: '9811001101',
+      passwordHash: bmPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: bmHoUser.id, roleId: roles['BRANCH_MANAGER']! } },
+    update: {},
+    create: { userId: bmHoUser.id, roleId: roles['BRANCH_MANAGER']! },
+  });
+
+  // Employees
+  const empPriya = await prisma.user.upsert({
+    where: { email: 'priya.verma@crazycapital.in' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['NOIDA_01'],
+      firstName: 'Priya',
+      lastName: 'Verma',
+      email: 'priya.verma@crazycapital.in',
+      mobile: '9811001102',
+      passwordHash: empPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: empPriya.id, roleId: roles['EMPLOYEE']! } },
+    update: {},
+    create: { userId: empPriya.id, roleId: roles['EMPLOYEE']! },
+  });
+
+  const empSuresh = await prisma.user.upsert({
+    where: { email: 'suresh.nair@crazycapital.in' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['DELHI_01'],
+      firstName: 'Suresh',
+      lastName: 'Nair',
+      email: 'suresh.nair@crazycapital.in',
+      mobile: '9811001103',
+      passwordHash: empPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: empSuresh.id, roleId: roles['EMPLOYEE']! } },
+    update: {},
+    create: { userId: empSuresh.id, roleId: roles['EMPLOYEE']! },
+  });
+
+  // Partner User
+  const partnerUser = await prisma.user.upsert({
+    where: { email: 'partner@apexadvisors.in' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['HO'],
+      firstName: 'Karan',
+      lastName: 'Malhotra',
+      email: 'partner@apexadvisors.in',
+      mobile: '9811998877',
+      passwordHash: partnerPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: partnerUser.id, roleId: roles['PARTNER']! } },
+    update: {},
+    create: { userId: partnerUser.id, roleId: roles['PARTNER']! },
+  });
+
+  // Customer Portal User
+  const customerUser = await prisma.user.upsert({
+    where: { email: 'client@kapoorenterprises.com' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['HO'],
+      firstName: 'Arjun',
+      lastName: 'Kapoor',
+      email: 'client@kapoorenterprises.com',
+      mobile: '9822003344',
+      passwordHash: customerPasswordHash,
+      status: 'ACTIVE',
+    },
+  });
+  await prisma.userRole.upsert({
+    where: { userId_roleId: { userId: customerUser.id, roleId: roles['CUSTOMER']! } },
+    update: {},
+    create: { userId: customerUser.id, roleId: roles['CUSTOMER']! },
+  });
+
+  console.log(`✅ Seeded all QA Demo Users (Admin, Branch Managers, Employees, Partner, Customer).`);
 
   // 8. Lead Sources (ADR-013)
   const leadSourcesData = [
@@ -209,17 +337,18 @@ async function main() {
     { name: 'Direct Call', code: 'DIRECT_CALL' },
   ];
 
+  const sourceMap: Record<string, string> = {};
   for (const s of leadSourcesData) {
-    await prisma.leadSource.upsert({
+    const src = await prisma.leadSource.upsert({
       where: { code: s.code },
       update: {},
       create: s,
     });
+    sourceMap[s.code] = src.id;
   }
-  console.log(`✅ 10 Lead Sources seeded (ADR-013).`);
 
   // 9. Document Types
-  const docTypes = [
+  const docTypesData = [
     { name: 'PAN Card', code: 'PAN', description: 'Permanent Account Number Card' },
     { name: 'Aadhaar Card', code: 'AADHAAR', description: 'UIDAI Aadhaar Card' },
     { name: 'GST Certificate', code: 'GST_CERTIFICATE', description: 'GST Registration Certificate' },
@@ -228,54 +357,354 @@ async function main() {
     { name: 'Bank Statement', code: 'BANK_STATEMENT', description: 'Last 6 Months Bank Statement' },
   ];
 
-  for (const d of docTypes) {
-    await prisma.documentType.upsert({
+  const docTypes: Record<string, string> = {};
+  for (const d of docTypesData) {
+    const dt = await prisma.documentType.upsert({
       where: { code: d.code },
       update: {},
       create: d,
     });
+    docTypes[d.code] = dt.id;
   }
-  console.log(`✅ Document types seeded.`);
 
-  // 10. Sample Employees
-  const empPassword = await argon2.hash('Employee@2026!');
-  const employeesData = [
-    { firstName: 'Amit', lastName: 'Kumar', email: 'amit.kumar@crazycapital.in', mobile: '9811001101', branchCode: 'HO', roleCode: 'BRANCH_MANAGER' },
-    { firstName: 'Priya', lastName: 'Verma', email: 'priya.verma@crazycapital.in', mobile: '9811001102', branchCode: 'NOIDA_01', roleCode: 'EMPLOYEE' },
-    { firstName: 'Suresh', lastName: 'Nair', email: 'suresh.nair@crazycapital.in', mobile: '9811001103', branchCode: 'DELHI_01', roleCode: 'EMPLOYEE' },
-    { firstName: 'Ananya', lastName: 'Deshmukh', email: 'ananya.d@crazycapital.in', mobile: '9811001104', branchCode: 'MUMBAI_01', roleCode: 'EMPLOYEE' },
-  ];
+  // 10. Service Categories, Services & Workflows (ADR-012)
+  const categoryCorp = await prisma.serviceCategory.upsert({
+    where: { slug: 'corporate-incorporation' },
+    update: {},
+    create: {
+      name: 'Corporate Incorporation',
+      slug: 'corporate-incorporation',
+      description: 'Company registration and corporate structurings',
+      isActive: true,
+    },
+  });
 
-  const employees: Record<string, any> = {};
-  for (const emp of employeesData) {
-    const user = await prisma.user.upsert({
-      where: { email: emp.email },
-      update: {},
-      create: {
-        organizationId: org.id,
-        branchId: branches[emp.branchCode] || branches['HO'],
-        firstName: emp.firstName,
-        lastName: emp.lastName,
-        email: emp.email,
-        mobile: emp.mobile,
-        passwordHash: empPassword,
-        status: 'ACTIVE',
+  const categoryTax = await prisma.serviceCategory.upsert({
+    where: { slug: 'tax-compliance' },
+    update: {},
+    create: {
+      name: 'Tax & Compliance',
+      slug: 'tax-compliance',
+      description: 'Statutory GST, TDS, and MCA filings',
+      isActive: true,
+    },
+  });
+
+  const categoryIP = await prisma.serviceCategory.upsert({
+    where: { slug: 'intellectual-property' },
+    update: {},
+    create: {
+      name: 'Intellectual Property',
+      slug: 'intellectual-property',
+      description: 'Trademarks, Copyrights, and Patents',
+      isActive: true,
+    },
+  });
+
+  // Services
+  const srvPvt = await prisma.service.upsert({
+    where: { slug: 'private-limited-company' },
+    update: {},
+    create: {
+      categoryId: categoryCorp.id,
+      name: 'Private Limited Company Incorporation',
+      slug: 'private-limited-company',
+      description: 'Full incorporation package with SPICe+, PAN, TAN, and Certificate of Incorporation',
+      isActive: true,
+    },
+  });
+
+  await prisma.servicePricing.create({
+    data: { serviceId: srvPvt.id, pricingType: 'STANDARD', amount: 15000 },
+  }).catch(() => {});
+
+  const srvGst = await prisma.service.upsert({
+    where: { slug: 'gst-registration' },
+    update: {},
+    create: {
+      categoryId: categoryTax.id,
+      name: 'GST Registration & Verification',
+      slug: 'gst-registration',
+      description: 'GSTIN allotment with jurisdiction tax officer verification',
+      isActive: true,
+    },
+  });
+
+  await prisma.servicePricing.create({
+    data: { serviceId: srvGst.id, pricingType: 'STANDARD', amount: 5000 },
+  }).catch(() => {});
+
+  const srvTm = await prisma.service.upsert({
+    where: { slug: 'trademark-filing' },
+    update: {},
+    create: {
+      categoryId: categoryIP.id,
+      name: 'Trademark Registration (TM-A)',
+      slug: 'trademark-filing',
+      description: 'Brand name and logo trademark registration with IPO India',
+      isActive: true,
+    },
+  });
+
+  await prisma.servicePricing.create({
+    data: { serviceId: srvTm.id, pricingType: 'STANDARD', amount: 8000 },
+  }).catch(() => {});
+
+  // Workflow Template for Pvt Ltd (ADR-012)
+  let workflowPvt = await prisma.workflow.findUnique({
+    where: { serviceId: srvPvt.id },
+  });
+
+  if (!workflowPvt) {
+    workflowPvt = await prisma.workflow.create({
+      data: {
+        serviceId: srvPvt.id,
+        name: 'Pvt Ltd Incorporation Workflow',
+        code: 'WF_PVT_LTD',
+        description: 'Sequential 4-stage MCA incorporation workflow',
+        isActive: true,
       },
     });
-    employees[emp.email] = user;
 
-    await prisma.userRole.upsert({
-      where: { userId_roleId: { userId: user.id, roleId: roles[emp.roleCode]! } },
-      update: {},
-      create: { userId: user.id, roleId: roles[emp.roleCode]! },
+    const st1 = await prisma.workflowStage.create({
+      data: { workflowId: workflowPvt.id, name: 'Document Collection', code: 'ST_DOC_COLLECT', stageOrder: 1, isStartStage: true, stageType: 'START', slaHours: 24 },
+    });
+    const st2 = await prisma.workflowStage.create({
+      data: { workflowId: workflowPvt.id, name: 'MCA SPICe+ Filing', code: 'ST_MCA_FILING', stageOrder: 2, stageType: 'PROCESSING', slaHours: 48 },
+    });
+    const st3 = await prisma.workflowStage.create({
+      data: { workflowId: workflowPvt.id, name: 'Officer Compliance Review', code: 'ST_OFFICER_REVIEW', stageOrder: 3, stageType: 'PROCESSING', slaHours: 24 },
+    });
+    const st4 = await prisma.workflowStage.create({
+      data: { workflowId: workflowPvt.id, name: 'Delivered & Completed', code: 'ST_DELIVERED', stageOrder: 4, isEndStage: true, stageType: 'COMPLETION' },
+    });
+
+    await prisma.workflowTransition.createMany({
+      data: [
+        { workflowId: workflowPvt.id, fromStageId: st1.id, toStageId: st2.id },
+        { workflowId: workflowPvt.id, fromStageId: st2.id, toStageId: st3.id },
+        { workflowId: workflowPvt.id, fromStageId: st3.id, toStageId: st4.id },
+      ],
+      skipDuplicates: true,
     });
   }
-  console.log(`✅ ${employeesData.length} Employees seeded.`);
 
-  // 11. Sample Leads & Activity Timelines
-  const leadSources = await prisma.leadSource.findMany();
-  const sourceMap = Object.fromEntries(leadSources.map((s) => [s.code, s.id]));
+  // 11. Sample Customers
+  const customerKapoor = await prisma.customer.upsert({
+    where: { organizationId_mobile: { organizationId: org.id, mobile: '9822003344' } },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['HO'],
+      customerType: 'BUSINESS',
+      firstName: 'Arjun',
+      lastName: 'Kapoor',
+      email: 'client@kapoorenterprises.com',
+      mobile: '9822003344',
+      companyName: 'Kapoor Global Exports Private Limited',
+      pan: 'AABCK1234D',
+      gstin: '07AABCK1234D1Z8',
+      status: 'ACTIVE',
+    },
+  });
 
+  const customerNoida = await prisma.customer.upsert({
+    where: { organizationId_mobile: { organizationId: org.id, mobile: '9811882233' } },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['NOIDA_01'],
+      customerType: 'BUSINESS',
+      firstName: 'Rakesh',
+      lastName: 'Bansal',
+      email: 'rakesh@bansaltech.in',
+      mobile: '9811882233',
+      companyName: 'Bansal Tech Logistics LLP',
+      pan: 'AABCB5678E',
+      status: 'ACTIVE',
+    },
+  });
+
+  // 12. Sample Applications & Workflow Instances (Slice 1.6 / 1.11)
+  const app1 = await prisma.application.upsert({
+    where: { applicationNumber: 'CC-2026-000101' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['HO'],
+      customerId: customerKapoor.id,
+      serviceId: srvPvt.id,
+      applicationNumber: 'CC-2026-000101',
+      status: 'IN_PROGRESS',
+      assignedToId: empPriya.id,
+      partnerId: partnerUser.id,
+    },
+  });
+
+  const stages = await prisma.workflowStage.findMany({ where: { workflowId: workflowPvt.id }, orderBy: { stageOrder: 'asc' } });
+  if (stages.length > 0) {
+    await prisma.workflowInstance.upsert({
+      where: { applicationId: app1.id },
+      update: {},
+      create: {
+        workflowId: workflowPvt.id,
+        applicationId: app1.id,
+        currentStageId: stages[1]?.id || stages[0].id,
+      },
+    });
+  }
+
+  const app2 = await prisma.application.upsert({
+    where: { applicationNumber: 'CC-2026-000102' },
+    update: {},
+    create: {
+      organizationId: org.id,
+      branchId: branches['NOIDA_01'],
+      customerId: customerNoida.id,
+      serviceId: srvGst.id,
+      applicationNumber: 'CC-2026-000102',
+      status: 'COMPLETED',
+      assignedToId: empPriya.id,
+    },
+  });
+
+  // 13. Sample Invoices & Payments (Slice 1.8)
+  const inv1 = await prisma.invoice.upsert({
+    where: { invoiceNumber: 'INV-2026-000001' },
+    update: {},
+    create: {
+      customerId: customerKapoor.id,
+      applicationId: app1.id,
+      invoiceNumber: 'INV-2026-000001',
+      amount: 17700,
+      taxAmount: 2700, // 18% GST on 15,000
+      status: 'PAID',
+    },
+  });
+
+  await prisma.payment.upsert({
+    where: { gatewayReference: 'pay_RZP_TEST_001' },
+    update: {},
+    create: {
+      invoiceId: inv1.id,
+      gateway: 'RAZORPAY',
+      gatewayReference: 'pay_RZP_TEST_001',
+      amount: 17700,
+      status: 'CAPTURED',
+    },
+  });
+
+  const inv2 = await prisma.invoice.upsert({
+    where: { invoiceNumber: 'INV-2026-000002' },
+    update: {},
+    create: {
+      customerId: customerNoida.id,
+      applicationId: app2.id,
+      invoiceNumber: 'INV-2026-000002',
+      amount: 5900,
+      taxAmount: 900, // 18% GST on 5,000
+      status: 'PAID',
+    },
+  });
+
+  await prisma.payment.upsert({
+    where: { gatewayReference: 'pay_RZP_TEST_002' },
+    update: {},
+    create: {
+      invoiceId: inv2.id,
+      gateway: 'RAZORPAY',
+      gatewayReference: 'pay_RZP_TEST_002',
+      amount: 5900,
+      status: 'CAPTURED',
+    },
+  });
+
+  await prisma.invoice.upsert({
+    where: { invoiceNumber: 'INV-2026-000003' },
+    update: {},
+    create: {
+      customerId: customerKapoor.id,
+      invoiceNumber: 'INV-2026-000003',
+      amount: 9440,
+      taxAmount: 1440,
+      status: 'SENT',
+    },
+  });
+
+  // 14. Partner Commissions & Payouts (Slice 1.9)
+  const comm1 = await prisma.commission.create({
+    data: {
+      applicationId: app1.id,
+      serviceId: srvPvt.id,
+      partnerId: partnerUser.id,
+      baseAmount: 15000,
+      rate: 10,
+      amount: 1500,
+      status: 'PAID',
+      approvedById: adminUser.id,
+      approvedAt: new Date(),
+    },
+  }).catch(() => {});
+
+  if (comm1) {
+    await prisma.payout.create({
+      data: {
+        commissionId: comm1.id,
+        partnerId: partnerUser.id,
+        amount: 1500,
+        paymentMethod: 'BANK_TRANSFER',
+        status: 'PAID',
+        referenceNumber: 'UTR-HDFC-2026-981122',
+        paidAt: new Date(),
+        notes: 'Monthly partner referral settlement',
+      },
+    }).catch(() => {});
+  }
+
+  // 15. Sample Documents (Slice 1.7)
+  await prisma.document.createMany({
+    data: [
+      {
+        organizationId: org.id,
+        branchId: branches['HO'],
+        customerId: customerKapoor.id,
+        applicationId: app1.id,
+        documentTypeId: docTypes['PAN']!,
+        fileName: 'kapoor_pan_card.pdf',
+        filePath: 'staging/documents/kapoor_pan_card.pdf',
+        fileSize: 245000,
+        mimeType: 'application/pdf',
+        status: 'VERIFIED',
+      },
+      {
+        organizationId: org.id,
+        branchId: branches['HO'],
+        customerId: customerKapoor.id,
+        applicationId: app1.id,
+        documentTypeId: docTypes['GST_CERTIFICATE']!,
+        fileName: 'gst_certificate.pdf',
+        filePath: 'staging/documents/gst_certificate.pdf',
+        fileSize: 512000,
+        mimeType: 'application/pdf',
+        status: 'VERIFIED',
+      },
+      {
+        organizationId: org.id,
+        branchId: branches['NOIDA_01'],
+        customerId: customerNoida.id,
+        applicationId: app2.id,
+        documentTypeId: docTypes['BANK_STATEMENT']!,
+        fileName: 'bansal_bank_stmt.pdf',
+        filePath: 'staging/documents/bansal_bank_stmt.pdf',
+        fileSize: 1024000,
+        mimeType: 'application/pdf',
+        status: 'PENDING',
+      },
+    ],
+    skipDuplicates: true,
+  });
+
+  // 16. Sample CRM Inbound Leads (Slice 1.2)
   const sampleLeads = [
     {
       firstName: 'Rajesh',
@@ -283,13 +712,13 @@ async function main() {
       email: 'rajesh.gupta@apextech.in',
       mobile: '9876543210',
       companyName: 'Apex Technologies Pvt Ltd',
-      status: 'NEW',
-      leadScore: 85,
+      status: 'CONVERTED',
+      leadScore: 90,
       sourceId: sourceMap['WEBSITE'],
       branchId: branches['HO'],
-      notes: 'Interested in Private Limited Incorporation & GST Registration package.',
+      notes: 'Converted to Private Limited Incorporation & GST Registration package.',
       campaign: 'GOOGLE_ADS_Q3',
-      assignedToId: employees['priya.verma@crazycapital.in']?.id,
+      assignedToId: empPriya.id,
     },
     {
       firstName: 'Sneha',
@@ -303,7 +732,7 @@ async function main() {
       branchId: branches['MUMBAI_01'],
       notes: 'Initial WhatsApp outreach completed; sent company registration checklist.',
       campaign: 'WHATSAPP_CAMPAIGN',
-      assignedToId: employees['ananya.d@crazycapital.in']?.id,
+      assignedToId: empSuresh.id,
     },
     {
       firstName: 'Vikram',
@@ -317,7 +746,7 @@ async function main() {
       branchId: branches['DELHI_01'],
       notes: 'High ticket size: MSME Loan syndication + Trademark Filing.',
       campaign: 'PARTNER_MEET_AUG',
-      assignedToId: employees['suresh.nair@crazycapital.in']?.id,
+      assignedToId: empSuresh.id,
     },
     {
       firstName: 'Deepak',
@@ -330,7 +759,7 @@ async function main() {
       sourceId: sourceMap['DIRECT_CALL'],
       branchId: branches['HO'],
       notes: 'Custom annual corporate compliance retainer quote sent.',
-      assignedToId: employees['amit.kumar@crazycapital.in']?.id,
+      assignedToId: bmHoUser.id,
     },
     {
       firstName: 'Kavita',
@@ -338,12 +767,12 @@ async function main() {
       email: 'kavita@reddyfoods.in',
       mobile: '9876543214',
       companyName: 'Reddy Organic Foods Pvt Ltd',
-      status: 'LOST',
-      leadScore: 30,
+      status: 'NEW',
+      leadScore: 50,
       sourceId: sourceMap['COLD_CALL'],
       branchId: branches['BLR_01'],
-      notes: 'Opted for local CA firm due to existing relationship.',
-      assignedToId: employees['priya.verma@crazycapital.in']?.id,
+      notes: 'Inquiry received via inbound inquiry line.',
+      assignedToId: empPriya.id,
     },
   ];
 
@@ -359,114 +788,19 @@ async function main() {
         },
       });
 
-      // Add activities
       await prisma.leadActivity.create({
         data: {
           leadId: createdLead.id,
           performedById: adminUser.id,
           activityType: 'NOTE',
-          notes: `Inquiry received: ${l.notes}`,
+          notes: `Inquiry recorded: ${l.notes}`,
         },
       });
-
-      if (l.status !== 'NEW') {
-        await prisma.leadActivity.create({
-          data: {
-            leadId: createdLead.id,
-            performedById: l.assignedToId || adminUser.id,
-            activityType: 'CALL',
-            notes: 'Follow-up discovery phone call completed with client.',
-          },
-        });
-        await prisma.leadActivity.create({
-          data: {
-            leadId: createdLead.id,
-            performedById: l.assignedToId || adminUser.id,
-            activityType: 'STATUS_CHANGE',
-            notes: `Status transitioned to ${l.status}`,
-          },
-        });
-      }
-
-      if (l.assignedToId) {
-        await prisma.leadAssignment.create({
-          data: {
-            leadId: createdLead.id,
-            assignedFrom: adminUser.id,
-            assignedTo: l.assignedToId,
-          },
-        });
-      }
     }
   }
-  console.log(`✅ Sample Leads & Timelines seeded.`);
 
-  // 12. Sample Customers & Customer 360 Records
-  const sampleCustomer = await prisma.customer.upsert({
-    where: { organizationId_mobile: { organizationId: org.id, mobile: '9822003344' } },
-    update: {},
-    create: {
-      organizationId: org.id,
-      branchId: branches['HO'],
-      customerType: 'BUSINESS',
-      firstName: 'Arjun',
-      lastName: 'Kapoor',
-      email: 'arjun@kapoorenterprises.com',
-      mobile: '9822003344',
-      companyName: 'Kapoor Global Exports Private Limited',
-      pan: 'AABCK1234D',
-      gstin: '07AABCK1234D1Z8',
-      status: 'ACTIVE',
-    },
-  });
-
-  await prisma.customerAddress.createMany({
-    data: [
-      {
-        customerId: sampleCustomer.id,
-        type: 'REGISTERED',
-        addressLine1: 'Plot 45, Okhla Industrial Area Phase III',
-        addressLine2: 'Near Crown Plaza',
-        city: 'New Delhi',
-        state: 'Delhi',
-        country: 'India',
-        pincode: '110020',
-      },
-      {
-        customerId: sampleCustomer.id,
-        type: 'BILLING',
-        addressLine1: 'Corporate Tower B, 8th Floor, Express Trade Towers',
-        city: 'Noida',
-        state: 'Uttar Pradesh',
-        country: 'India',
-        pincode: '201301',
-      },
-    ],
-    skipDuplicates: true,
-  });
-
-  await prisma.customerContact.createMany({
-    data: [
-      {
-        customerId: sampleCustomer.id,
-        name: 'Arjun Kapoor',
-        mobile: '9822003344',
-        email: 'arjun@kapoorenterprises.com',
-        designation: 'Director & CEO',
-      },
-      {
-        customerId: sampleCustomer.id,
-        name: 'Meenakshi Sundaram',
-        mobile: '9822003355',
-        email: 'meenakshi@kapoorenterprises.com',
-        designation: 'Chief Financial Officer',
-      },
-    ],
-    skipDuplicates: true,
-  });
-  console.log(`✅ Sample Customer 360 records seeded (Kapoor Global Exports).`);
-
-  console.log('🎉 Seeding completed successfully!');
+  console.log(`✅ Sample Leads, Invoices, Workflows, Applications, and Documents seeded successfully!`);
+  console.log('🎉 Comprehensive database seeding complete!');
 }
 
 main()
