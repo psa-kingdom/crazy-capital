@@ -39,7 +39,9 @@ export function AdminShell({ children }: AdminShellProps) {
     { label: 'Workflow Builder', href: '/workflows', icon: GitFork, badge: 'Slice 2.1' },
     { label: 'SLA & Escalations', href: '/sla', icon: AlertTriangle, badge: 'Slice 2.2' },
     { label: 'Task Engine & Workload', href: '/tasks', icon: ListTodo, badge: 'Slice 2.3' },
+    { label: 'Branch & Regional Hubs', href: '/branches', icon: Building2, badge: 'Slice 2.4' },
     { label: 'Reports & Analytics', href: '/reports', icon: BarChart3, badge: 'Slice 1.12' },
+
 
     { label: 'CMS & Knowledge Base', href: '/cms', icon: BookOpen, badge: 'Slice 1.13' },
     { label: 'CRM Leads Engine', href: '/leads', icon: Users2, badge: 'Sprint 2' },

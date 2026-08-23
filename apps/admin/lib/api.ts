@@ -464,3 +464,46 @@ export const tasksApi = {
   },
 };
 
+// Branch Hierarchy & Regional Operations Hubs API Services (Slice 2.4)
+export const branchesApi = {
+  getRegions: async () => {
+    return apiClient.get('/branches/regions');
+  },
+  getRegionById: async (id: string) => {
+    return apiClient.get(`/branches/regions/${id}`);
+  },
+  createRegion: async (data: Record<string, any>) => {
+    return apiClient.post('/branches/regions', data);
+  },
+  updateRegion: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/branches/regions/${id}`, data);
+  },
+  deleteRegion: async (id: string) => {
+    return apiClient.delete(`/branches/regions/${id}`);
+  },
+  getBranches: async (params?: Record<string, any>) => {
+    return apiClient.get('/branches', { params });
+  },
+  getBranchById: async (id: string) => {
+    return apiClient.get(`/branches/${id}`);
+  },
+  createBranch: async (data: Record<string, any>) => {
+    return apiClient.post('/branches', data);
+  },
+  updateBranch: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/branches/${id}`, data);
+  },
+  getTargets: async (params?: Record<string, any>) => {
+    return apiClient.get('/branches/targets', { params });
+  },
+  setTarget: async (data: Record<string, any>) => {
+    return apiClient.post('/branches/targets', data);
+  },
+  getPerformance: async (targetPeriod?: string) => {
+    return apiClient.get('/branches/performance', {
+      params: targetPeriod ? { targetPeriod } : {},
+    });
+  },
+};
+
+

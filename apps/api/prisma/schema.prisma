@@ -19,6 +19,7 @@ model Organization {
   updatedAt  DateTime  @updatedAt @map("updated_at")
   deletedAt  DateTime? @map("deleted_at")
 
+  regions      Region[]
   branches     Branch[]
   departments  Department[]
   users        User[]
@@ -34,30 +35,87 @@ model Organization {
   @@map("organizations")
 }
 
-model Branch {
-  id             String    @id @default(uuid())
-  organizationId String    @map("organization_id")
-  name           String
-  code           String
-  city           String?
-  state          String?
-  status         String    @default("ACTIVE")
-  createdAt      DateTime  @default(now()) @map("created_at")
-  updatedAt      DateTime  @updatedAt @map("updated_at")
-  deletedAt      DateTime? @map("deleted_at")
+model Region {
+  id                String    @id @default(uuid())
+  organizationId    String    @map("organization_id")
+  name              String
+  code              String    // e.g. "NORTH_HUB", "WEST_HUB", "SOUTH_HUB", "EAST_HUB"
+  description       String?
+  regionalManagerId String?   @map("regional_manager_id")
+  status            String    @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt         DateTime  @default(now()) @map("created_at")
+  updatedAt         DateTime  @updatedAt @map("updated_at")
+  deletedAt         DateTime? @map("deleted_at")
 
-  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
-  departments  Department[]
-  users        User[]
-  leads        Lead[]
-  customers    Customer[]
-  applications Application[]
-  documents    Document[]
-  tasks        Task[]
+  organization    Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  regionalManager User?          @relation("RegionalManager", fields: [regionalManagerId], references: [id], onDelete: SetNull)
+  branches        Branch[]
+  targets         BranchTarget[]
+
+  @@unique([organizationId, code])
+  @@map("regions")
+}
+
+model Branch {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  regionId        String?   @map("region_id")
+  branchManagerId String?   @map("branch_manager_id")
+  name            String
+  code            String    // e.g. "NOIDA_01", "DELHI_01", "MUMBAI_01"
+  branchType      String    @default("METRO_BRANCH") @map("branch_type") // REGIONAL_HUB, METRO_BRANCH, SATELLITE_OFFICE, FRANCHISE_OUTPOST
+  addressLine     String?   @map("address_line")
+  city            String?
+  state           String?
+  pincode         String?
+  phone           String?
+  email           String?
+  status          String    @default("ACTIVE") // ACTIVE, INACTIVE, SUSPENDED
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  organization  Organization   @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  region        Region?        @relation(fields: [regionId], references: [id], onDelete: SetNull)
+  branchManager User?          @relation("BranchManager", fields: [branchManagerId], references: [id], onDelete: SetNull)
+  departments   Department[]
+  users         User[]
+  leads         Lead[]
+  customers     Customer[]
+  applications  Application[]
+  documents     Document[]
+  tasks         Task[]
+  targets       BranchTarget[]
 
   @@unique([organizationId, code])
   @@map("branches")
 }
+
+model BranchTarget {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  branchId        String    @map("branch_id")
+  regionId        String?   @map("region_id")
+  targetPeriod    String    @map("target_period") // e.g. "2026-08", "2026-Q3", "2026-Q4", "2026-ANNUAL"
+  periodType      String    @default("MONTHLY") @map("period_type") // MONTHLY, QUARTERLY, ANNUAL
+  revenueTarget   Decimal   @default(0) @db.Decimal(12, 2) @map("revenue_target")
+  caseTarget      Int       @default(0) @map("case_target")
+  leadTarget      Int?      @default(0) @map("lead_target")
+  achievedRevenue Decimal   @default(0) @db.Decimal(12, 2) @map("achieved_revenue")
+  achievedCases   Int       @default(0) @map("achieved_cases")
+  status          String    @default("ON_TRACK") // ON_TRACK, ACHIEVED, AT_RISK, MISSED
+  notes           String?
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+
+  branch Branch  @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  region Region? @relation(fields: [regionId], references: [id], onDelete: SetNull)
+
+  @@unique([branchId, targetPeriod])
+  @@index([organizationId, targetPeriod])
+  @@map("branch_targets")
+}
+
 
 
 model Department {
@@ -134,6 +192,8 @@ model User {
   taskAssignmentsMade   TaskAssignmentHistory[] @relation("TaskAssigner")
   blogPosts             BlogPost[]              @relation("AuthorBlogPosts")
   escalationsReceived   WorkflowSlaEscalation[] @relation("EscalationRecipient")
+  managedRegions        Region[]                @relation("RegionalManager")
+  managedBranches       Branch[]                @relation("BranchManager")
 
   @@index([organizationId, email])
   @@index([organizationId, mobile])

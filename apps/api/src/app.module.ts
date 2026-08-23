@@ -18,6 +18,7 @@ import { ReportsModule } from './modules/reports/reports.module';
 import { CmsModule } from './modules/cms/cms.module';
 import { SlaModule } from './modules/sla/sla.module';
 import { TasksModule } from './modules/tasks/tasks.module';
+import { BranchesModule } from './modules/branches/branches.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -45,6 +46,7 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     CmsModule,
     SlaModule,
     TasksModule,
+    BranchesModule,
   ],
   controllers: [AppController],
   providers: [

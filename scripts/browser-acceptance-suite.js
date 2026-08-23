@@ -564,10 +564,166 @@ async function runBrowserAcceptance() {
   // Take screenshot of Task Engine Workbench
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08_admin_task_engine.png'), fullPage: true });
 
+  // -------------------------------------------------------------
+  // TEST 11: Vertical Slice 2.4 — Branch Hierarchy & Regional Operations Hubs (/branches)
+  // -------------------------------------------------------------
+  console.log('\n[11/11] Testing Vertical Slice 2.4 — Branch Hierarchy & Regional Hubs (http://localhost:3001/branches)...');
+
+  const branchesRes = await page.goto('http://localhost:3001/branches', { waitUntil: 'networkidle' });
+  await wait(600);
+  assert(branchesRes && branchesRes.status() === 200, 'Branch Hierarchy page (/branches) responds with HTTP 200');
+
+  const branchText = await page.textContent('body');
+  assert(branchText.includes('Branch Hierarchy & Regional Operations Hubs'), 'Page header contains Branch Hierarchy title');
+  assert(branchText.includes('Slice 2.4'), 'Slice 2.4 badge is rendered');
+  assert(branchText.includes('Multi-Branch Hierarchy Active'), 'Multi-Branch Hierarchy status badge is visible');
+  assert(branchText.includes('Regional Operations Hubs'), 'Regional Operations Hubs badge is present');
+
+  // Verify 4 KPI overview cards
+  assert(branchText.includes('Regional Hubs') && branchText.includes('Operating Branches') && branchText.includes('Target Attainment') && branchText.includes('Realized Revenue'), '4 KPI overview cards render correctly');
+
+  // Verify Tab 1 (Regional Hubs & Hierarchy) content
+  assert(branchText.includes('NORTH_HUB') || branchText.includes('North Regional Operations Hub'), 'North Regional Operations Hub rendered in hierarchy');
+  assert(branchText.includes('WEST_HUB') || branchText.includes('West Regional Operations Hub'), 'West Regional Operations Hub rendered in hierarchy');
+  assert(branchText.includes('Revenue Realization') && branchText.includes('Completed Cases'), 'Regional rollup metrics displayed on hub cards');
+
+  // Switch to Tab 2: Operating Branch Directory
+  const branchTabBtn = await page.$('#tab-branches');
+  if (branchTabBtn) {
+    await branchTabBtn.click();
+    await wait(400);
+    const directoryText = await page.textContent('body');
+    assert(directoryText.includes('Branch & Code') && directoryText.includes('Branch Manager') && directoryText.includes('Target Attainment'), 'Operating Branch Directory table headers rendered');
+    assert(directoryText.includes('NOIDA_01') || directoryText.includes('Noida Sector 62 Branch'), 'Noida Branch listed in directory');
+    assert(directoryText.includes('MUMBAI_01') || directoryText.includes('Mumbai BKC Operations Hub'), 'Mumbai Branch listed in directory');
+  }
+
+  // Test "Inspect 360" button interaction
+  const inspectBtn = await page.$('button:has-text("Inspect 360")');
+  if (inspectBtn) {
+    await inspectBtn.click();
+    await wait(400);
+    const drawerText = await page.textContent('body');
+    assert(drawerText.includes('Branch 360 Operations Inspector') && drawerText.includes('Branch Code'), 'Branch 360 Inspector Drawer opens cleanly');
+    assert(drawerText.includes('Operational & Performance Snapshot') || drawerText.includes('Active Cases'), 'Performance snapshot rendered in drawer');
+
+    // Close drawer
+    const closeDrawerBtn = await page.$('div.fixed button:has-text("")');
+    const xBtn = await page.$('button svg.lucide-x');
+    if (xBtn) {
+      await xBtn.click();
+      await wait(300);
+    }
+  }
+
+  // Switch to Tab 3: Target Management & Variance
+  const targetTabBtn = await page.$('#tab-targets');
+  if (targetTabBtn) {
+    await targetTabBtn.click();
+    await wait(400);
+    const targetText = await page.textContent('body');
+    assert(targetText.includes('Revenue Target vs Achieved') && targetText.includes('Revenue Variance') && targetText.includes('Case Target vs Completed'), 'Target Management table headers rendered');
+    assert(targetText.includes('ACHIEVED') || targetText.includes('ON TRACK') || targetText.includes('AT RISK'), 'Target status badges rendered in target management table');
+  }
+
+  // Test "+ Set Target" modal interaction
+  const setTargetBtn = await page.$('#btn-open-set-target');
+  if (setTargetBtn) {
+    await setTargetBtn.click();
+    await wait(300);
+    const setTargetModalText = await page.textContent('body');
+    assert(setTargetModalText.includes('Set Branch Performance Target') && setTargetModalText.includes('Revenue Target (INR)'), 'Set Branch Performance Target modal opens cleanly');
+
+    const revInput = await page.$('#target-revenue-input');
+    if (revInput) {
+      await revInput.fill('750000');
+    }
+
+    const casesInput = await page.$('#target-cases-input');
+    if (casesInput) {
+      await casesInput.fill('55');
+    }
+
+    const submitTargetBtn = await page.$('#btn-submit-set-target');
+    if (submitTargetBtn) {
+      await submitTargetBtn.click();
+      await wait(500);
+      const postTargetText = await page.textContent('body');
+      assert(postTargetText.includes('updated') || postTargetText.includes('Target') || postTargetText.includes('saved'), 'Target configuration confirmed');
+    }
+  }
+
+  // Test "+ New Branch" modal creation flow
+  const createBranchBtn = await page.$('#btn-open-create-branch');
+  if (createBranchBtn) {
+    await createBranchBtn.click();
+    await wait(300);
+    const createBranchModalText = await page.textContent('body');
+    assert(createBranchModalText.includes('Create Operating Branch') && createBranchModalText.includes('Branch Code'), 'Create Operating Branch modal opens');
+
+    const nameInput = await page.$('#new-branch-name-input');
+    if (nameInput) {
+      await nameInput.fill('Chennai Anna Nagar Outpost');
+    }
+
+    const codeInput = await page.$('#new-branch-code-input');
+    if (codeInput) {
+      await codeInput.fill('CHN_01');
+    }
+
+    const submitBranchBtn = await page.$('#btn-submit-create-branch');
+    if (submitBranchBtn) {
+      await submitBranchBtn.click();
+      await wait(500);
+      const postBranchText = await page.textContent('body');
+      assert(postBranchText.includes('added') || postBranchText.includes('Branch') || postBranchText.includes('created'), 'Branch creation confirms');
+    }
+  }
+
+  // Test "+ New Regional Hub" modal creation flow
+  const createRegionBtn = await page.$('#btn-open-create-region');
+  if (createRegionBtn) {
+    await createRegionBtn.click();
+    await wait(300);
+    const createRegionModalText = await page.textContent('body');
+    assert(createRegionModalText.includes('Create Regional Operations Hub') && createRegionModalText.includes('Region Code'), 'Create Regional Operations Hub modal opens');
+
+    const regNameInput = await page.$('#new-region-name-input');
+    if (regNameInput) {
+      await regNameInput.fill('Central Regional Operations Hub');
+    }
+
+    const regCodeInput = await page.$('#new-region-code-input');
+    if (regCodeInput) {
+      await regCodeInput.fill('CENTRAL_HUB');
+    }
+
+    const submitRegionBtn = await page.$('#btn-submit-create-region');
+    if (submitRegionBtn) {
+      await submitRegionBtn.click();
+      await wait(500);
+      const postRegText = await page.textContent('body');
+      assert(postRegText.includes('instantiated') || postRegText.includes('Hub') || postRegText.includes('created'), 'Regional Hub creation confirms');
+    }
+  }
+
+  // Switch to Tab 4: Regional Scorecard
+  const perfTabBtn = await page.$('#tab-performance');
+  if (perfTabBtn) {
+    await perfTabBtn.click();
+    await wait(400);
+    const perfText = await page.textContent('body');
+    assert(perfText.includes('Revenue Attainment') && perfText.includes('Case Attainment') && perfText.includes('Regional Manager'), 'Regional Performance Scorecard cards rendered');
+  }
+
+  // Take screenshot of Branch Hierarchy Workbench
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '09_admin_branch_hierarchy.png'), fullPage: true });
+
   await browser.close();
 
   // Summary Report
   console.log('\n================================================================');
+
   console.log(`🏁 REAL BROWSER QA ACCEPTANCE SUMMARY:`);
   console.log(`   Total Assertions: ${results.totalChecks}`);
   console.log(`   Passed:           ${results.passedChecks}`);

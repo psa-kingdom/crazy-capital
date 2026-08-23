@@ -1995,3 +1995,209 @@ export interface AutoAssignTaskResultDto {
   reason: string;
 }
 
+// ─── BRANCH HIERARCHY & REGIONAL OPERATIONS HUBS (SLICE 2.4) ─────────────────
+
+export type BranchType =
+  | 'REGIONAL_HUB'
+  | 'METRO_BRANCH'
+  | 'SATELLITE_OFFICE'
+  | 'FRANCHISE_OUTPOST';
+
+export type TargetPeriodType = 'MONTHLY' | 'QUARTERLY' | 'ANNUAL';
+
+export type TargetStatus = 'ON_TRACK' | 'ACHIEVED' | 'AT_RISK' | 'MISSED';
+
+export interface RegionDto {
+  id: string;
+  organizationId: string;
+  name: string;
+  code: string;
+  description?: string | null;
+  regionalManagerId?: string | null;
+  regionalManagerName?: string | null;
+  regionalManagerEmail?: string | null;
+  branchCount: number;
+  activeEmployeeCount: number;
+  activeCaseCount: number;
+  revenueTarget: number;
+  achievedRevenue: number;
+  revenueAttainmentPercent: number;
+  caseTarget: number;
+  achievedCases: number;
+  caseAttainmentPercent: number;
+  status: string;
+  createdAt: string;
+  updatedAt: string;
+  branches?: BranchDto[];
+}
+
+export interface BranchDto {
+  id: string;
+  organizationId: string;
+  regionId?: string | null;
+  regionName?: string | null;
+  regionCode?: string | null;
+  branchManagerId?: string | null;
+  branchManagerName?: string | null;
+  branchManagerEmail?: string | null;
+  name: string;
+  code: string;
+  branchType: BranchType | string;
+  addressLine?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  status: string;
+  employeeCount: number;
+  activeCaseCount: number;
+  completedCaseCount: number;
+  revenueTarget: number;
+  achievedRevenue: number;
+  revenueAttainmentPercent: number;
+  caseTarget: number;
+  achievedCases: number;
+  caseAttainmentPercent: number;
+  createdAt: string;
+  updatedAt: string;
+  manager?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+}
+
+export interface BranchTargetDto {
+  id: string;
+  organizationId: string;
+  branchId: string;
+  branchName: string;
+  branchCode: string;
+  regionId?: string | null;
+  regionName?: string | null;
+  targetPeriod: string;
+  periodType: TargetPeriodType | string;
+  revenueTarget: number;
+  caseTarget: number;
+  leadTarget?: number;
+  achievedRevenue: number;
+  achievedCases: number;
+  revenueAttainmentPercent: number;
+  caseAttainmentPercent: number;
+  varianceRevenue: number;
+  varianceCases: number;
+  status: TargetStatus | string;
+  notes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface RegionalRollupDto {
+  regionId: string;
+  regionName: string;
+  regionCode: string;
+  regionalManagerName?: string | null;
+  branchCount: number;
+  revenueTarget: number;
+  achievedRevenue: number;
+  revenueAttainmentPercent: number;
+  caseTarget: number;
+  achievedCases: number;
+  caseAttainmentPercent: number;
+  status: TargetStatus | string;
+  branches: BranchTargetDto[];
+}
+
+export interface BranchPerformanceMatrixDto {
+  targetPeriod: string;
+  organizationSummary: {
+    totalBranches: number;
+    totalRegions: number;
+    totalRevenueTarget: number;
+    totalAchievedRevenue: number;
+    revenueAttainmentPercent: number;
+    totalCaseTarget: number;
+    totalAchievedCases: number;
+    caseAttainmentPercent: number;
+    onTrackCount: number;
+    achievedCount: number;
+    atRiskCount: number;
+    missedCount: number;
+  };
+  regionalRollups: RegionalRollupDto[];
+  branchScorecards: BranchDto[];
+}
+
+export interface CreateRegionInput {
+  name: string;
+  code: string;
+  description?: string;
+  regionalManagerId?: string;
+  status?: string;
+}
+
+export interface UpdateRegionInput {
+  name?: string;
+  code?: string;
+  description?: string;
+  regionalManagerId?: string;
+  status?: string;
+}
+
+export interface CreateBranchInput {
+  name: string;
+  code: string;
+  regionId?: string;
+  branchManagerId?: string;
+  branchType?: BranchType | string;
+  addressLine?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  phone?: string;
+  email?: string;
+  status?: string;
+}
+
+export interface UpdateBranchInput {
+  name?: string;
+  code?: string;
+  regionId?: string;
+  branchManagerId?: string;
+  branchType?: BranchType | string;
+  addressLine?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  phone?: string;
+  email?: string;
+  status?: string;
+}
+
+export interface SetBranchTargetInput {
+  branchId: string;
+  targetPeriod: string;
+  periodType?: TargetPeriodType | string;
+  revenueTarget: number;
+  caseTarget: number;
+  leadTarget?: number;
+  notes?: string;
+}
+
+export interface QueryBranchesInput {
+  regionId?: string;
+  branchType?: string;
+  status?: string;
+  search?: string;
+}
+
+export interface QueryBranchTargetsInput {
+  targetPeriod?: string;
+  regionId?: string;
+  branchId?: string;
+  status?: string;
+}
+
+
