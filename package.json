@@ -10,6 +10,12 @@
   "scripts": {
     "build": "turbo run build",
     "dev": "turbo run dev",
+    "dev:api": "npm run --workspace=@cc/api dev",
+    "dev:admin": "npm run --workspace=@cc/admin dev",
+    "dev:web": "npm run --workspace=@cc/web dev",
+    "db:generate": "npm run --workspace=@cc/api prisma:generate",
+    "db:push": "npx --workspace=@cc/api prisma db push",
+    "db:seed": "npm run --workspace=@cc/api prisma:seed",
     "lint": "turbo run lint",
     "test": "turbo run test",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
