@@ -1356,6 +1356,156 @@ export interface CustomerDashboardDto {
   recentInvoices: InvoiceDto[];
 }
 
+// ─── DOMAIN 12: OPERATIONAL DASHBOARDS & REPORTING ENGINE (Slice 1.12) ──────
+
+export interface QueryReportFilterInput {
+  startDate?: string;
+  endDate?: string;
+  branchId?: string;
+  serviceId?: string;
+}
+
+export interface ExecutiveDashboardDto {
+  scope: {
+    organizationId: string;
+    branchId?: string | null;
+    branchName?: string | null;
+    isOrganizationWide: boolean;
+  };
+  kpis: {
+    totalRevenue: number;
+    totalCollected: number;
+    pendingCollections: number;
+    totalLeads: number;
+    convertedLeads: number;
+    conversionRate: number;
+    totalApplications: number;
+    activeApplications: number;
+    completedApplications: number;
+    totalCommissionsAccrued: number;
+    totalCommissionsPaid: number;
+  };
+  leadsByStatus: { status: string; count: number; percentage: number }[];
+  leadsBySource: { source: string; count: number }[];
+  applicationsByStatus: { status: string; count: number }[];
+  topServices: { id: string; name: string; applicationsCount: number; revenue: number }[];
+  recentActivities: {
+    type: 'LEAD' | 'APPLICATION' | 'PAYMENT' | 'COMMISSION';
+    id: string;
+    reference: string;
+    description: string;
+    amount?: number | null;
+    timestamp: string;
+  }[];
+}
+
+export interface RevenueReportDto {
+  summary: {
+    totalInvoiced: number;
+    totalCollected: number;
+    totalTax: number;
+    invoicesCount: number;
+    paidInvoicesCount: number;
+  };
+  trend: {
+    date: string;
+    invoiced: number;
+    collected: number;
+  }[];
+  byService: {
+    serviceId: string;
+    serviceName: string;
+    totalRevenue: number;
+    invoicesCount: number;
+  }[];
+  byBranch: {
+    branchId: string;
+    branchName: string;
+    totalRevenue: number;
+    invoicesCount: number;
+  }[];
+}
+
+export interface LeadsReportDto {
+  summary: {
+    totalLeads: number;
+    convertedLeads: number;
+    conversionRate: number;
+    avgScore: number;
+  };
+  byStatus: {
+    status: string;
+    count: number;
+    percentage: number;
+  }[];
+  bySource: {
+    source: string;
+    count: number;
+    convertedCount: number;
+    conversionRate: number;
+  }[];
+  byEmployee: {
+    userId: string;
+    name: string;
+    email: string;
+    assignedCount: number;
+    convertedCount: number;
+    conversionRate: number;
+  }[];
+}
+
+export interface OperationsReportDto {
+  summary: {
+    totalApplications: number;
+    inProgress: number;
+    completed: number;
+    rejected: number;
+  };
+  byService: {
+    serviceId: string;
+    serviceName: string;
+    count: number;
+    completedCount: number;
+  }[];
+  byStage: {
+    stageId: string;
+    stageName: string;
+    count: number;
+  }[];
+  documentsStatus: {
+    totalUploaded: number;
+    verified: number;
+    pendingReview: number;
+    rejected: number;
+  };
+}
+
+export interface BranchComparisonReportDto {
+  branches: {
+    branchId: string;
+    branchName: string;
+    branchCode: string;
+    city: string;
+    state: string;
+    employeeCount: number;
+    leadCount: number;
+    convertedLeadCount: number;
+    conversionRate: number;
+    applicationCount: number;
+    completedApplicationCount: number;
+    totalRevenue: number;
+  }[];
+}
+
+export interface ExportReportInput {
+  reportType: 'DASHBOARD' | 'REVENUE' | 'LEADS' | 'OPERATIONS' | 'BRANCHES' | 'COMMISSIONS';
+  format?: 'csv' | 'json';
+  startDate?: string;
+  endDate?: string;
+  branchId?: string;
+}
+
+
 
 
 

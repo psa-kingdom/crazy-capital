@@ -337,5 +337,36 @@ export const payoutsApi = {
   },
 };
 
+// Operational Dashboards & Reporting API Services (Slice 1.12)
+export const reportsApi = {
+  getDashboard: async (params?: Record<string, any>) => {
+    return apiClient.get('/reports/dashboard', { params });
+  },
+  getRevenue: async (params?: Record<string, any>) => {
+    return apiClient.get('/reports/revenue', { params });
+  },
+  getLeads: async (params?: Record<string, any>) => {
+    return apiClient.get('/reports/leads', { params });
+  },
+  getOperations: async (params?: Record<string, any>) => {
+    return apiClient.get('/reports/operations', { params });
+  },
+  getBranches: async (params?: Record<string, any>) => {
+    return apiClient.get('/reports/branches', { params });
+  },
+  exportReport: async (data: {
+    reportType: string;
+    format?: 'csv' | 'json';
+    startDate?: string;
+    endDate?: string;
+    branchId?: string;
+  }) => {
+    return apiClient.post('/reports/export', data, {
+      responseType: 'blob',
+    });
+  },
+};
+
+
 
 

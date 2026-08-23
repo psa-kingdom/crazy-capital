@@ -17,6 +17,7 @@ import {
   FileCheck2,
   Receipt,
   Coins,
+  BarChart3,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 
@@ -31,6 +32,7 @@ export function AdminShell({ children }: AdminShellProps) {
 
   const navItems = [
     { label: 'Executive Dashboard', href: '/', icon: LayoutDashboard },
+    { label: 'Reports & Analytics', href: '/reports', icon: BarChart3, badge: 'Slice 1.12' },
     { label: 'CRM Leads Engine', href: '/leads', icon: Users2, badge: 'Sprint 2' },
     { label: 'Customer 360 Hub', href: '/customers', icon: UserCheck, badge: 'Sprint 2' },
     { label: 'Document Vault (ADR-018)', href: '/documents', icon: FileCheck2, badge: 'Slice 1.7' },
