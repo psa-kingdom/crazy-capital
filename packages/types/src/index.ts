@@ -80,8 +80,10 @@ export type CustomerType = (typeof CustomerType)[keyof typeof CustomerType];
 export const TaskStatus = {
   PENDING: 'PENDING',
   IN_PROGRESS: 'IN_PROGRESS',
+  UNDER_REVIEW: 'UNDER_REVIEW',
   COMPLETED: 'COMPLETED',
   CANCELLED: 'CANCELLED',
+  BLOCKED: 'BLOCKED',
 } as const;
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
@@ -862,25 +864,6 @@ export const ApprovalStatus = {
 } as const;
 export type ApprovalStatus = (typeof ApprovalStatus)[keyof typeof ApprovalStatus];
 
-export interface TaskDto {
-  id: string;
-  applicationId: string;
-  workflowStageId: string | null;
-  assignedToId: string | null;
-  title: string;
-  description: string | null;
-  status: TaskStatus | string;
-  dueDate: string | null;
-  completedAt: string | null;
-  assignedTo?: {
-    id: string;
-    firstName: string;
-    lastName: string;
-    email: string;
-  } | null;
-  createdAt: string;
-}
-
 export interface ApprovalDto {
   id: string;
   workflowInstanceId: string;
@@ -953,20 +936,30 @@ export interface AssignApplicationInput {
 }
 
 export interface CreateTaskInput {
+  applicationId?: string;
+  workflowStageId?: string;
   title: string;
   description?: string;
-  workflowStageId?: string;
-  assignedToId?: string;
+  taskType?: TaskType | string;
+  priority?: TaskPriority | string;
+  department?: string;
+  requiredSkill?: string;
+  estimatedHours?: number;
+  slaHours?: number;
   dueDate?: string;
+  assignedToId?: string;
 }
 
 export interface UpdateTaskInput {
   title?: string;
   description?: string;
   status?: TaskStatus;
+  priority?: TaskPriority | string;
   assignedToId?: string;
   dueDate?: string;
+  completionNotes?: string;
 }
+
 
 export interface CreateApplicationActivityInput {
   activityType: string;
@@ -1851,5 +1844,154 @@ export interface QueryEscalationsInput {
   branchId?: string;
   stageId?: string;
   search?: string;
+}
+
+// ─── INTELLIGENT TASK ENGINE & WORKLOAD BALANCING (SLICE 2.3) ────────────────
+
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT' | 'CRITICAL';
+
+
+export type TaskType =
+  | 'STAGE_EXECUTION'
+  | 'DOCUMENT_VERIFICATION'
+  | 'CUSTOMER_FOLLOWUP'
+  | 'GOVT_PORTAL_FILING'
+  | 'MANUAL_REVIEW';
+
+export interface TaskAssignmentHistoryDto {
+  id: string;
+  taskId: string;
+  fromUserId?: string | null;
+  fromUserName?: string | null;
+  toUserId: string;
+  toUserName: string;
+  assignedById?: string | null;
+  assignedByName?: string | null;
+  reason?: string | null;
+  score?: number | null;
+  assignedAt: string;
+}
+
+export interface TaskDto {
+  id: string;
+  organizationId: string;
+  branchId?: string | null;
+  branchName?: string;
+  applicationId: string;
+  applicationNumber: string;
+  serviceName: string;
+  customerName: string;
+  customerMobile?: string | null;
+  workflowStageId?: string | null;
+  workflowStageName?: string;
+  workflowStageCode?: string;
+  workflowInstanceId?: string | null;
+  assignedToId?: string | null;
+  assignedToName?: string | null;
+  assignedToEmail?: string | null;
+  createdById?: string | null;
+  createdByName?: string | null;
+  title: string;
+  description?: string | null;
+  taskType: TaskType | string;
+  status: TaskStatus | string;
+  priority: TaskPriority | string;
+  requiredSkill?: string | null;
+  department?: string | null;
+  estimatedHours?: number;
+  slaHours?: number;
+  slaDueAt?: string | null;
+  slaStatus: SlaStatus | string;
+  escalationLevel: number;
+  assignmentReason?: string | null;
+  assignmentScore?: number | null;
+  dueDate?: string | null;
+  startedAt?: string | null;
+  completedAt?: string | null;
+  completionNotes?: string | null;
+  createdAt: string;
+  updatedAt: string;
+  assignmentHistory?: TaskAssignmentHistoryDto[];
+}
+
+export interface EmployeeWorkloadDto {
+  userId: string;
+  name: string;
+  email: string;
+  department?: string | null;
+  branchId?: string | null;
+  branchName?: string;
+  role: string;
+  skills: string[];
+  activeTaskCount: number;
+  completedTaskCount: number;
+  maxCapacity: number;
+  utilizationPercent: number;
+  isOverloaded: boolean;
+  availableCapacity: number;
+  highPriorityTaskCount: number;
+  breachedTaskCount: number;
+}
+
+export interface RoutingCandidateDto {
+  userId: string;
+  name: string;
+  email: string;
+  department?: string | null;
+  branchName?: string;
+  skills: string[];
+  skillMatch: boolean;
+  activeTaskCount: number;
+  maxCapacity: number;
+  utilizationPercent: number;
+  suitabilityScore: number;
+  reason: string;
+}
+
+export interface TaskDashboardStatsDto {
+  totalTasks: number;
+  pendingCount: number;
+  inProgressCount: number;
+  completedCount: number;
+  overdueBreachedCount: number;
+  urgentCriticalCount: number;
+  averageCompletionHours: number;
+  teamCapacitySummary: {
+    totalCapacity: number;
+    utilizedCapacity: number;
+    averageUtilizationPercent: number;
+    overloadedStaffCount: number;
+  };
+  tasksByDepartment: Record<string, number>;
+  tasksByPriority: Record<string, number>;
+  employeeWorkloads: EmployeeWorkloadDto[];
+  recentTasks: TaskDto[];
+}
+
+export interface QueryTasksInput {
+  page?: number;
+  limit?: number;
+  status?: string;
+  priority?: string;
+  department?: string;
+  assignedToId?: string;
+  branchId?: string;
+  applicationId?: string;
+  search?: string;
+  isOverdue?: boolean;
+}
+
+export interface ReassignTaskInput {
+  assignedToId: string;
+  reason?: string;
+}
+
+export interface AutoAssignTaskResultDto {
+  taskId: string;
+  assignedToId: string;
+  assignedToName: string;
+  assignedToEmail: string;
+  score: number;
+  reason: string;
 }
 

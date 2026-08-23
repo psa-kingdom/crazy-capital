@@ -13,9 +13,15 @@ import { CreateApplicationActivityDto } from './dto/create-application-activity.
 import { QueryApplicationsDto } from './dto/query-applications.dto';
 import { ApplicationStatus, TaskStatus, UserRole } from '@cc/types';
 
+import { TasksService } from '../tasks/tasks.service';
+
 @Injectable()
 export class ApplicationsService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly tasksService?: TasksService,
+  ) {}
+
 
   private async generateApplicationNumber(organizationId: string): Promise<string> {
     const year = new Date().getFullYear();
@@ -127,6 +133,20 @@ export class ApplicationsService {
             notes: dto.notes.trim(),
           },
         });
+      }
+
+      // Auto-create Stage 1 operational task via Intelligent Task Engine
+      try {
+        if (this.tasksService) {
+          await this.tasksService.createStageTask(
+            application.id,
+            startStage.id,
+            orgId,
+            tx,
+          );
+        }
+      } catch (e) {
+        // Non-blocking fallback
       }
 
       return tx.application.findUnique({
@@ -392,6 +412,7 @@ export class ApplicationsService {
     return this.prisma.$transaction(async (tx) => {
       const task = await tx.task.create({
         data: {
+          organizationId: user.organizationId,
           applicationId: id,
           workflowStageId: dto.workflowStageId || null,
           assignedToId: dto.assignedToId || user.id,
@@ -565,10 +586,25 @@ export class ApplicationsService {
           where: { id: app.id },
           data: { status: ApplicationStatus.COMPLETED },
         });
+      } else {
+        // Auto-create operational task for new target stage via Task Engine
+        try {
+          if (this.tasksService) {
+            await this.tasksService.createStageTask(
+              app.id,
+              targetStageId,
+              app.organizationId,
+              tx,
+            );
+          }
+        } catch (e) {
+          // Non-blocking fallback
+        }
       }
 
       return updatedInstance;
     });
   }
 }
+
 

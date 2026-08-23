@@ -3,10 +3,15 @@ import { BadRequestException, ForbiddenException, NotFoundException } from '@nes
 import { ApplicationsService } from './applications.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { ApplicationStatus, TaskStatus, UserRole } from '@cc/types';
+import { TasksService } from '../tasks/tasks.service';
 
 describe('Application Lifecycle & Processing Matrix (Vertical Slice 1.6)', () => {
   let applicationsService: ApplicationsService;
   let prisma: PrismaService;
+
+  const mockTasksService = {
+    createStageTask: jest.fn().mockResolvedValue({ id: 'task-1' }),
+  };
 
   const mockPrisma = {
     customer: {
@@ -24,6 +29,16 @@ describe('Application Lifecycle & Processing Matrix (Vertical Slice 1.6)', () =>
       update: jest.fn(),
     },
     workflowInstance: {
+      create: jest.fn(),
+      update: jest.fn(),
+    },
+    workflowTransition: {
+      findFirst: jest.fn(),
+    },
+    workflowSlaEscalation: {
+      updateMany: jest.fn(),
+    },
+    workflowHistory: {
       create: jest.fn(),
     },
     applicationActivity: {
@@ -59,8 +74,10 @@ describe('Application Lifecycle & Processing Matrix (Vertical Slice 1.6)', () =>
       providers: [
         ApplicationsService,
         { provide: PrismaService, useValue: mockPrisma },
+        { provide: TasksService, useValue: mockTasksService },
       ],
     }).compile();
+
 
     applicationsService = module.get<ApplicationsService>(ApplicationsService);
     prisma = module.get<PrismaService>(PrismaService);

@@ -29,6 +29,7 @@ model Organization {
   blogCategories BlogCategory[]
   blogPosts    BlogPost[]
   slaEscalations WorkflowSlaEscalation[]
+  tasks        Task[]
 
   @@map("organizations")
 }
@@ -52,10 +53,12 @@ model Branch {
   customers    Customer[]
   applications Application[]
   documents    Document[]
+  tasks        Task[]
 
   @@unique([organizationId, code])
   @@map("branches")
 }
+
 
 model Department {
   id             String    @id @default(uuid())
@@ -100,6 +103,9 @@ model User {
   mobile         String?
   passwordHash   String    @map("password_hash")
   status         String    @default("ACTIVE") // ACTIVE, INACTIVE, BLOCKED
+  department     String?   @map("department")
+  skills         Json?     @default("[]")     @map("skills") // Array of string skill tags e.g. ["COMPANY_LAW", "GST_FILING"]
+  maxConcurrentTasks Int   @default(5)        @map("max_concurrent_tasks")
   lastLoginAt    DateTime? @map("last_login_at")
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
@@ -122,6 +128,10 @@ model User {
   partnerLeads          Lead[]                  @relation("PartnerLeads")
   partnerApplications   Application[]           @relation("PartnerApplications")
   assignedTasks         Task[]                  @relation("AssignedTasks")
+  createdTasks          Task[]                  @relation("CreatedTasks")
+  taskAssignmentsFrom   TaskAssignmentHistory[] @relation("TaskAssignmentFrom")
+  taskAssignmentsTo     TaskAssignmentHistory[] @relation("TaskAssignmentTo")
+  taskAssignmentsMade   TaskAssignmentHistory[] @relation("TaskAssigner")
   blogPosts             BlogPost[]              @relation("AuthorBlogPosts")
   escalationsReceived   WorkflowSlaEscalation[] @relation("EscalationRecipient")
 
@@ -476,21 +486,24 @@ model Workflow {
 }
 
 model WorkflowStage {
-  id           String   @id @default(uuid())
-  workflowId   String   @map("workflow_id")
-  name         String
-  code         String
-  stageOrder   Int      @map("stage_order")
-  stageType    String   @default("PROCESSING") @map("stage_type") // START, PROCESSING, APPROVAL, COMPLETION, REJECTION
-  isStartStage Boolean  @default(false) @map("is_start_stage")
-  isEndStage   Boolean  @default(false) @map("is_end_stage")
-  isMandatory  Boolean  @default(true) @map("is_mandatory")
-  slaHours     Int?     @map("sla_hours")
-  warningHours Int?     @map("warning_hours")
-  department   String?  @map("department")
-  canvasX      Float?   @map("canvas_x")
-  canvasY      Float?   @map("canvas_y")
-  createdAt    DateTime @default(now()) @map("created_at")
+  id               String   @id @default(uuid())
+  workflowId       String   @map("workflow_id")
+  name             String
+  code             String
+  stageOrder       Int      @map("stage_order")
+  stageType        String   @default("PROCESSING") @map("stage_type") // START, PROCESSING, APPROVAL, COMPLETION, REJECTION
+  isStartStage     Boolean  @default(false) @map("is_start_stage")
+  isEndStage       Boolean  @default(false) @map("is_end_stage")
+  isMandatory      Boolean  @default(true) @map("is_mandatory")
+  slaHours         Int?     @map("sla_hours")
+  warningHours     Int?     @map("warning_hours")
+  department       String?  @map("department")
+  requiredSkill    String?  @map("required_skill")
+  defaultTaskTitle String?  @map("default_task_title")
+  defaultTaskDesc  String?  @map("default_task_desc")
+  canvasX          Float?   @map("canvas_x")
+  canvasY          Float?   @map("canvas_y")
+  createdAt        DateTime @default(now()) @map("created_at")
 
   workflow         Workflow             @relation(fields: [workflowId], references: [id], onDelete: Cascade)
   rules            WorkflowRule[]
@@ -551,6 +564,7 @@ model WorkflowInstance {
   history      WorkflowHistory[]
   approvals    Approval[]
   escalations  WorkflowSlaEscalation[]
+  tasks        Task[]
 
   @@index([slaStatus])
   @@map("workflow_instances")
@@ -600,23 +614,81 @@ model WorkflowHistory {
 }
 
 model Task {
-  id              String    @id @default(uuid())
-  applicationId   String    @map("application_id")
-  workflowStageId String?   @map("workflow_stage_id")
-  assignedToId    String?   @map("assigned_to_id")
-  title           String
-  description     String?
-  status          String    @default("PENDING") // PENDING, IN_PROGRESS, COMPLETED, CANCELLED
-  dueDate         DateTime? @map("due_date")
-  completedAt     DateTime? @map("completed_at")
-  createdAt       DateTime  @default(now()) @map("created_at")
+  id                 String    @id @default(uuid())
+  organizationId     String    @map("organization_id")
+  branchId           String?   @map("branch_id")
+  applicationId      String    @map("application_id")
+  workflowStageId    String?   @map("workflow_stage_id")
+  workflowInstanceId String?   @map("workflow_instance_id")
+  assignedToId       String?   @map("assigned_to_id")
+  createdById        String?   @map("created_by_id")
 
-  application   Application    @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  workflowStage WorkflowStage? @relation(fields: [workflowStageId], references: [id], onDelete: SetNull)
-  assignedTo    User?          @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  title              String
+  description        String?
+  taskType           String    @default("STAGE_EXECUTION") @map("task_type") // STAGE_EXECUTION, DOCUMENT_VERIFICATION, CUSTOMER_FOLLOWUP, GOVT_PORTAL_FILING, MANUAL_REVIEW
+  status             String    @default("PENDING") // PENDING, IN_PROGRESS, UNDER_REVIEW, COMPLETED, CANCELLED, BLOCKED
+  priority           String    @default("MEDIUM")  // LOW, MEDIUM, HIGH, URGENT, CRITICAL
 
+  requiredSkill      String?   @map("required_skill")
+  department         String?   @map("department")
+  estimatedHours     Float?    @default(4.0) @map("estimated_hours")
+
+  // SLA & Urgency linkage
+  slaHours           Int?      @map("sla_hours")
+  slaDueAt           DateTime? @map("sla_due_at")
+  slaStatus          String    @default("ON_TRACK") @map("sla_status") // ON_TRACK, WARNING, BREACHED, ESCALATED
+  escalationLevel    Int       @default(0) @map("escalation_level")
+
+  // Explainable Intelligent Routing
+  assignmentReason   String?   @map("assignment_reason")
+  assignmentScore    Float?    @map("assignment_score")
+
+  dueDate            DateTime? @map("due_date")
+  startedAt          DateTime? @map("started_at")
+  completedAt        DateTime? @map("completed_at")
+  completionNotes    String?   @map("completion_notes")
+
+  createdAt          DateTime  @default(now()) @map("created_at")
+  updatedAt          DateTime  @updatedAt @map("updated_at")
+
+  organization      Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch            Branch?                 @relation(fields: [branchId], references: [id], onDelete: SetNull)
+  application       Application             @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  workflowStage     WorkflowStage?          @relation(fields: [workflowStageId], references: [id], onDelete: SetNull)
+  workflowInstance  WorkflowInstance?       @relation(fields: [workflowInstanceId], references: [id], onDelete: SetNull)
+  assignedTo        User?                   @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  createdBy         User?                   @relation("CreatedTasks", fields: [createdById], references: [id], onDelete: SetNull)
+  assignmentHistory TaskAssignmentHistory[]
+
+  @@unique([applicationId, workflowStageId, title])
+  @@index([organizationId, status])
+  @@index([assignedToId, status])
+  @@index([branchId, status])
+  @@index([slaStatus, priority])
+  @@index([department, status])
   @@map("tasks")
 }
+
+model TaskAssignmentHistory {
+  id           String   @id @default(uuid())
+  taskId       String   @map("task_id")
+  fromUserId   String?  @map("from_user_id")
+  toUserId     String   @map("to_user_id")
+  assignedById String?  @map("assigned_by_id")
+  reason       String?
+  score        Float?
+  assignedAt   DateTime @default(now()) @map("assigned_at")
+
+  task       Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  fromUser   User? @relation("TaskAssignmentFrom", fields: [fromUserId], references: [id], onDelete: SetNull)
+  toUser     User  @relation("TaskAssignmentTo", fields: [toUserId], references: [id], onDelete: Cascade)
+  assignedBy User? @relation("TaskAssigner", fields: [assignedById], references: [id], onDelete: SetNull)
+
+  @@index([taskId])
+  @@index([toUserId])
+  @@map("task_assignment_history")
+}
+
 
 model Approval {
   id                 String    @id @default(uuid())

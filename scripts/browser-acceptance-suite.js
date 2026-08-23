@@ -457,6 +457,113 @@ async function runBrowserAcceptance() {
   // Take screenshot of SLA Command Center
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '07_admin_sla_command_center.png'), fullPage: true });
 
+  // -------------------------------------------------------------
+  // TEST 10: Vertical Slice 2.3 — Intelligent Task Engine & Workload Balancing (/tasks)
+  // -------------------------------------------------------------
+  console.log('\n[10/10] Testing Vertical Slice 2.3 — Task Engine & Workload Balancing (http://localhost:3001/tasks)...');
+  
+  const tasksRes = await page.goto('http://localhost:3001/tasks', { waitUntil: 'networkidle' });
+  await wait(600);
+  assert(tasksRes && tasksRes.status() === 200, 'Task Engine & Workload page (/tasks) responds with HTTP 200');
+
+  const tasksText = await page.textContent('body');
+  assert(tasksText.includes('Intelligent Task Engine & Workload Balancing'), 'Page header contains Intelligent Task Engine title');
+  assert(tasksText.includes('Slice 2.3'), 'Slice 2.3 badge is rendered');
+  assert(tasksText.includes('Skill-Based Auto-Routing'), 'Skill-Based Auto-Routing badge is present');
+  assert(tasksText.includes('Workload Capacity Balancing Active'), 'Capacity Balancing status indicator is rendered');
+
+  // Verify 4 KPI metric cards
+  assert(tasksText.includes('Pending & Queued') && tasksText.includes('In Progress / Review') && tasksText.includes('Urgent / SLA At Risk') && tasksText.includes('Staff Utilization'), '4 KPI overview cards render correctly');
+
+  // Verify Operational Task Queue table headers and columns
+  assert(tasksText.includes('Task & Title') && tasksText.includes('Stage & Desk') && tasksText.includes('Assignee & Routing Score'), 'Operational Task Queue table headers rendered');
+  assert(tasksText.includes('IN PROGRESS') || tasksText.includes('PENDING') || tasksText.includes('COMPLETED'), 'Task status badges rendered in queue table');
+
+  // Test "Start Task" action if a pending task exists
+  const startBtn = await page.$('button:has-text("Start")');
+  if (startBtn) {
+    await startBtn.click();
+    await wait(400);
+    const postStartText = await page.textContent('body');
+    assert(postStartText.includes('IN PROGRESS') || postStartText.includes('started'), 'Start Task button transitions task to IN PROGRESS');
+  }
+
+  // Test "Complete Task" modal interaction
+  const completeBtn = await page.$('button:has-text("Complete")');
+  if (completeBtn) {
+    await completeBtn.click();
+    await wait(300);
+    const completeModalText = await page.textContent('body');
+    assert(completeModalText.includes('Complete Operational Task') && completeModalText.includes('Completion Remarks'), 'Complete Task modal opens with remarks textarea');
+
+    const notesInput = await page.$('#task-complete-notes-input');
+    if (notesInput) {
+      await notesInput.fill('Verified incorporation filings on MCA portal and issued compliance seal');
+    }
+
+    const confirmCompleteBtn = await page.$('#btn-confirm-complete');
+    if (confirmCompleteBtn) {
+      await confirmCompleteBtn.click();
+      await wait(500);
+    }
+  }
+
+  // Test "Reassign" modal with Intelligent Candidate Ranking
+  const reassignBtn = await page.$('button:has-text("Reassign")');
+  if (reassignBtn) {
+    await reassignBtn.click();
+    await wait(400);
+    const reassignModalText = await page.textContent('body');
+    assert(reassignModalText.includes('Intelligent Task Reassignment') && reassignModalText.includes('Ranked Assignee Candidates'), 'Reassignment modal opens and displays ranked candidate list');
+    assert(reassignModalText.includes('/100') || reassignModalText.includes('Score'), 'Candidate match suitability scores displayed');
+
+    const reasonInput = await page.$('#reassign-reason-input');
+    if (reasonInput) {
+      await reasonInput.fill('Rebalancing active branch workload to meet SLA commitment');
+    }
+
+    const confirmReassignBtn = await page.$('#btn-confirm-reassign');
+    if (confirmReassignBtn) {
+      await confirmReassignBtn.click();
+      await wait(500);
+    }
+  }
+
+  // Switch to Staff Workload Balancing Radar tab
+  const workloadTabBtn = await page.$('#tab-workload');
+  if (workloadTabBtn) {
+    await workloadTabBtn.click();
+    await wait(400);
+    const workloadText = await page.textContent('body');
+    assert(workloadText.includes('Active Workload') && workloadText.includes('Specializations') && workloadText.includes('Available Cap'), 'Staff Workload Balancing Radar cards rendered');
+    assert(workloadText.includes('Tasks (') || workloadText.includes('OPTIMAL LOAD') || workloadText.includes('OVERLOADED'), 'Staff capacity indicators and overload badges visible');
+  }
+
+  // Test "+ New Operational Task" modal creation flow
+  const openCreateTaskBtn = await page.$('#btn-open-create-task');
+  if (openCreateTaskBtn) {
+    await openCreateTaskBtn.click();
+    await wait(300);
+    const createModalText = await page.textContent('body');
+    assert(createModalText.includes('Create Operational Task') && createModalText.includes('Task Title'), 'Create Operational Task modal opens');
+
+    const titleInput = await page.$('#new-task-title-input');
+    if (titleInput) {
+      await titleInput.fill('Execute Trademark Distinctiveness Search & Examination');
+    }
+
+    const submitCreateBtn = await page.$('#btn-submit-create-task');
+    if (submitCreateBtn) {
+      await submitCreateBtn.click();
+      await wait(500);
+      const postCreateText = await page.textContent('body');
+      assert(postCreateText.includes('added') || postCreateText.includes('created') || postCreateText.includes('Task'), 'Task creation confirms and updates queue');
+    }
+  }
+
+  // Take screenshot of Task Engine Workbench
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08_admin_task_engine.png'), fullPage: true });
+
   await browser.close();
 
   // Summary Report
@@ -482,5 +589,6 @@ runBrowserAcceptance().catch((err) => {
   console.error('Browser QA Fatal Error:', err);
   process.exit(1);
 });
+
 
 

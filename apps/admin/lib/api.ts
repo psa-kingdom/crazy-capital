@@ -435,3 +435,32 @@ export const slaApi = {
     return apiClient.patch(`/sla/escalations/${id}/resolve`, data || {});
   },
 };
+
+// Intelligent Task Engine & Workload Balancing API Services (Slice 2.3)
+export const tasksApi = {
+  getDashboard: async () => {
+    return apiClient.get('/tasks/dashboard');
+  },
+  getTasks: async (params?: Record<string, any>) => {
+    return apiClient.get('/tasks', { params });
+  },
+  getTaskById: async (id: string) => {
+    return apiClient.get(`/tasks/${id}`);
+  },
+  getCandidates: async (id: string) => {
+    return apiClient.get(`/tasks/${id}/candidates`);
+  },
+  createTask: async (data: Record<string, any>) => {
+    return apiClient.post('/tasks', data);
+  },
+  updateTask: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/tasks/${id}`, data);
+  },
+  reassignTask: async (id: string, data: { assignedToId: string; reason?: string }) => {
+    return apiClient.patch(`/tasks/${id}/reassign`, data);
+  },
+  completeTask: async (id: string, data?: { completionNotes?: string }) => {
+    return apiClient.patch(`/tasks/${id}/complete`, data || {});
+  },
+};
+
