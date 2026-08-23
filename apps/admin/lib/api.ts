@@ -134,8 +134,11 @@ export const servicesApi = {
   },
 };
 
-// Workflow Engine API Services (ADR-012)
+// Workflow Engine & Visual Graph Builder API Services (Slice 1.5 & 2.1 - ADR-012)
 export const workflowsApi = {
+  getWorkflows: async () => {
+    return apiClient.get('/workflows');
+  },
   createWorkflow: async (data: Record<string, any>) => {
     return apiClient.post('/workflows', data);
   },
@@ -145,17 +148,38 @@ export const workflowsApi = {
   getWorkflowByServiceId: async (serviceId: string) => {
     return apiClient.get(`/services/${serviceId}/workflow`);
   },
+  getWorkflowGraph: async (id: string) => {
+    return apiClient.get(`/workflows/${id}/graph`);
+  },
+  saveWorkflowGraph: async (id: string, data: Record<string, any>) => {
+    return apiClient.post(`/workflows/${id}/graph`, data);
+  },
+  cloneWorkflow: async (id: string, data: { targetServiceId: string; name: string; code?: string }) => {
+    return apiClient.post(`/workflows/${id}/clone`, data);
+  },
   updateWorkflow: async (id: string, data: Record<string, any>) => {
     return apiClient.patch(`/workflows/${id}`, data);
   },
   addStage: async (workflowId: string, data: Record<string, any>) => {
     return apiClient.post(`/workflows/${workflowId}/stages`, data);
   },
+  updateStage: async (stageId: string, data: Record<string, any>) => {
+    return apiClient.patch(`/workflows/stages/${stageId}`, data);
+  },
+  deleteStage: async (stageId: string) => {
+    return apiClient.delete(`/workflows/stages/${stageId}`);
+  },
   addTransition: async (workflowId: string, data: Record<string, any>) => {
     return apiClient.post(`/workflows/${workflowId}/transitions`, data);
   },
+  deleteTransition: async (transitionId: string) => {
+    return apiClient.delete(`/workflows/transitions/${transitionId}`);
+  },
   addRule: async (stageId: string, data: Record<string, any>) => {
     return apiClient.post(`/workflows/stages/${stageId}/rules`, data);
+  },
+  deleteRule: async (ruleId: string) => {
+    return apiClient.delete(`/workflows/rules/${ruleId}`);
   },
   transitionInstance: async (instanceId: string, targetStageId: string, remarks?: string) => {
     return apiClient.post(`/workflow-instances/${instanceId}/transition`, { targetStageId, remarks });
@@ -164,6 +188,7 @@ export const workflowsApi = {
     return apiClient.get(`/workflow-instances/${instanceId}/history`);
   },
 };
+
 
 // Application Lifecycle API Services
 export const applicationsApi = {
@@ -391,6 +416,8 @@ export const cmsApi = {
     return apiClient.post('/cms/categories', data);
   },
 };
+
+
 
 
 

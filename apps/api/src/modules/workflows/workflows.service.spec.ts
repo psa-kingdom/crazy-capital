@@ -345,4 +345,185 @@ describe('Configurable Workflow Engine (Vertical Slice 1.5 - ADR-012)', () => {
       ).rejects.toThrow(BadRequestException);
     });
   });
+
+  describe('Visual Workflow Builder & DAG Graph Engine (Slice 2.1)', () => {
+    it('11. should compute DAG graph structure with nodes, edges and reachability analysis', async () => {
+      mockPrisma.workflow.findUnique.mockResolvedValueOnce({
+        id: 'wf-1',
+        serviceId: 'srv-1',
+        name: 'Private Limited Incorporation',
+        code: 'WF_PVT_LTD',
+        isActive: true,
+        service: { id: 'srv-1', name: 'Pvt Ltd' },
+        stages: [
+          {
+            id: 'st-1',
+            name: 'Document Collection',
+            code: 'DOC_COLLECTION',
+            stageOrder: 1,
+            stageType: 'START',
+            isStartStage: true,
+            isEndStage: false,
+            isMandatory: true,
+            slaHours: 24,
+            warningHours: 18,
+            canvasX: 100,
+            canvasY: 150,
+            rules: [{ id: 'r-1', ruleType: 'DOCUMENT_GATE', ruleConfig: {} }],
+          },
+          {
+            id: 'st-2',
+            name: 'MCA SPICe+ Filing',
+            code: 'MCA_FILING',
+            stageOrder: 2,
+            stageType: 'PROCESSING',
+            isStartStage: false,
+            isEndStage: false,
+            isMandatory: true,
+            slaHours: 48,
+            warningHours: 36,
+            canvasX: 400,
+            canvasY: 150,
+            rules: [],
+          },
+          {
+            id: 'st-3',
+            name: 'Incorporation Certificate Issued',
+            code: 'COI_ISSUED',
+            stageOrder: 3,
+            stageType: 'COMPLETION',
+            isStartStage: false,
+            isEndStage: true,
+            isMandatory: true,
+            slaHours: null,
+            canvasX: 700,
+            canvasY: 150,
+            rules: [],
+          },
+        ],
+        transitions: [
+          {
+            id: 'tr-1',
+            fromStageId: 'st-1',
+            toStageId: 'st-2',
+            requiresApproval: false,
+            conditionLabel: 'Docs Verified',
+          },
+          {
+            id: 'tr-2',
+            fromStageId: 'st-2',
+            toStageId: 'st-3',
+            requiresApproval: true,
+            conditionLabel: 'MCA Approved',
+          },
+        ],
+      });
+
+      const graph = await workflowsService.getGraph('wf-1');
+
+      expect(graph.workflowId).toBe('wf-1');
+      expect(graph.nodes).toHaveLength(3);
+      expect(graph.edges).toHaveLength(2);
+      expect(graph.startNodeId).toBe('st-1');
+      expect(graph.terminalNodeIds).toContain('st-3');
+      expect(graph.validationErrors).toHaveLength(0);
+      expect(graph.validationWarnings).toHaveLength(0);
+    });
+
+    it('12. should perform atomic bulk update on graph stages, layout coordinates and transitions', async () => {
+      mockPrisma.workflow.findUnique.mockResolvedValueOnce({
+        id: 'wf-1',
+        name: 'Workflow 1',
+        stages: [],
+        transitions: [],
+      });
+
+      mockPrisma.workflowStage.findMany = jest.fn().mockResolvedValueOnce([]);
+      mockPrisma.workflowStage.create = jest.fn().mockResolvedValue({ id: 'new-st-1' });
+      mockPrisma.workflowTransition.deleteMany = jest.fn().mockResolvedValue({ count: 0 });
+      mockPrisma.workflowTransition.create = jest.fn().mockResolvedValue({ id: 'new-tr-1' });
+
+      mockPrisma.workflow.findUnique.mockResolvedValueOnce({
+        id: 'wf-1',
+        name: 'Workflow 1',
+        stages: [{ id: 'new-st-1', code: 'START_STAGE' }],
+        transitions: [],
+      });
+
+      const result = await workflowsService.bulkUpdateGraph('wf-1', {
+        stages: [
+          {
+            name: 'Start Stage',
+            code: 'START_STAGE',
+            stageOrder: 1,
+            stageType: WorkflowStageType.START,
+            isStartStage: true,
+            isEndStage: false,
+            slaHours: 12,
+            canvasX: 50,
+            canvasY: 50,
+          },
+        ],
+        transitions: [],
+      });
+
+      expect(result).toBeDefined();
+    });
+
+    it('13. should clone an entire workflow blueprint with stages and transitions for another service', async () => {
+      mockPrisma.workflow.findUnique.mockResolvedValueOnce({
+        id: 'wf-src',
+        name: 'Source Flow',
+        description: 'Standard incorporation flow',
+        stages: [
+          {
+            id: 'st-old-1',
+            name: 'Stage 1',
+            code: 'ST_1',
+            stageOrder: 1,
+            stageType: 'START',
+            isStartStage: true,
+            isEndStage: false,
+            isMandatory: true,
+            slaHours: 24,
+            rules: [],
+          },
+        ],
+        transitions: [],
+      });
+
+      mockPrisma.service.findUnique.mockResolvedValueOnce({
+        id: 'srv-target',
+        name: 'Target Service',
+        workflow: null,
+      });
+
+      mockPrisma.workflow.create = jest.fn().mockResolvedValueOnce({ id: 'wf-cloned' });
+      mockPrisma.workflowStage.create = jest.fn().mockResolvedValueOnce({ id: 'st-new-1' });
+      mockPrisma.workflow.findUnique.mockResolvedValueOnce({
+        id: 'wf-cloned',
+        name: 'Cloned Flow',
+        stages: [{ id: 'st-new-1' }],
+        transitions: [],
+      });
+
+      const cloned = await workflowsService.cloneWorkflow('wf-src', {
+        targetServiceId: 'srv-target',
+        name: 'Cloned Flow',
+      });
+
+      expect(cloned).toBeDefined();
+    });
+
+    it('14. should block deleting a workflow stage if active instances reside on it', async () => {
+      mockPrisma.workflowStage.findUnique = jest.fn().mockResolvedValueOnce({
+        id: 'st-active',
+        name: 'Active Processing',
+      });
+      mockPrisma.workflowInstance.count = jest.fn().mockResolvedValueOnce(3);
+
+      await expect(workflowsService.deleteStage('st-active')).rejects.toThrow(BadRequestException);
+    });
+  });
 });
+

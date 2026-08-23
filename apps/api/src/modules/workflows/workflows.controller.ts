@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   Param,
   ParseUUIDPipe,
@@ -16,6 +17,9 @@ import { CreateWorkflowTransitionDto } from './dto/create-workflow-transition.dt
 import { CreateWorkflowDto } from './dto/create-workflow.dto';
 import { TransitionWorkflowInstanceDto } from './dto/transition-instance.dto';
 import { UpdateWorkflowDto } from './dto/update-workflow.dto';
+import { BulkUpdateWorkflowGraphDto } from './dto/bulk-update-graph.dto';
+import { UpdateWorkflowStageDto } from './dto/update-stage.dto';
+import { CloneWorkflowDto } from './dto/clone-workflow.dto';
 import { WorkflowsService } from './workflows.service';
 
 @ApiTags('Workflow Engine')
@@ -23,6 +27,13 @@ import { WorkflowsService } from './workflows.service';
 @Controller()
 export class WorkflowsController {
   constructor(private readonly workflowsService: WorkflowsService) {}
+
+  @Get('workflows')
+  @RequirePermissions('workflow.read')
+  @ApiOperation({ summary: 'List all workflow blueprints across services' })
+  async findAll() {
+    return this.workflowsService.findAll();
+  }
 
   @Post('workflows')
   @RequirePermissions('workflow.manage')
@@ -37,6 +48,33 @@ export class WorkflowsController {
   @ApiOperation({ summary: 'Get workflow blueprint details with all stages and transitions' })
   async findOne(@Param('id', ParseUUIDPipe) id: string) {
     return this.workflowsService.findOne(id);
+  }
+
+  @Get('workflows/:id/graph')
+  @RequirePermissions('workflow.read')
+  @ApiOperation({ summary: 'Get DAG graph layout with nodes, edges, cycle detection & validation for visual canvas' })
+  async getGraph(@Param('id', ParseUUIDPipe) id: string) {
+    return this.workflowsService.getGraph(id);
+  }
+
+  @Post('workflows/:id/graph')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Atomic bulk update of visual graph canvas layout, stages, transitions and rules' })
+  async bulkUpdateGraph(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: BulkUpdateWorkflowGraphDto,
+  ) {
+    return this.workflowsService.bulkUpdateGraph(id, dto);
+  }
+
+  @Post('workflows/:id/clone')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Clone an existing workflow blueprint for another service' })
+  async cloneWorkflow(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: CloneWorkflowDto,
+  ) {
+    return this.workflowsService.cloneWorkflow(id, dto);
   }
 
   @Get('services/:serviceId/workflow')
@@ -66,6 +104,23 @@ export class WorkflowsController {
     return this.workflowsService.addStage(id, dto);
   }
 
+  @Patch('workflows/stages/:stageId')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Update an individual workflow stage properties & SLA (Admin only)' })
+  async updateStage(
+    @Param('stageId', ParseUUIDPipe) stageId: string,
+    @Body() dto: UpdateWorkflowStageDto,
+  ) {
+    return this.workflowsService.updateStage(stageId, dto);
+  }
+
+  @Delete('workflows/stages/:stageId')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Delete a workflow stage (Admin only)' })
+  async deleteStage(@Param('stageId', ParseUUIDPipe) stageId: string) {
+    return this.workflowsService.deleteStage(stageId);
+  }
+
   @Post('workflows/:id/transitions')
   @RequirePermissions('workflow.manage')
   @ApiOperation({ summary: 'Define an allowable stage-to-stage transition (Admin only)' })
@@ -76,6 +131,13 @@ export class WorkflowsController {
     return this.workflowsService.addTransition(id, dto);
   }
 
+  @Delete('workflows/transitions/:transitionId')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Delete a transition between stages (Admin only)' })
+  async deleteTransition(@Param('transitionId', ParseUUIDPipe) transitionId: string) {
+    return this.workflowsService.deleteTransition(transitionId);
+  }
+
   @Post('workflows/stages/:stageId/rules')
   @RequirePermissions('workflow.manage')
   @ApiOperation({ summary: 'Configure a Document/Payment/Approval gate rule on a stage (Admin only)' })
@@ -84,6 +146,13 @@ export class WorkflowsController {
     @Body() dto: CreateWorkflowRuleDto,
   ) {
     return this.workflowsService.addRule(stageId, dto);
+  }
+
+  @Delete('workflows/rules/:ruleId')
+  @RequirePermissions('workflow.manage')
+  @ApiOperation({ summary: 'Delete a workflow gate rule (Admin only)' })
+  async deleteRule(@Param('ruleId', ParseUUIDPipe) ruleId: string) {
+    return this.workflowsService.deleteRule(ruleId);
   }
 
   @Post('workflow-instances/:id/transition')
@@ -104,8 +173,8 @@ export class WorkflowsController {
 
   @Get('workflow-instances/:id/history')
   @RequirePermissions('application.read')
-  @ApiOperation({ summary: 'Get immutable audit history of workflow stage transitions' })
-  async getHistory(@Param('id', ParseUUIDPipe) id: string) {
-    return this.workflowsService.getHistory(id);
+  @ApiOperation({ summary: 'Get complete audit history of stage transitions for an instance' })
+  async getInstanceHistory(@Param('id', ParseUUIDPipe) id: string) {
+    return this.workflowsService.getInstanceHistory(id);
   }
 }

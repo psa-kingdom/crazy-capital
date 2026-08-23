@@ -604,12 +604,13 @@ export interface QueryServicesInput {
   search?: string;
 }
 
-// ─── Workflow Engine Domain Types (Vertical Slice 1.5 - ADR-012) ─────────────
+// ─── Workflow Engine Domain Types (Vertical Slice 1.5 & 2.1 - ADR-012) ─────────────
 
 export const WorkflowRuleType = {
   DOCUMENT_GATE: 'DOCUMENT_GATE',
   PAYMENT_GATE: 'PAYMENT_GATE',
   APPROVAL_GATE: 'APPROVAL_GATE',
+  CUSTOM_VALIDATION: 'CUSTOM_VALIDATION',
 } as const;
 export type WorkflowRuleType = (typeof WorkflowRuleType)[keyof typeof WorkflowRuleType];
 
@@ -625,7 +626,8 @@ export interface WorkflowRuleDto {
   id: string;
   stageId: string;
   ruleType: WorkflowRuleType | string;
-  ruleConfig: WorkflowRuleConfig;
+  ruleConfig: WorkflowRuleConfig | Record<string, any>;
+  createdAt?: string;
 }
 
 export interface WorkflowTransitionDto {
@@ -634,9 +636,10 @@ export interface WorkflowTransitionDto {
   fromStageId: string;
   toStageId: string;
   requiresApproval: boolean;
+  conditionLabel?: string | null;
   fromStage?: WorkflowStageDto;
   toStage?: WorkflowStageDto;
-  createdAt: string;
+  createdAt?: string;
 }
 
 export interface WorkflowStageDto {
@@ -650,10 +653,15 @@ export interface WorkflowStageDto {
   isEndStage: boolean;
   isMandatory: boolean;
   slaHours: number | null;
+  warningHours?: number | null;
+  department?: string | null;
+  canvasX?: number | null;
+  canvasY?: number | null;
   rules?: WorkflowRuleDto[];
   fromTransitions?: WorkflowTransitionDto[];
   toTransitions?: WorkflowTransitionDto[];
-  createdAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface WorkflowDto {
@@ -663,10 +671,67 @@ export interface WorkflowDto {
   code: string;
   description: string | null;
   isActive: boolean;
-  stages?: WorkflowStageDto[];
-  transitions?: WorkflowTransitionDto[];
-  createdAt: string;
-  updatedAt: string;
+  service?: {
+    id: string;
+    name: string;
+    code: string;
+    category?: {
+      id: string;
+      name: string;
+      code: string;
+    };
+  };
+  stages: WorkflowStageDto[];
+  transitions: WorkflowTransitionDto[];
+  _count?: {
+    instances?: number;
+    stages?: number;
+    transitions?: number;
+  };
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface WorkflowNodeDto {
+  id: string;
+  type: 'start' | 'processing' | 'approval' | 'completion' | 'rejection';
+  label: string;
+  code: string;
+  stageOrder: number;
+  stageType?: string;
+  slaHours: number | null;
+  warningHours?: number | null;
+  isStartStage: boolean;
+  isEndStage: boolean;
+  isMandatory: boolean;
+  rulesCount: number;
+  rules?: WorkflowRuleDto[];
+  position: { x: number; y: number };
+}
+
+export interface WorkflowEdgeDto {
+  id: string;
+  source: string;
+  target: string;
+  label?: string | null;
+  requiresApproval: boolean;
+  animated?: boolean;
+}
+
+export interface WorkflowGraphDto {
+  workflowId: string;
+  workflowName: string;
+  workflowCode: string;
+  serviceId: string;
+  serviceName: string;
+  isActive: boolean;
+  nodes: WorkflowNodeDto[];
+  edges: WorkflowEdgeDto[];
+  isCyclic: boolean;
+  startNodeId: string | null;
+  terminalNodeIds: string[];
+  validationWarnings: string[];
+  validationErrors: string[];
 }
 
 export interface CreateWorkflowInput {
@@ -696,6 +761,49 @@ export interface CreateWorkflowStageInput {
   isEndStage?: boolean;
   isMandatory?: boolean;
   slaHours?: number;
+  warningHours?: number;
+  department?: string;
+}
+
+export interface UpdateWorkflowStageInput {
+  name?: string;
+  code?: string;
+  stageOrder?: number;
+  stageType?: WorkflowStageType;
+  isStartStage?: boolean;
+  isEndStage?: boolean;
+  isMandatory?: boolean;
+  slaHours?: number | null;
+  warningHours?: number | null;
+  department?: string | null;
+}
+
+export interface BulkUpdateWorkflowGraphInput {
+  stages: {
+    id?: string;
+    name: string;
+    code: string;
+    stageOrder: number;
+    stageType: WorkflowStageType;
+    isStartStage: boolean;
+    isEndStage: boolean;
+    isMandatory?: boolean;
+    slaHours?: number | null;
+    warningHours?: number | null;
+    positionX?: number;
+    positionY?: number;
+  }[];
+  transitions: {
+    fromStageCode: string;
+    toStageCode: string;
+    requiresApproval?: boolean;
+    conditionLabel?: string;
+  }[];
+  rules?: {
+    stageCode: string;
+    ruleType: WorkflowRuleType;
+    ruleConfig: Record<string, any>;
+  }[];
 }
 
 export interface CreateWorkflowTransitionInput {
@@ -743,6 +851,7 @@ export interface TransitionWorkflowInstanceInput {
   targetStageId: string;
   remarks?: string;
 }
+
 
 // ─── Application Lifecycle Domain Types (Vertical Slice 1.6) ────────────────
 
@@ -1645,9 +1754,3 @@ export interface ServiceVerticalDto {
   relatedBlogTags: string[];
   isPopular?: boolean;
 }
-
-
-
-
-
-

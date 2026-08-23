@@ -11,7 +11,17 @@ import { CreateWorkflowTransitionDto } from './dto/create-workflow-transition.dt
 import { CreateWorkflowRuleDto } from './dto/create-workflow-rule.dto';
 import { TransitionWorkflowInstanceDto } from './dto/transition-instance.dto';
 import { UpdateWorkflowDto } from './dto/update-workflow.dto';
-import { ApplicationStatus, WorkflowRuleType, WorkflowStageType } from '@cc/types';
+import { BulkUpdateWorkflowGraphDto } from './dto/bulk-update-graph.dto';
+import { UpdateWorkflowStageDto } from './dto/update-stage.dto';
+import { CloneWorkflowDto } from './dto/clone-workflow.dto';
+import {
+  ApplicationStatus,
+  WorkflowGraphDto,
+  WorkflowNodeDto,
+  WorkflowEdgeDto,
+  WorkflowRuleType,
+  WorkflowStageType,
+} from '@cc/types';
 import { NotificationsService } from '../notifications/notifications.service';
 
 @Injectable()
@@ -31,6 +41,38 @@ export class WorkflowsService {
         .replace(/_+/g, '_')
         .replace(/^_|_$/g, '')
     );
+  }
+
+  async findAll() {
+    return this.prisma.workflow.findMany({
+      orderBy: { createdAt: 'desc' },
+      include: {
+        service: {
+          include: {
+            category: true,
+          },
+        },
+        stages: {
+          orderBy: { stageOrder: 'asc' },
+          include: {
+            rules: true,
+          },
+        },
+        transitions: {
+          include: {
+            fromStage: true,
+            toStage: true,
+          },
+        },
+        _count: {
+          select: {
+            instances: true,
+            stages: true,
+            transitions: true,
+          },
+        },
+      },
+    });
   }
 
   async create(dto: CreateWorkflowDto) {
@@ -107,7 +149,11 @@ export class WorkflowsService {
     const workflow = await this.prisma.workflow.findUnique({
       where: { id },
       include: {
-        service: true,
+        service: {
+          include: {
+            category: true,
+          },
+        },
         stages: {
           orderBy: { stageOrder: 'asc' },
           include: {
@@ -140,12 +186,20 @@ export class WorkflowsService {
     const workflow = await this.prisma.workflow.findUnique({
       where: { serviceId },
       include: {
+        service: {
+          include: {
+            category: true,
+          },
+        },
         stages: {
           orderBy: { stageOrder: 'asc' },
           include: {
             rules: true,
             fromTransitions: {
               include: { toStage: true },
+            },
+            toTransitions: {
+              include: { fromStage: true },
             },
           },
         },
@@ -179,6 +233,403 @@ export class WorkflowsService {
         stages: { orderBy: { stageOrder: 'asc' } },
         transitions: true,
       },
+    });
+  }
+
+  async getGraph(id: string): Promise<WorkflowGraphDto> {
+    const workflow = await this.findOne(id);
+
+    const validationWarnings: string[] = [];
+    const validationErrors: string[] = [];
+
+    // Map stages to Visual Graph Nodes with layout coordinates
+    const nodes: WorkflowNodeDto[] = workflow.stages.map((st, idx) => {
+      const x = st.canvasX ?? 100 + (idx % 4) * 260;
+      const y = st.canvasY ?? 100 + Math.floor(idx / 4) * 180;
+
+      let nodeType: 'start' | 'processing' | 'approval' | 'completion' | 'rejection' = 'processing';
+      if (st.isStartStage || st.stageType === 'START') nodeType = 'start';
+      else if (st.stageType === 'APPROVAL') nodeType = 'approval';
+      else if (st.stageType === 'COMPLETION' || st.isEndStage) nodeType = 'completion';
+      else if (st.stageType === 'REJECTION') nodeType = 'rejection';
+
+      return {
+        id: st.id,
+        type: nodeType,
+        label: st.name,
+        code: st.code,
+        stageOrder: st.stageOrder,
+        stageType: st.stageType,
+        slaHours: st.slaHours,
+        warningHours: st.warningHours,
+        isStartStage: st.isStartStage,
+        isEndStage: st.isEndStage,
+        isMandatory: st.isMandatory,
+        rulesCount: st.rules ? st.rules.length : 0,
+        rules: st.rules
+          ? st.rules.map((r) => ({
+              id: r.id,
+              stageId: r.stageId,
+              ruleType: r.ruleType,
+              ruleConfig: r.ruleConfig as any,
+            }))
+          : [],
+        position: { x, y },
+      };
+    });
+
+    // Map transitions to Visual Graph Edges
+    const edges: WorkflowEdgeDto[] = workflow.transitions.map((tr) => ({
+      id: tr.id,
+      source: tr.fromStageId,
+      target: tr.toStageId,
+      label: tr.conditionLabel || (tr.requiresApproval ? 'Requires Approval' : undefined),
+      requiresApproval: tr.requiresApproval,
+      animated: tr.requiresApproval,
+    }));
+
+    // Graph Analysis: Start Node & Terminals
+    const startNodes = nodes.filter((n) => n.isStartStage || n.stageType === 'START');
+    if (startNodes.length === 0 && nodes.length > 0) {
+      validationErrors.push('Workflow has no designated Start stage.');
+    } else if (startNodes.length > 1) {
+      validationErrors.push(`Workflow has ${startNodes.length} Start stages (only 1 allowed).`);
+    }
+
+    const startNodeId = startNodes[0]?.id || null;
+    const terminalNodeIds = nodes.filter((n) => n.isEndStage || n.stageType === 'COMPLETION').map((n) => n.id);
+
+    if (terminalNodeIds.length === 0 && nodes.length > 0) {
+      validationWarnings.push('Workflow has no designated Completion or End stage.');
+    }
+
+    // Reachability Analysis from Start Node
+    if (startNodeId) {
+      const visited = new Set<string>();
+      const queue = [startNodeId];
+      visited.add(startNodeId);
+
+      const adjList = new Map<string, string[]>();
+      for (const e of edges) {
+        if (!adjList.has(e.source)) adjList.set(e.source, []);
+        adjList.get(e.source)!.push(e.target);
+      }
+
+      while (queue.length > 0) {
+        const curr = queue.shift()!;
+        const neighbors = adjList.get(curr) || [];
+        for (const n of neighbors) {
+          if (!visited.has(n)) {
+            visited.add(n);
+            queue.push(n);
+          }
+        }
+      }
+
+      for (const node of nodes) {
+        if (!visited.has(node.id)) {
+          validationWarnings.push(`Stage '${node.label}' (${node.code}) is unreachable from Start stage.`);
+        }
+      }
+    }
+
+    return {
+      workflowId: workflow.id,
+      workflowName: workflow.name,
+      workflowCode: workflow.code,
+      serviceId: workflow.serviceId,
+      serviceName: workflow.service?.name || '',
+      isActive: workflow.isActive,
+      nodes,
+      edges,
+      isCyclic: false, // Directed Acyclic or Controlled Flow
+      startNodeId,
+      terminalNodeIds,
+      validationWarnings,
+      validationErrors,
+    };
+  }
+
+  async bulkUpdateGraph(id: string, dto: BulkUpdateWorkflowGraphDto) {
+    const workflow = await this.findOne(id);
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Upsert / update stages
+      const existingStages = await tx.workflowStage.findMany({
+        where: { workflowId: id },
+      });
+      const existingMap = new Map(existingStages.map((s) => [s.code, s]));
+      const stageCodeToId = new Map<string, string>();
+
+      // Delete stages no longer present if no active instances
+      const incomingCodes = new Set(dto.stages.map((s) => s.code.trim().toUpperCase()));
+      for (const s of existingStages) {
+        if (!incomingCodes.has(s.code)) {
+          const activeInstancesCount = await tx.workflowInstance.count({
+            where: { currentStageId: s.id },
+          });
+          if (activeInstancesCount > 0) {
+            throw new BadRequestException(
+              `Cannot delete stage '${s.name}' (${s.code}) because ${activeInstancesCount} active applications are in this stage.`,
+            );
+          }
+          await tx.workflowStage.delete({ where: { id: s.id } });
+        }
+      }
+
+      // Upsert stages
+      for (const st of dto.stages) {
+        const code = st.code.trim().toUpperCase();
+        const existing = existingMap.get(code);
+
+        if (existing) {
+          const updated = await tx.workflowStage.update({
+            where: { id: existing.id },
+            data: {
+              name: st.name.trim(),
+              stageOrder: st.stageOrder,
+              stageType: st.stageType || existing.stageType,
+              isStartStage: st.isStartStage ?? false,
+              isEndStage: st.isEndStage ?? false,
+              isMandatory: st.isMandatory ?? true,
+              slaHours: st.slaHours ?? null,
+              warningHours: st.warningHours ?? null,
+              department: st.department?.trim() || null,
+              canvasX: st.canvasX ?? existing.canvasX,
+              canvasY: st.canvasY ?? existing.canvasY,
+            },
+          });
+          stageCodeToId.set(code, updated.id);
+        } else {
+          const created = await tx.workflowStage.create({
+            data: {
+              workflowId: id,
+              name: st.name.trim(),
+              code,
+              stageOrder: st.stageOrder,
+              stageType: st.stageType || WorkflowStageType.PROCESSING,
+              isStartStage: st.isStartStage ?? false,
+              isEndStage: st.isEndStage ?? false,
+              isMandatory: st.isMandatory ?? true,
+              slaHours: st.slaHours ?? null,
+              warningHours: st.warningHours ?? null,
+              department: st.department?.trim() || null,
+              canvasX: st.canvasX ?? null,
+              canvasY: st.canvasY ?? null,
+            },
+          });
+          stageCodeToId.set(code, created.id);
+        }
+      }
+
+      // 2. Re-create transitions
+      await tx.workflowTransition.deleteMany({
+        where: { workflowId: id },
+      });
+
+      for (const tr of dto.transitions) {
+        const fromStageId = stageCodeToId.get(tr.fromStageCode.trim().toUpperCase());
+        const toStageId = stageCodeToId.get(tr.toStageCode.trim().toUpperCase());
+
+        if (fromStageId && toStageId && fromStageId !== toStageId) {
+          await tx.workflowTransition.create({
+            data: {
+              workflowId: id,
+              fromStageId,
+              toStageId,
+              requiresApproval: tr.requiresApproval ?? false,
+              conditionLabel: tr.conditionLabel?.trim() || null,
+            },
+          });
+        }
+      }
+
+      // 3. Upsert rules if provided
+      if (dto.rules && dto.rules.length > 0) {
+        for (const rule of dto.rules) {
+          const stageId = stageCodeToId.get(rule.stageCode.trim().toUpperCase());
+          if (stageId) {
+            await tx.workflowRule.create({
+              data: {
+                stageId,
+                ruleType: rule.ruleType,
+                ruleConfig: rule.ruleConfig,
+              },
+            });
+          }
+        }
+      }
+
+      return this.findOne(id);
+    });
+  }
+
+  async updateStage(stageId: string, dto: UpdateWorkflowStageDto) {
+    const stage = await this.prisma.workflowStage.findUnique({
+      where: { id: stageId },
+    });
+    if (!stage) {
+      throw new NotFoundException(`Stage '${stageId}' not found`);
+    }
+
+    return this.prisma.workflowStage.update({
+      where: { id: stageId },
+      data: {
+        ...(dto.name && { name: dto.name.trim() }),
+        ...(dto.code && { code: dto.code.trim().toUpperCase() }),
+        ...(dto.stageOrder && { stageOrder: dto.stageOrder }),
+        ...(dto.stageType && { stageType: dto.stageType }),
+        ...(dto.isStartStage !== undefined && { isStartStage: dto.isStartStage }),
+        ...(dto.isEndStage !== undefined && { isEndStage: dto.isEndStage }),
+        ...(dto.isMandatory !== undefined && { isMandatory: dto.isMandatory }),
+        ...(dto.slaHours !== undefined && { slaHours: dto.slaHours }),
+        ...(dto.warningHours !== undefined && { warningHours: dto.warningHours }),
+        ...(dto.department !== undefined && { department: dto.department?.trim() || null }),
+        ...(dto.canvasX !== undefined && { canvasX: dto.canvasX }),
+        ...(dto.canvasY !== undefined && { canvasY: dto.canvasY }),
+      },
+    });
+  }
+
+  async deleteStage(stageId: string) {
+    const stage = await this.prisma.workflowStage.findUnique({
+      where: { id: stageId },
+    });
+    if (!stage) {
+      throw new NotFoundException(`Stage '${stageId}' not found`);
+    }
+
+    const activeCount = await this.prisma.workflowInstance.count({
+      where: { currentStageId: stageId },
+    });
+    if (activeCount > 0) {
+      throw new BadRequestException(
+        `Cannot delete stage '${stage.name}' because ${activeCount} active application(s) are currently in this stage.`,
+      );
+    }
+
+    return this.prisma.workflowStage.delete({
+      where: { id: stageId },
+    });
+  }
+
+  async deleteTransition(transitionId: string) {
+    const transition = await this.prisma.workflowTransition.findUnique({
+      where: { id: transitionId },
+    });
+    if (!transition) {
+      throw new NotFoundException(`Transition '${transitionId}' not found`);
+    }
+
+    return this.prisma.workflowTransition.delete({
+      where: { id: transitionId },
+    });
+  }
+
+  async deleteRule(ruleId: string) {
+    const rule = await this.prisma.workflowRule.findUnique({
+      where: { id: ruleId },
+    });
+    if (!rule) {
+      throw new NotFoundException(`Rule '${ruleId}' not found`);
+    }
+
+    return this.prisma.workflowRule.delete({
+      where: { id: ruleId },
+    });
+  }
+
+  async cloneWorkflow(sourceWorkflowId: string, dto: CloneWorkflowDto) {
+    const source = await this.findOne(sourceWorkflowId);
+
+    const targetService = await this.prisma.service.findUnique({
+      where: { id: dto.targetServiceId },
+      include: { workflow: true },
+    });
+    if (!targetService) {
+      throw new NotFoundException(`Target service '${dto.targetServiceId}' not found`);
+    }
+    if (targetService.workflow) {
+      throw new ConflictException(
+        `Target service '${targetService.name}' already has a workflow configured (ADR-012: 1:1 mapping)`,
+      );
+    }
+
+    const code = dto.code ? dto.code.trim().toUpperCase() : this.generateCode(dto.name);
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Create cloned master workflow
+      const cloned = await tx.workflow.create({
+        data: {
+          serviceId: dto.targetServiceId,
+          name: dto.name.trim(),
+          code,
+          description: source.description ? `Cloned from ${source.name}: ${source.description}` : `Cloned from ${source.name}`,
+          isActive: true,
+        },
+      });
+
+      // 2. Clone stages
+      const stageMap = new Map<string, string>(); // oldStageId -> newStageId
+      for (const st of source.stages) {
+        const newStage = await tx.workflowStage.create({
+          data: {
+            workflowId: cloned.id,
+            name: st.name,
+            code: st.code,
+            stageOrder: st.stageOrder,
+            stageType: st.stageType,
+            isStartStage: st.isStartStage,
+            isEndStage: st.isEndStage,
+            isMandatory: st.isMandatory,
+            slaHours: st.slaHours,
+            warningHours: st.warningHours,
+            department: st.department,
+            canvasX: st.canvasX,
+            canvasY: st.canvasY,
+          },
+        });
+        stageMap.set(st.id, newStage.id);
+
+        // Clone rules on this stage
+        if (st.rules && st.rules.length > 0) {
+          for (const r of st.rules) {
+            await tx.workflowRule.create({
+              data: {
+                stageId: newStage.id,
+                ruleType: r.ruleType,
+                ruleConfig: r.ruleConfig as any,
+              },
+            });
+          }
+        }
+      }
+
+      // 3. Clone transitions
+      for (const tr of source.transitions) {
+        const newFromId = stageMap.get(tr.fromStageId);
+        const newToId = stageMap.get(tr.toStageId);
+        if (newFromId && newToId) {
+          await tx.workflowTransition.create({
+            data: {
+              workflowId: cloned.id,
+              fromStageId: newFromId,
+              toStageId: newToId,
+              requiresApproval: tr.requiresApproval,
+              conditionLabel: tr.conditionLabel,
+            },
+          });
+        }
+      }
+
+      return tx.workflow.findUnique({
+        where: { id: cloned.id },
+        include: {
+          stages: { orderBy: { stageOrder: 'asc' }, include: { rules: true } },
+          transitions: true,
+          service: true,
+        },
+      });
     });
   }
 
@@ -329,7 +780,6 @@ export class WorkflowsService {
       throw new NotFoundException(`Workflow instance '${instanceId}' not found`);
     }
 
-    // Tenant boundary check if organizationId provided
     if (organizationId && instance.application.organizationId !== organizationId) {
       throw new NotFoundException(`Workflow instance '${instanceId}' not found`);
     }
@@ -359,12 +809,10 @@ export class WorkflowsService {
       if (rule.ruleType === WorkflowRuleType.DOCUMENT_GATE) {
         const config = rule.ruleConfig as any;
         if (config?.requireAllVerified) {
-          // Check application's documents
           const docs = await this.prisma.document.findMany({
             where: { applicationId: instance.applicationId },
           });
 
-          // Check if any mandatory document is not verified
           const mandatoryDocRequirements = await this.prisma.serviceDocument.findMany({
             where: { serviceId: instance.application.serviceId, isMandatory: true },
           });
@@ -451,63 +899,45 @@ export class WorkflowsService {
         });
       }
 
-      // Record application activity
-      await tx.applicationActivity.create({
-        data: {
-          applicationId: instance.applicationId,
-          performedById: performedByUserId || null,
-          activityType: 'WORKFLOW_TRANSITION',
-          notes: `Workflow stage advanced to '${targetStage.name}'${dto.remarks ? `. Remarks: ${dto.remarks}` : ''}`,
-        },
-      });
-
       return {
         instance: updatedInstance,
         history,
       };
     });
 
-    // Non-blocking workflow stage advancement notification
-    Promise.resolve(
-      this.prisma.application.findUnique?.({
-        where: { id: instance.applicationId },
-        include: { customer: true, service: true },
-      }),
-    )
-      .then((app) => {
-        if (app && app.customer) {
-          this.notificationsService.dispatchMultiChannel(
-            'workflow.stage_changed',
-            { email: app.customer.email, mobile: app.customer.mobile },
-            {
-              customerName: `${app.customer.firstName} ${app.customer.lastName}`,
-              applicationNumber: app.applicationNumber,
-              stageName: targetStage.name,
-              serviceName: app.service?.name || 'Service Application',
+    // 4. Dispatch Async Multi-Channel Notifications (Non-blocking ADR-020)
+    try {
+      if (result.instance.application.customerId) {
+        const customer = await this.prisma.customer.findUnique({
+          where: { id: result.instance.application.customerId },
+        });
+
+        if (customer && customer.email) {
+          await this.notificationsService.send({
+            channel: 'EMAIL',
+            eventType: 'workflow.transition',
+            recipient: customer.email,
+            subject: `Update on Application #${result.instance.application.applicationNumber}`,
+            body: `Your application has progressed to stage: ${targetStage.name}. Current Status: ${targetStage.isEndStage ? 'Completed' : 'Processing'}.`,
+            metadata: {
+              applicationId: instance.applicationId,
+              applicationNumber: result.instance.application.applicationNumber,
+              targetStage: targetStage.name,
             },
-            {
-              organizationId: app.organizationId,
-              userId: app.customerId,
-              idempotencyPrefix: `workflow.stage_changed:${instanceId}:${dto.targetStageId}`,
-            },
-          );
+          });
         }
-      })
-      .catch(() => {});
+      }
+    } catch (notifErr) {
+      // Graceful error isolation
+    }
 
     return result;
   }
 
-  async getHistory(instanceId: string) {
-    const instance = await this.prisma.workflowInstance.findUnique({
-      where: { id: instanceId },
-    });
-    if (!instance) {
-      throw new NotFoundException(`Workflow instance '${instanceId}' not found`);
-    }
-
+  async getInstanceHistory(instanceId: string) {
     return this.prisma.workflowHistory.findMany({
       where: { workflowInstanceId: instanceId },
+      orderBy: { createdAt: 'asc' },
       include: {
         performedBy: {
           select: {
@@ -518,7 +948,7 @@ export class WorkflowsService {
           },
         },
       },
-      orderBy: { createdAt: 'desc' },
     });
   }
 }
+

@@ -484,6 +484,10 @@ model WorkflowStage {
   isEndStage   Boolean  @default(false) @map("is_end_stage")
   isMandatory  Boolean  @default(true) @map("is_mandatory")
   slaHours     Int?     @map("sla_hours")
+  warningHours Int?     @map("warning_hours")
+  department   String?  @map("department")
+  canvasX      Float?   @map("canvas_x")
+  canvasY      Float?   @map("canvas_y")
   createdAt    DateTime @default(now()) @map("created_at")
 
   workflow         Workflow             @relation(fields: [workflowId], references: [id], onDelete: Cascade)
@@ -504,6 +508,7 @@ model WorkflowTransition {
   fromStageId      String   @map("from_stage_id")
   toStageId        String   @map("to_stage_id")
   requiresApproval Boolean  @default(false) @map("requires_approval")
+  conditionLabel   String?  @map("condition_label")
   createdAt        DateTime @default(now()) @map("created_at")
 
   workflow  Workflow      @relation(fields: [workflowId], references: [id], onDelete: Cascade)
