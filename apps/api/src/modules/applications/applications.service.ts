@@ -482,4 +482,93 @@ export class ApplicationsService {
       },
     });
   }
+
+  async transitionStage(id: string, targetStageId: string, user: any, notes?: string) {
+    const app = await this.findOne(id, user);
+    if (!app.workflowInstance) {
+      throw new BadRequestException(
+        `Application ${app.applicationNumber} does not have an active workflow instance`,
+      );
+    }
+
+    const currentStageId = app.workflowInstance.currentStageId;
+    const transition = await this.prisma.workflowTransition.findFirst({
+      where: {
+        workflowId: app.workflowInstance.workflowId,
+        fromStageId: currentStageId,
+        toStageId: targetStageId,
+      },
+      include: { toStage: true, fromStage: true },
+    });
+
+    if (!transition) {
+      throw new BadRequestException(
+        `Invalid workflow transition from current stage to requested target stage`,
+      );
+    }
+
+    const now = new Date();
+
+    return this.prisma.$transaction(async (tx) => {
+      // 1. Update WorkflowInstance with reset SLA timer
+      const updatedInstance = await tx.workflowInstance.update({
+        where: { id: app.workflowInstance!.id },
+        data: {
+          currentStageId: targetStageId,
+          stageEnteredAt: now,
+          slaStatus: 'ON_TRACK',
+          escalationLevel: 0,
+          lastSlaCheckAt: now,
+          ...(transition.toStage.isEndStage && { completedAt: now }),
+        },
+        include: { currentStage: true },
+      });
+
+      // 2. Resolve any active escalations from previous stage
+      await tx.workflowSlaEscalation.updateMany({
+        where: {
+          workflowInstanceId: app.workflowInstance!.id,
+          stageId: currentStageId,
+          status: 'TRIGGERED',
+        },
+        data: {
+          status: 'RESOLVED',
+          resolvedAt: now,
+          remarks: `Auto-resolved on stage transition to ${transition.toStage.name}`,
+        },
+      });
+
+      // 3. Record WorkflowHistory
+      await tx.workflowHistory.create({
+        data: {
+          workflowInstanceId: app.workflowInstance!.id,
+          fromStageId: currentStageId,
+          toStageId: targetStageId,
+          performedById: user.id,
+          remarks: notes || `Advanced to ${transition.toStage.name}`,
+        },
+      });
+
+      // 4. Record ApplicationActivity
+      await tx.applicationActivity.create({
+        data: {
+          applicationId: app.id,
+          performedById: user.id,
+          activityType: 'STAGE_CHANGED',
+          notes: `Stage transitioned from "${transition.fromStage.name}" to "${transition.toStage.name}". SLA timer reset.`,
+        },
+      });
+
+      // 5. Update application status if terminal stage
+      if (transition.toStage.isEndStage) {
+        await tx.application.update({
+          where: { id: app.id },
+          data: { status: ApplicationStatus.COMPLETED },
+        });
+      }
+
+      return updatedInstance;
+    });
+  }
 }
+

@@ -18,6 +18,7 @@ import { CreateApplicationDto } from './dto/create-application.dto';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { QueryApplicationsDto } from './dto/query-applications.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { TransitionStageDto } from './dto/transition-stage.dto';
 
 @ApiTags('Application Lifecycle')
 @ApiBearerAuth()
@@ -99,4 +100,16 @@ export class ApplicationsController {
   ) {
     return this.applicationsService.addActivity(id, dto, user);
   }
+
+  @Patch(':id/transition')
+  @RequirePermissions('application.update')
+  @ApiOperation({ summary: 'Advance application workflow stage and reset SLA tracking' })
+  async transition(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Body() dto: TransitionStageDto,
+    @CurrentUser() user: any,
+  ) {
+    return this.applicationsService.transitionStage(id, dto.targetStageId, user, dto.notes);
+  }
 }
+

@@ -28,6 +28,7 @@ model Organization {
   documents    Document[]
   blogCategories BlogCategory[]
   blogPosts    BlogPost[]
+  slaEscalations WorkflowSlaEscalation[]
 
   @@map("organizations")
 }
@@ -122,6 +123,7 @@ model User {
   partnerApplications   Application[]           @relation("PartnerApplications")
   assignedTasks         Task[]                  @relation("AssignedTasks")
   blogPosts             BlogPost[]              @relation("AuthorBlogPosts")
+  escalationsReceived   WorkflowSlaEscalation[] @relation("EscalationRecipient")
 
   @@index([organizationId, email])
   @@index([organizationId, mobile])
@@ -496,6 +498,7 @@ model WorkflowStage {
   toTransitions    WorkflowTransition[] @relation("ToStage")
   currentInstances WorkflowInstance[]   @relation("CurrentStage")
   tasks            Task[]
+  slaEscalations   WorkflowSlaEscalation[]
 
   @@unique([workflowId, stageOrder])
   @@unique([workflowId, code])
@@ -531,20 +534,54 @@ model WorkflowRule {
 }
 
 model WorkflowInstance {
-  id             String    @id @default(uuid())
-  workflowId     String    @map("workflow_id")
-  applicationId  String    @unique @map("application_id")
-  currentStageId String    @map("current_stage_id")
-  startedAt      DateTime  @default(now()) @map("started_at")
-  completedAt    DateTime? @map("completed_at")
+  id              String    @id @default(uuid())
+  workflowId      String    @map("workflow_id")
+  applicationId   String    @unique @map("application_id")
+  currentStageId  String    @map("current_stage_id")
+  stageEnteredAt  DateTime  @default(now()) @map("stage_entered_at")
+  slaStatus       String    @default("ON_TRACK") @map("sla_status") // ON_TRACK, WARNING, BREACHED, ESCALATED, COMPLETED
+  escalationLevel Int       @default(0) @map("escalation_level")
+  lastSlaCheckAt  DateTime? @map("last_sla_check_at")
+  startedAt       DateTime  @default(now()) @map("started_at")
+  completedAt     DateTime? @map("completed_at")
 
-  workflow     Workflow          @relation(fields: [workflowId], references: [id], onDelete: Cascade)
-  application  Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
-  currentStage WorkflowStage     @relation("CurrentStage", fields: [currentStageId], references: [id])
+  workflow     Workflow                @relation(fields: [workflowId], references: [id], onDelete: Cascade)
+  application  Application             @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  currentStage WorkflowStage           @relation("CurrentStage", fields: [currentStageId], references: [id])
   history      WorkflowHistory[]
   approvals    Approval[]
+  escalations  WorkflowSlaEscalation[]
 
+  @@index([slaStatus])
   @@map("workflow_instances")
+}
+
+model WorkflowSlaEscalation {
+  id                 String    @id @default(uuid())
+  organizationId     String    @map("organization_id")
+  workflowInstanceId String    @map("workflow_instance_id")
+  stageId            String    @map("stage_id")
+  escalationLevel    Int       @map("escalation_level") // 1, 2, 3, 4
+  levelName          String    @map("level_name")       // ASSIGNED_EXECUTIVE, TEAM_LEAD, BRANCH_MANAGER, SUPER_ADMIN
+  recipientUserId    String?   @map("recipient_user_id")
+  recipientRole      String    @map("recipient_role")
+  recipientEmail     String?   @map("recipient_email")
+  channels           Json      @map("channels")
+  status             String    @default("TRIGGERED") @map("status") // TRIGGERED, ACKNOWLEDGED, RESOLVED
+  remarks            String?
+  triggeredAt        DateTime  @default(now()) @map("triggered_at")
+  acknowledgedAt     DateTime? @map("acknowledged_at")
+  resolvedAt         DateTime? @map("resolved_at")
+
+  organization Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  instance     WorkflowInstance @relation(fields: [workflowInstanceId], references: [id], onDelete: Cascade)
+  stage        WorkflowStage    @relation(fields: [stageId], references: [id], onDelete: Cascade)
+  recipient    User?            @relation("EscalationRecipient", fields: [recipientUserId], references: [id], onDelete: SetNull)
+
+  @@unique([workflowInstanceId, stageId, escalationLevel])
+  @@index([organizationId, status])
+  @@index([workflowInstanceId, status])
+  @@map("workflow_sla_escalations")
 }
 
 model WorkflowHistory {

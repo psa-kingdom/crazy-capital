@@ -413,6 +413,76 @@ export function compileNotificationTemplate(
       };
     }
 
+    case 'workflow.sla_warning': {
+      const stageName = data.stageName || 'Processing';
+      const remainingHours = data.remainingHours !== undefined ? `${data.remainingHours}h` : 'limited time';
+      const subject = `⚠️ SLA Warning: Case ${appNumber} Stage "${stageName}" Approaching Deadline (${remainingHours} remaining)`;
+      const body = `Urgent SLA Warning for Case ${appNumber} (${serviceName}): Stage "${stageName}" has exceeded ${data.warningHours || 18}h threshold. Remaining time: ${remainingHours}. Assigned to: ${data.assignedOfficer || 'Executive'}.`;
+      const html = wrapHtmlEmail(
+        `SLA Warning — ${appNumber}`,
+        `⚠️ SLA Warning: Case ${appNumber} Stage Approaching Deadline`,
+        `
+        <p>This is an automated operational alert. Application <strong>${appNumber}</strong> (${serviceName}) has entered the SLA warning zone.</p>
+        <div class="card" style="background:#fffbeb; border-color:#fde68a;">
+          <table style="width:100%; font-size:13px; color:#92400e;">
+            <tr><td><strong>Case Number:</strong></td><td style="text-align:right; font-family:monospace; font-weight:bold;">${appNumber}</td></tr>
+            <tr><td><strong>Service:</strong></td><td style="text-align:right;">${serviceName}</td></tr>
+            <tr><td><strong>Current Stage:</strong></td><td style="text-align:right; font-weight:bold;">${stageName}</td></tr>
+            <tr><td><strong>SLA Target:</strong></td><td style="text-align:right;">${data.slaHours || 24} Hours</td></tr>
+            <tr><td><strong>Remaining Time:</strong></td><td style="text-align:right; font-weight:bold; color:#b45309;">${remainingHours}</td></tr>
+            <tr><td><strong>Assigned Officer:</strong></td><td style="text-align:right;">${data.assignedOfficer || 'Executive'}</td></tr>
+          </table>
+        </div>
+        <p style="color:#b45309; font-weight:600;">Action Required: Please expedite document verification / drafting to avoid breach escalation.</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/admin/sla" class="btn" style="background:#d97706;">Open SLA Command Center</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_sla_warning',
+        templateData: { appNumber, serviceName, stageName, remainingHours },
+      };
+    }
+
+    case 'workflow.sla_escalation': {
+      const stageName = data.stageName || 'Processing';
+      const level = data.escalationLevel || 1;
+      const levelName = data.levelName || 'EXECUTIVE';
+      const elapsedHours = data.elapsedHours !== undefined ? `${data.elapsedHours}h` : 'exceeded';
+      const slaHours = data.slaHours || 24;
+      const subject = `🚨 SLA ESCALATION [Level ${level} - ${levelName}]: Case ${appNumber} breached Stage "${stageName}" (${elapsedHours} elapsed)`;
+      const body = `CRITICAL SLA BREACH [Level ${level} - ${levelName}]: Application ${appNumber} (${serviceName}) stage "${stageName}" has breached target SLA of ${slaHours}h (${elapsedHours} elapsed). Escalated to ${data.recipientRole || levelName}.`;
+      const html = wrapHtmlEmail(
+        `🚨 SLA Breach Level ${level} — ${appNumber}`,
+        `🚨 SLA ESCALATION [Level ${level} - ${levelName}]`,
+        `
+        <p>A critical SLA breach has occurred on application <strong>${appNumber}</strong>. The 4-Tier Auto-Escalation Engine has triggered <strong>Level ${level} (${levelName})</strong> escalation.</p>
+        <div class="card" style="background:#fef2f2; border-color:#fecaca;">
+          <table style="width:100%; font-size:13px; color:#991b1b;">
+            <tr><td><strong>Case Number:</strong></td><td style="text-align:right; font-family:monospace; font-weight:bold;">${appNumber}</td></tr>
+            <tr><td><strong>Escalation Tier:</strong></td><td style="text-align:right; font-weight:bold; color:#dc2626;">Level ${level} — ${levelName}</td></tr>
+            <tr><td><strong>Service:</strong></td><td style="text-align:right;">${serviceName}</td></tr>
+            <tr><td><strong>Breached Stage:</strong></td><td style="text-align:right; font-weight:bold;">${stageName}</td></tr>
+            <tr><td><strong>Target SLA:</strong></td><td style="text-align:right;">${slaHours} Hours</td></tr>
+            <tr><td><strong>Total Elapsed Time:</strong></td><td style="text-align:right; font-weight:bold; color:#dc2626;">${elapsedHours}</td></tr>
+            <tr><td><strong>Escalated Recipient:</strong></td><td style="text-align:right; font-weight:bold;">${data.recipientName || data.recipientRole || levelName}</td></tr>
+          </table>
+        </div>
+        <p style="color:#b91c1c; font-weight:bold;">Immediate management intervention is required to unblock this case.</p>
+        `,
+        `<div style="text-align:center;"><a href="https://crazycapital.in/admin/sla" class="btn" style="background:#dc2626;">Resolve Escalation Now</a></div>`,
+      );
+      return {
+        subject,
+        body,
+        html,
+        templateId: 'crazy_capital_sla_escalation',
+        templateData: { appNumber, serviceName, stageName, level, levelName, elapsedHours, slaHours },
+      };
+    }
+
     case 'test.dispatch':
     default: {
       const customMsg = data.customMessage || 'This is a test notification from the Crazy Capital Dispatch Matrix.';
@@ -439,3 +509,4 @@ export function compileNotificationTemplate(
     }
   }
 }
+

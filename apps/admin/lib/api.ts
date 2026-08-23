@@ -417,9 +417,21 @@ export const cmsApi = {
   },
 };
 
-
-
-
-
-
-
+// SLA & 4-Tier Auto-Escalation API Services (Slice 2.2)
+export const slaApi = {
+  getDashboard: async () => {
+    return apiClient.get('/sla/dashboard');
+  },
+  getEscalations: async (params?: Record<string, any>) => {
+    return apiClient.get('/sla/escalations', { params });
+  },
+  evaluateSla: async (data?: { instanceId?: string; referenceTime?: string }) => {
+    return apiClient.post('/sla/evaluate', data || {});
+  },
+  acknowledgeEscalation: async (id: string, data?: { remarks?: string }) => {
+    return apiClient.patch(`/sla/escalations/${id}/acknowledge`, data || {});
+  },
+  resolveEscalation: async (id: string, data?: { remarks?: string }) => {
+    return apiClient.patch(`/sla/escalations/${id}/resolve`, data || {});
+  },
+};

@@ -20,6 +20,7 @@ import {
   BarChart3,
   BookOpen,
   GitFork,
+  AlertTriangle,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 
@@ -35,6 +36,7 @@ export function AdminShell({ children }: AdminShellProps) {
   const navItems = [
     { label: 'Executive Dashboard', href: '/', icon: LayoutDashboard },
     { label: 'Workflow Builder', href: '/workflows', icon: GitFork, badge: 'Slice 2.1' },
+    { label: 'SLA & Escalations', href: '/sla', icon: AlertTriangle, badge: 'Slice 2.2' },
     { label: 'Reports & Analytics', href: '/reports', icon: BarChart3, badge: 'Slice 1.12' },
     { label: 'CMS & Knowledge Base', href: '/cms', icon: BookOpen, badge: 'Slice 1.13' },
     { label: 'CRM Leads Engine', href: '/leads', icon: Users2, badge: 'Sprint 2' },

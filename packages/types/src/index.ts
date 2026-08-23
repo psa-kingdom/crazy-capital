@@ -1754,3 +1754,102 @@ export interface ServiceVerticalDto {
   relatedBlogTags: string[];
   isPopular?: boolean;
 }
+
+// ─── SLA & 4-TIER AUTO-ESCALATION ENGINE (SLICE 2.2) ──────────────────────────
+
+export type SlaStatus = 'ON_TRACK' | 'WARNING' | 'BREACHED' | 'ESCALATED' | 'COMPLETED';
+
+export type EscalationLevel = 1 | 2 | 3 | 4;
+
+export type EscalationRecipientRole = 'ASSIGNED_EXECUTIVE' | 'TEAM_LEAD' | 'BRANCH_MANAGER' | 'SUPER_ADMIN';
+
+export type EscalationStatus = 'TRIGGERED' | 'ACKNOWLEDGED' | 'RESOLVED';
+
+export interface WorkflowSlaEscalationDto {
+  id: string;
+  organizationId: string;
+  workflowInstanceId: string;
+  stageId: string;
+  stageName?: string;
+  stageCode?: string;
+  applicationId: string;
+  applicationNumber: string;
+  serviceName?: string;
+  customerName?: string;
+  branchName?: string;
+  escalationLevel: number;
+  levelName: string;
+  recipientUserId?: string | null;
+  recipientName?: string | null;
+  recipientRole: string;
+  recipientEmail?: string | null;
+  channels: string[];
+  status: string;
+  remarks?: string | null;
+  triggeredAt: string;
+  acknowledgedAt?: string | null;
+  resolvedAt?: string | null;
+}
+
+export interface ActiveInstanceSlaTrackerDto {
+  instanceId: string;
+  applicationId: string;
+  applicationNumber: string;
+  serviceName: string;
+  customerName: string;
+  branchName?: string;
+  currentStageId: string;
+  currentStageName: string;
+  currentStageCode: string;
+  stageType: string;
+  department?: string;
+  assignedOfficerName?: string;
+  assignedOfficerEmail?: string;
+  stageEnteredAt: string;
+  slaHours: number;
+  warningHours: number;
+  elapsedHours: number;
+  remainingHours: number;
+  percentElapsed: number;
+  slaStatus: SlaStatus;
+  escalationLevel: number;
+  activeEscalationLevelName?: string;
+  lastSlaCheckAt?: string;
+}
+
+export interface SlaDashboardStatsDto {
+  totalActiveTracked: number;
+  onTrackCount: number;
+  warningCount: number;
+  breachedCount: number;
+  escalatedCount: number;
+  escalationsByLevel: {
+    level1: number;
+    level2: number;
+    level3: number;
+    level4: number;
+  };
+  recentEscalations: WorkflowSlaEscalationDto[];
+  activeTrackers: ActiveInstanceSlaTrackerDto[];
+}
+
+export interface SlaEvaluationResultDto {
+  evaluatedCount: number;
+  warningTriggeredCount: number;
+  breachTriggeredCount: number;
+  escalationsCreatedCount: number;
+  notificationsDispatchedCount: number;
+  durationMs: number;
+  timestamp: string;
+}
+
+export interface QueryEscalationsInput {
+  page?: number;
+  limit?: number;
+  status?: string;
+  escalationLevel?: number;
+  branchId?: string;
+  stageId?: string;
+  search?: string;
+}
+

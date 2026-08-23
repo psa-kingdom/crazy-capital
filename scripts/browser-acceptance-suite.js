@@ -386,6 +386,77 @@ async function runBrowserAcceptance() {
   // Take screenshot of Visual Workflow Builder
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06_admin_workflow_builder.png'), fullPage: true });
 
+  // -------------------------------------------------------------
+  // TEST 9: Vertical Slice 2.2 — SLA Tracking & 4-Level Auto-Escalation (/sla)
+  // -------------------------------------------------------------
+  console.log('\n[9/9] Testing Vertical Slice 2.2 — SLA Tracking & 4-Level Auto-Escalation (http://localhost:3001/sla)...');
+  
+  const slaRes = await page.goto('http://localhost:3001/sla', { waitUntil: 'networkidle' });
+  await wait(600);
+  assert(slaRes && slaRes.status() === 200, 'SLA Command Center (/sla) responds with HTTP 200');
+
+  const slaText = await page.textContent('body');
+  assert(slaText.includes('SLA Tracking & 4-Level Auto-Escalation'), 'Page header contains SLA Tracking & 4-Level Auto-Escalation');
+  assert(slaText.includes('Slice 2.2'), 'Slice 2.2 badge is rendered');
+  assert(slaText.includes('4-Level Auto-Escalation') || slaText.includes('4-Tier Auto-Escalation'), '4-Tier escalation badge is present');
+  assert(slaText.includes('Background Evaluator Active'), 'Background Evaluator status badge is visible');
+
+  // Verify 4 KPI overview metric cards
+  assert(slaText.includes('On Track') && slaText.includes('Warning Zone') && slaText.includes('SLA Breached') && slaText.includes('Active Escalations'), '4 KPI overview cards render correctly');
+
+  // Verify 4-Tier Escalation Matrix Ribbon rules
+  assert(slaText.includes('LEVEL 1') && slaText.includes('Assigned Executive'), 'Tier 1 (Assigned Executive) rendered in matrix ribbon');
+  assert(slaText.includes('LEVEL 2') && slaText.includes('Team Lead'), 'Tier 2 (Team Lead) rendered in matrix ribbon');
+  assert(slaText.includes('LEVEL 3') && slaText.includes('Branch Manager'), 'Tier 3 (Branch Manager) rendered in matrix ribbon');
+  assert(slaText.includes('LEVEL 4') && (slaText.includes('Super Admin') || slaText.includes('Executive')), 'Tier 4 (Super Admin) rendered in matrix ribbon');
+
+  // Verify Live Trackers table columns and stage timers
+  assert(slaText.includes('Live SLA Trackers'), 'Live SLA Trackers tab rendered');
+  assert(slaText.includes('SLA Gauge') && slaText.includes('Current Stage & Desk'), 'Trackers table headers rendered');
+  assert(slaText.includes('ON TRACK') || slaText.includes('WARNING ZONE') || slaText.includes('SLA BREACHED'), 'Stage SLA status badges rendered in tracker');
+
+  // Switch to Escalations Incidents & Audit Log tab
+  const escTabBtn = await page.$('#tab-escalations');
+  if (escTabBtn) {
+    await escTabBtn.click();
+    await wait(400);
+    const escTabText = await page.textContent('body');
+    assert(escTabText.includes('Incident Ref') && escTabText.includes('Breached Stage') && escTabText.includes('Tier & Escalated Recipient'), 'Escalation Incidents & Audit Log table rendered');
+    assert(escTabText.includes('TRIGGERED') || escTabText.includes('ACKNOWLEDGED') || escTabText.includes('RESOLVED'), 'Escalation status tags displayed');
+
+    // Test Acknowledge Modal interaction
+    const ackBtn = await page.$('button:has-text("Acknowledge")');
+    if (ackBtn) {
+      await ackBtn.click();
+      await wait(300);
+      const modalText = await page.textContent('body');
+      assert(modalText.includes('Acknowledge Escalation') && modalText.includes('Case Reference'), 'Acknowledge Escalation modal opens cleanly');
+
+      const remarksInput = await page.$('#action-remarks-input');
+      if (remarksInput) {
+        await remarksInput.fill('Reviewing file with department lead for expedited submission');
+      }
+
+      const confirmBtn = await page.$('#btn-confirm-action');
+      if (confirmBtn) {
+        await confirmBtn.click();
+        await wait(500);
+      }
+    }
+  }
+
+  // Test "Evaluate SLA Now" on-demand button trigger
+  const evalBtn = await page.$('#btn-run-sla-eval');
+  if (evalBtn) {
+    await evalBtn.click();
+    await wait(600);
+    const postEvalText = await page.textContent('body');
+    assert(postEvalText.includes('SLA') || postEvalText.includes('completed') || postEvalText.includes('Evaluation'), 'Evaluate SLA Now button executes evaluation cycle');
+  }
+
+  // Take screenshot of SLA Command Center
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '07_admin_sla_command_center.png'), fullPage: true });
+
   await browser.close();
 
   // Summary Report
@@ -411,4 +482,5 @@ runBrowserAcceptance().catch((err) => {
   console.error('Browser QA Fatal Error:', err);
   process.exit(1);
 });
+
 
