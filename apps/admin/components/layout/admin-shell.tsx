@@ -49,7 +49,7 @@ export function AdminShell({ children }: AdminShellProps) {
     { label: 'Document Vault (ADR-018)', href: '/documents', icon: FileCheck2, badge: 'Slice 1.7' },
     { label: 'Billing & Invoices (ADR-014)', href: '/invoices', icon: Receipt, badge: 'Slice 1.8' },
     { label: 'Notifications & Alerts', href: '/notifications', icon: Bell, badge: 'Slice 1.9' },
-    { label: 'Commissions & Payouts', href: '/commissions', icon: Coins, badge: 'Slice 1.9' },
+    { label: 'Commissions & Payouts', href: '/commissions', icon: Coins, badge: 'Slice 2.5' },
     { label: 'Lead Sources (ADR-013)', href: '/settings/lead-sources', icon: Sliders },
   ];
 

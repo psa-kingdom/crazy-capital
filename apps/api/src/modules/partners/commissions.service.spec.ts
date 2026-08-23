@@ -4,6 +4,7 @@ import { PayoutsService } from './payouts.service';
 import { PartnersService } from './partners.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
+import { RazorpayXPayoutProvider } from './providers/razorpayx-payout.provider';
 import { ForbiddenException, NotFoundException, BadRequestException } from '@nestjs/common';
 import { UserRole } from '@cc/types';
 
@@ -140,6 +141,20 @@ describe('Partner Management & Commission Engine (Vertical Slice 1.9 - ADR-011 &
         PartnersService,
         { provide: PrismaService, useValue: prisma },
         { provide: NotificationsService, useValue: notificationsService },
+        {
+          provide: RazorpayXPayoutProvider,
+          useValue: {
+            isConfigured: jest.fn().mockReturnValue(false),
+            initiatePayout: jest.fn().mockResolvedValue({
+              success: true,
+              providerPayoutId: 'pout_mock_1',
+              status: 'PAID',
+              utr: 'UTR12345',
+            }),
+            getPayoutStatus: jest.fn().mockResolvedValue({ status: 'PAID' }),
+            getAccountBalance: jest.fn().mockResolvedValue({ balance: 1000000 }),
+          },
+        },
       ],
     }).compile();
 

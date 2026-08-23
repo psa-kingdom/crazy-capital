@@ -719,6 +719,95 @@ async function runBrowserAcceptance() {
   // Take screenshot of Branch Hierarchy Workbench
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '09_admin_branch_hierarchy.png'), fullPage: true });
 
+  // -------------------------------------------------------------
+  // TEST 12: Vertical Slice 2.5 — RazorpayX Automated Partner Payouts (/commissions)
+  // -------------------------------------------------------------
+  console.log('\n[12/12] Testing Vertical Slice 2.5 — RazorpayX Automated Partner Payouts (http://localhost:3001/commissions)...');
+
+  const slice25Res = await page.goto('http://localhost:3001/commissions', { waitUntil: 'networkidle' });
+  await wait(600);
+  assert(slice25Res && slice25Res.status() === 200, 'Commissions & Payouts page (/commissions) responds with HTTP 200');
+
+  const slice25Text = await page.textContent('body');
+  assert(slice25Text.includes('Partner Commissions & RazorpayX Automated Payouts'), 'Page header contains RazorpayX Automated Payouts title');
+  assert(slice25Text.includes('Slice 2.5'), 'Slice 2.5 badge is rendered');
+  assert(slice25Text.includes('RazorpayX Automated Disbursements Active'), 'RazorpayX Automated Disbursements Active badge is visible');
+  assert(slice25Text.includes('ADR-011') && slice25Text.includes('ADR-014'), 'ADR-011 / ADR-014 Compliance badges rendered');
+  assert(slice25Text.includes('RazorpayX Float') && slice25Text.includes('Available'), 'RazorpayX Operational Float Balance rendered');
+
+  // Verify 4 KPI overview cards
+  assert(slice25Text.includes('Pending Review') && slice25Text.includes('Approved & Ready') && slice25Text.includes('Disbursed (Settled)') && slice25Text.includes('RazorpayX Gateway'), '4 KPI overview cards render correctly');
+
+  // Verify Tab 1 (Commission Approval & Payout Queue) content
+  assert(slice25Text.includes('Commission Approval Queue') && slice25Text.includes('Partner Profile') && slice25Text.includes('Application & Service'), 'Commission queue table headers rendered');
+  assert(slice25Text.includes('Vikram Aditya') || slice25Text.includes('Priya Sundaram'), 'Partner profiles listed in commission table');
+  assert(slice25Text.includes('Private Limited Company Incorporation') || slice25Text.includes('Trademark Registration'), 'Referral services displayed');
+
+  // Test "Approve" modal interaction (ADR-011 Admin Approval)
+  const approveCommBtn = await page.$('button:has-text("Approve")');
+  if (approveCommBtn) {
+    await approveCommBtn.click();
+    await wait(300);
+    const approveModalText = await page.textContent('body');
+    assert(approveModalText.includes('Approve Partner Commission') && approveModalText.includes('eligible for automated RazorpayX payout'), 'Approve Partner Commission modal opens with ADR-011 context');
+
+    const approveNotesInput = await page.$('#approve-notes-input');
+    if (approveNotesInput) {
+      await approveNotesInput.fill('Verified case completion against MCA master records');
+    }
+
+    const confirmApproveBtn = await page.$('#btn-confirm-approve-commission');
+    if (confirmApproveBtn) {
+      await confirmApproveBtn.click();
+      await wait(500);
+      const postApproveText = await page.textContent('body');
+      assert(postApproveText.includes('approved') || postApproveText.includes('APPROVED'), 'Commission approval confirms');
+    }
+  }
+
+  // Test "⚡ Execute RazorpayX Payout" modal interaction (Slice 2.5 Automated Bank Disbursement)
+  const executePayoutBtn = await page.$('button:has-text("Execute RazorpayX Payout")');
+  if (executePayoutBtn) {
+    await executePayoutBtn.click();
+    await wait(300);
+    const payoutModalText = await page.textContent('body');
+    assert(payoutModalText.includes('Execute RazorpayX Automated Payout') && payoutModalText.includes('Beneficiary Partner'), 'Execute RazorpayX Automated Payout modal opens');
+    assert(payoutModalText.includes('Destination Account') && payoutModalText.includes('Net Payable Amount'), 'Financial breakdown and masked bank coordinates displayed');
+    assert(payoutModalText.includes('IMPS') && payoutModalText.includes('NEFT'), 'Transfer mode options available');
+
+    // Submit payout disbursement
+    const confirmDisburseBtn = await page.$('#btn-confirm-razorpayx-payout');
+    if (confirmDisburseBtn) {
+      await confirmDisburseBtn.click();
+      await wait(600);
+      const postDisburseText = await page.textContent('body');
+      assert(postDisburseText.includes('settled') || postDisburseText.includes('Disbursed') || postDisburseText.includes('UTR'), 'Automated RazorpayX payout settled with UTR generated');
+    }
+  }
+
+  // Switch to Tab 2: RazorpayX Payouts Ledger
+  const payoutsTabBtn = await page.$('#tab-payouts');
+  if (payoutsTabBtn) {
+    await payoutsTabBtn.click();
+    await wait(400);
+    const ledgerText = await page.textContent('body');
+    assert(ledgerText.includes('RazorpayX Automated Payouts & Settlement Ledger') && ledgerText.includes('Destination Account') && ledgerText.includes('Provider Payout ID / UTR'), 'RazorpayX Payouts Ledger table headers rendered');
+    assert(ledgerText.includes('PAYOUT-2026-') || ledgerText.includes('UTR'), 'Payout references and UTR settlement numbers listed in ledger');
+  }
+
+  // Test "Inspect 360" button interaction in Payouts Ledger
+  const inspectPayoutBtn = await page.$('button:has-text("Inspect 360")');
+  if (inspectPayoutBtn) {
+    await inspectPayoutBtn.click();
+    await wait(300);
+    const drawerText = await page.textContent('body');
+    assert(drawerText.includes('RazorpayX Payout Audit Inspector') && drawerText.includes('Provider Payout ID'), 'Payout 360 Audit Inspector drawer opens');
+    assert(drawerText.includes('Beneficiary Details') && drawerText.includes('Transfer Mode'), 'Beneficiary details and transfer parameters rendered in inspector drawer');
+  }
+
+  // Take screenshot of RazorpayX Payouts Workbench
+  await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10_admin_razorpayx_payouts.png'), fullPage: true });
+
   await browser.close();
 
   // Summary Report

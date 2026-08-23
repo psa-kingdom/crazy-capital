@@ -165,6 +165,10 @@ model User {
   skills         Json?     @default("[]")     @map("skills") // Array of string skill tags e.g. ["COMPANY_LAW", "GST_FILING"]
   maxConcurrentTasks Int   @default(5)        @map("max_concurrent_tasks")
   lastLoginAt    DateTime? @map("last_login_at")
+  bankAccountNumber String? @map("bank_account_number")
+  bankIfsc          String? @map("bank_ifsc")
+  bankAccountName   String? @map("bank_account_name")
+  upiId             String? @map("upi_id")
   createdAt      DateTime  @default(now()) @map("created_at")
   updatedAt      DateTime  @updatedAt @map("updated_at")
   deletedAt      DateTime? @map("deleted_at")
@@ -183,6 +187,7 @@ model User {
   approvedCommissions   Commission[]            @relation("AdminApprovedCommissions")
   partnerCommissions    Commission[]            @relation("PartnerCommissions")
   partnerPayouts        Payout[]                @relation("PartnerPayouts")
+  initiatedPayouts      Payout[]                @relation("UserInitiatedPayouts")
   partnerLeads          Lead[]                  @relation("PartnerLeads")
   partnerApplications   Application[]           @relation("PartnerApplications")
   assignedTasks         Task[]                  @relation("AssignedTasks")
@@ -884,24 +889,40 @@ model Commission {
   @@map("commissions")
 }
 
-// ADR-014: Payouts tracked separately
+// ADR-014: Payouts tracked separately; Slice 2.5: RazorpayX Automated Partner Payouts
 model Payout {
-  id              String    @id @default(uuid())
-  commissionId    String    @map("commission_id")
-  partnerId       String    @map("partner_id")
-  amount          Decimal   @db.Decimal(12, 2)
-  paymentMethod   String    @default("BANK_TRANSFER") @map("payment_method") // BANK_TRANSFER, RAZORPAYX
-  status          String    @default("PENDING_PAYOUT") // PENDING_PAYOUT, PAID, FAILED
-  referenceNumber String?   @map("reference_number") // UTR / transaction ID
-  paidAt          DateTime? @map("paid_at")
-  notes           String?
-  createdAt       DateTime  @default(now()) @map("created_at")
+  id                  String    @id @default(uuid())
+  payoutReference     String?   @unique @map("payout_reference") // e.g. PAYOUT-2026-000123
+  idempotencyKey      String?   @unique @map("idempotency_key")
+  commissionId        String    @map("commission_id")
+  partnerId           String    @map("partner_id")
+  amount              Decimal   @db.Decimal(12, 2)
+  paymentMethod       String    @default("RAZORPAYX") @map("payment_method") // RAZORPAYX, BANK_TRANSFER, CHEQUE, UPI
+  provider            String    @default("RAZORPAYX") // RAZORPAYX, MANUAL, MOCK
+  providerPayoutId    String?   @map("provider_payout_id") // pout_xxxx
+  fundAccountId       String?   @map("fund_account_id") // fa_xxxx
+  contactId           String?   @map("contact_id") // cont_xxxx
+  payoutMode          String    @default("IMPS") @map("payout_mode") // IMPS, NEFT, RTGS, UPI, MANUAL
+  accountNumberMasked String?   @map("account_number_masked")
+  ifsc                String?
+  status              String    @default("PENDING_PAYOUT") // PENDING_PAYOUT, PROCESSING, PAID, FAILED, REVERSED
+  referenceNumber     String?   @map("reference_number") // UTR / transaction ID
+  failureReason       String?   @map("failure_reason")
+  initiatedById       String?   @map("initiated_by_id")
+  initiatedAt         DateTime? @map("initiated_at")
+  paidAt              DateTime? @map("paid_at")
+  notes               String?
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
 
-  commission Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
-  partner    User       @relation("PartnerPayouts", fields: [partnerId], references: [id], onDelete: Cascade)
+  commission  Commission @relation(fields: [commissionId], references: [id], onDelete: Cascade)
+  partner     User       @relation("PartnerPayouts", fields: [partnerId], references: [id], onDelete: Cascade)
+  initiatedBy User?      @relation("UserInitiatedPayouts", fields: [initiatedById], references: [id], onDelete: SetNull)
 
   @@index([partnerId])
   @@index([status])
+  @@index([providerPayoutId])
+  @@index([payoutReference])
   @@map("payouts")
 }
 

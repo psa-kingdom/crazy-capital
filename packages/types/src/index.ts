@@ -1244,10 +1244,20 @@ export interface TestDispatchNotificationInput {
   customMessage?: string;
 }
 
-// ─── DOMAIN 9: PARTNER & COMMISSION TYPES (Slice 1.9 / ADR-011 / ADR-014) ────
+// ─── DOMAIN 9: PARTNER & COMMISSION TYPES (Slice 1.9 & Slice 2.5 / ADR-011 / ADR-014) ────
 
-export type PayoutStatus = 'PENDING_PAYOUT' | 'PAID' | 'FAILED';
+export type PayoutStatus =
+  | 'PENDING_PAYOUT'
+  | 'PROCESSING'
+  | 'PAID'
+  | 'FAILED'
+  | 'REVERSED';
+
 export type PayoutMethod = 'BANK_TRANSFER' | 'RAZORPAYX' | 'CHEQUE' | 'UPI';
+
+export type PayoutMode = 'IMPS' | 'NEFT' | 'RTGS' | 'UPI' | 'MANUAL';
+
+export type PayoutProviderType = 'RAZORPAYX' | 'MANUAL' | 'MOCK';
 
 export interface CommissionDto {
   id: string;
@@ -1285,6 +1295,10 @@ export interface CommissionDto {
     lastName: string;
     email: string;
     mobile?: string | null;
+    bankAccountNumber?: string | null;
+    bankIfsc?: string | null;
+    bankAccountName?: string | null;
+    upiId?: string | null;
   } | null;
   approvedBy?: {
     id: string;
@@ -1297,15 +1311,29 @@ export interface CommissionDto {
 
 export interface PayoutDto {
   id: string;
+  payoutReference?: string | null;
+  idempotencyKey?: string | null;
   commissionId: string;
   partnerId: string;
   amount: number;
   paymentMethod: PayoutMethod | string;
+  provider: PayoutProviderType | string;
+  providerPayoutId?: string | null;
+  fundAccountId?: string | null;
+  contactId?: string | null;
+  payoutMode: PayoutMode | string;
+  accountNumberMasked?: string | null;
+  ifsc?: string | null;
   status: PayoutStatus;
   referenceNumber?: string | null;
+  failureReason?: string | null;
+  initiatedById?: string | null;
+  initiatedByName?: string | null;
+  initiatedAt?: string | null;
   paidAt?: string | null;
   notes?: string | null;
   createdAt: string;
+  updatedAt?: string;
   commission?: CommissionDto | null;
   partner?: {
     id: string;
@@ -1313,6 +1341,10 @@ export interface PayoutDto {
     lastName: string;
     email: string;
     mobile?: string | null;
+    bankAccountNumber?: string | null;
+    bankIfsc?: string | null;
+    bankAccountName?: string | null;
+    upiId?: string | null;
   } | null;
 }
 
@@ -1360,6 +1392,38 @@ export interface RecordPayoutInput {
   paymentMethod?: PayoutMethod | string;
   referenceNumber: string; // UTR Number / Bank Transaction ID
   notes?: string;
+}
+
+export interface ExecutePayoutInput {
+  commissionId: string;
+  mode?: PayoutMode;
+  notes?: string;
+  idempotencyKey?: string;
+  bankDetailsOverride?: {
+    accountNumber?: string;
+    ifsc?: string;
+    accountName?: string;
+    upiId?: string;
+  };
+}
+
+export interface RetryPayoutInput {
+  notes?: string;
+  newMode?: PayoutMode;
+}
+
+export interface RazorpayXBalanceDto {
+  balance: number;
+  currency: string;
+  accountNumber: string;
+  isSandbox: boolean;
+  status: string;
+}
+
+export interface PayoutExecutionResultDto {
+  payout: PayoutDto;
+  isMock: boolean;
+  message: string;
 }
 
 export interface QueryCommissionsInput {

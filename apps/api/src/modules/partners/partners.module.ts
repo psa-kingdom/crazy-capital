@@ -7,11 +7,22 @@ import { PayoutsService } from './payouts.service';
 import { PayoutsController } from './payouts.controller';
 import { PartnersService } from './partners.service';
 import { PartnersController } from './partners.controller';
+import { RazorpayXPayoutProvider } from './providers/razorpayx-payout.provider';
 
 @Module({
   imports: [PrismaModule, NotificationsModule],
   controllers: [CommissionsController, PayoutsController, PartnersController],
-  providers: [CommissionsService, PayoutsService, PartnersService],
-  exports: [CommissionsService, PayoutsService, PartnersService],
+  providers: [
+    CommissionsService,
+    PayoutsService,
+    PartnersService,
+    RazorpayXPayoutProvider,
+  ],
+  exports: [
+    CommissionsService,
+    PayoutsService,
+    PartnersService,
+    RazorpayXPayoutProvider,
+  ],
 })
 export class PartnersModule {}

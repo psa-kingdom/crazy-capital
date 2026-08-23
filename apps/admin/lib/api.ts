@@ -352,13 +352,34 @@ export const payoutsApi = {
   getPayouts: async (params?: Record<string, any>) => {
     return apiClient.get('/payouts', { params });
   },
+  getPayoutById: async (id: string) => {
+    return apiClient.get(`/payouts/${id}`);
+  },
+  executePayout: async (data: {
+    commissionId: string;
+    mode?: string;
+    notes?: string;
+    idempotencyKey?: string;
+    bankDetailsOverride?: Record<string, any>;
+  }) => {
+    return apiClient.post('/payouts/execute', data);
+  },
+  syncStatus: async (id: string) => {
+    return apiClient.post(`/payouts/${id}/sync`);
+  },
+  retryPayout: async (id: string, data?: { notes?: string; newMode?: string }) => {
+    return apiClient.post(`/payouts/${id}/retry`, data || {});
+  },
   recordManualPayout: async (data: {
     commissionId: string;
     referenceNumber: string;
     paymentMethod?: string;
     notes?: string;
   }) => {
-    return apiClient.post('/payouts', data);
+    return apiClient.post('/payouts/manual', data);
+  },
+  getRazorpayXBalance: async () => {
+    return apiClient.get('/payouts/razorpayx/balance');
   },
 };
 
@@ -505,5 +526,6 @@ export const branchesApi = {
     });
   },
 };
+
 
 
