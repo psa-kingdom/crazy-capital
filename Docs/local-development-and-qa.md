@@ -1,8 +1,8 @@
 # Crazy Capital — Local Development & QA Guide
 
-> **Authoritative Local Development & Human Acceptance Reference**  
-> Current Checkpoint: **Vertical Slice 1.12 Delivered (Commit: `d6c32ba`)**  
-> Covers: Local Environment Setup, Synthetic Seed Accounts, Full Browser QA Checklists, Security & Data Scoping Validation.
+> **Authoritative Local Development & Real Browser QA Reference**  
+> Current Checkpoint: **Vertical Slice 1.13 Delivered — Phase 1 Complete**  
+> Covers: Local Environment Setup, Real Chrome/Edge Browser Automation Suite, Synthetic Seed Accounts, Full Browser QA Checklists, Security & Data Scoping Validation.
 
 ---
 
@@ -183,9 +183,44 @@ The following deterministic, synthetic demo users are seeded for testing:
    - [ ] Inspect delivery audit logs across Email, SMS, WhatsApp.
    - [ ] Trigger test dispatch modal.
 
+### Phase F: Public Website & Knowledge Center (Slice 1.13)
+1. **Public Homepage ([http://localhost:3000](http://localhost:3000))**:
+   - [ ] All 14 service vertical cards rendered with starting prices (`₹XX,XXX`) and SLA turnaround tags.
+   - [ ] Fast-track public lead capture form with instant CRM dispatch.
+2. **14 Service Vertical Landing Pages ([http://localhost:3000/services/[slug]](http://localhost:3000/services/pvt-ltd-incorporation))**:
+   - [ ] Dynamic OpenGraph SEO metadata, deliverables checklist, 4-stage execution stepper, document checklist, and FAQ list.
+3. **Public Blog & Knowledge Center ([http://localhost:3000/blog](http://localhost:3000/blog))**:
+   - [ ] Interactive topic search and category filter buttons.
+   - [ ] Individual article reading view ([http://localhost:3000/blog/how-to-register-pvt-ltd-company-india](http://localhost:3000/blog/how-to-register-pvt-ltd-company-india)) with markdown typography and author card.
+4. **Admin CMS Workbench ([http://localhost:3001/cms](http://localhost:3001/cms))**:
+   - [ ] Article management table with status filtering (`ALL`, `PUBLISHED`, `DRAFT`, `ARCHIVED`).
+   - [ ] 3-Tab Authoring Modal (Markdown content editor, SEO & OpenGraph configurator, Live Preview).
+
 ---
 
-## 6. Staging Infrastructure Reference
+## 6. Automated Real Browser QA Test Suite
+
+Crazy Capital includes an automated real browser test suite powered by `playwright-core` that natively controls the host's installed Google Chrome / Microsoft Edge binaries without requiring external CDN binary downloads:
+
+```bash
+# 1. Start the stack in background (API :4000, Web :3000, Admin :3001)
+npm run start:stack
+
+# 2. Run the 169-assertion Real Browser Acceptance Test Suite
+npm run test:browser
+```
+
+### Verified Browser Test Checkpoints (169 / 169 Passing):
+- **Checkpoint 1-14**: All 14 Service Vertical Routes (HTTP 200, SEO Title, Meta Description, OG Title, Pricing, 4-Stage Stepper, Documents Checklist, FAQs, Lead Form).
+- **Checkpoint 15-20**: Real Lead Form Interaction (Form filling, UTM & Branch parameter parsing, submission state transition, personalized success card).
+- **Checkpoint 21-28**: Knowledge Center & Blog (Index title, Category filter buttons, Search bar, Article detail, OG tags, 404 handler for invalid slugs).
+- **Checkpoint 29-38**: Admin CMS Workbench (Admin header, Slice 1.13 badge, Status filters, "+ New Article" modal, SEO tab, Live Preview tab).
+- **Checkpoint 39-50**: Customer Portal & Operations Suite Regression (Customer Portal, Admin Reports, Leads CRM, Document Vault, Invoices, Commissions, Notifications).
+- **Checkpoint 51-55**: SEO Assets (`/sitemap.xml` dynamic XML generator, `/robots.txt` directives).
+
+---
+
+## 7. Staging Infrastructure Reference
 
 - **Railway Staging API**: `https://api-staging-41ee.up.railway.app`
 - **Cloudflare R2 Bucket**: `crazy-capital-staging-documents` (ACTIVE & VERIFIED)

@@ -85,6 +85,13 @@ export const TaskStatus = {
 } as const;
 export type TaskStatus = (typeof TaskStatus)[keyof typeof TaskStatus];
 
+export const BlogPostStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED',
+  ARCHIVED: 'ARCHIVED',
+} as const;
+export type BlogPostStatus = (typeof BlogPostStatus)[keyof typeof BlogPostStatus];
+
 // ─── Base Types ───────────────────────────────────────────────────────────────
 
 export interface PaginationMeta {
@@ -1503,6 +1510,140 @@ export interface ExportReportInput {
   startDate?: string;
   endDate?: string;
   branchId?: string;
+}
+
+// ─── DOMAIN 13: CMS & KNOWLEDGE BASE DOMAIN ─────────────────────────────────
+
+export interface BlogCategoryDto {
+  id: string;
+  organizationId: string;
+  name: string;
+  slug: string;
+  description?: string | null;
+  icon?: string | null;
+  sortOrder: number;
+  postCount?: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface BlogPostDto {
+  id: string;
+  organizationId: string;
+  categoryId?: string | null;
+  category?: BlogCategoryDto | null;
+  authorId?: string | null;
+  author?: {
+    id: string;
+    firstName: string;
+    lastName: string;
+    email: string;
+  } | null;
+  title: string;
+  slug: string;
+  excerpt: string;
+  content: string;
+  coverImage?: string | null;
+  readingTimeMin: number;
+  status: BlogPostStatus;
+  publishedAt?: string | null;
+  tags: string[];
+  featured: boolean;
+  viewCount: number;
+  // SEO Metadata
+  metaTitle?: string | null;
+  metaDescription?: string | null;
+  metaKeywords?: string | null;
+  canonicalUrl?: string | null;
+  ogTitle?: string | null;
+  ogDescription?: string | null;
+  ogImage?: string | null;
+  twitterCard?: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateBlogPostInput {
+  title: string;
+  slug?: string;
+  categoryId?: string;
+  excerpt: string;
+  content: string;
+  coverImage?: string;
+  readingTimeMin?: number;
+  status?: BlogPostStatus;
+  tags?: string[];
+  featured?: boolean;
+  metaTitle?: string;
+  metaDescription?: string;
+  metaKeywords?: string;
+  canonicalUrl?: string;
+  ogTitle?: string;
+  ogDescription?: string;
+  ogImage?: string;
+  twitterCard?: string;
+}
+
+export interface UpdateBlogPostInput extends Partial<CreateBlogPostInput> {}
+
+export interface QueryBlogPostsInput {
+  page?: number;
+  limit?: number;
+  search?: string;
+  categorySlug?: string;
+  tag?: string;
+  status?: BlogPostStatus;
+  featured?: boolean;
+}
+
+export interface CreateBlogCategoryInput {
+  name: string;
+  slug?: string;
+  description?: string;
+  icon?: string;
+  sortOrder?: number;
+}
+
+export interface UpdateBlogCategoryInput extends Partial<CreateBlogCategoryInput> {}
+
+// ─── 14 SERVICE VERTICALS DOMAIN ──────────────────────────────────────────
+
+export interface ServiceProcessStep {
+  stepNumber: number;
+  title: string;
+  description: string;
+  estimatedDays: string;
+}
+
+export interface ServiceFaq {
+  question: string;
+  answer: string;
+}
+
+export interface ServiceVerticalDto {
+  id: string;
+  slug: string;
+  title: string;
+  subtitle: string;
+  categoryCode: string;
+  categoryName: string;
+  description: string;
+  iconName: string;
+  badge?: string;
+  startingPriceInr: number;
+  governmentFeesNote: string;
+  slaTimelineDays: string;
+  deliverables: string[];
+  features: string[];
+  requiredDocuments: {
+    name: string;
+    mandatory: boolean;
+    description: string;
+  }[];
+  processSteps: ServiceProcessStep[];
+  faqs: ServiceFaq[];
+  relatedBlogTags: string[];
+  isPopular?: boolean;
 }
 
 

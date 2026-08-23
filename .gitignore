@@ -50,4 +50,5 @@ coverage/
 
 # Misc
 *.pem
+artifacts/
 

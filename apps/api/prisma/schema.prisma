@@ -26,6 +26,8 @@ model Organization {
   customers    Customer[]
   applications Application[]
   documents    Document[]
+  blogCategories BlogCategory[]
+  blogPosts    BlogPost[]
 
   @@map("organizations")
 }
@@ -119,6 +121,7 @@ model User {
   partnerLeads          Lead[]                  @relation("PartnerLeads")
   partnerApplications   Application[]           @relation("PartnerApplications")
   assignedTasks         Task[]                  @relation("AssignedTasks")
+  blogPosts             BlogPost[]              @relation("AuthorBlogPosts")
 
   @@index([organizationId, email])
   @@index([organizationId, mobile])
@@ -225,6 +228,10 @@ model Lead {
   leadScore      Int       @default(0) @map("lead_score")
   notes          String?
   campaign       String?
+  utmSource      String?   @map("utm_source")
+  utmMedium      String?   @map("utm_medium")
+  utmCampaign    String?   @map("utm_campaign")
+  serviceInterest String?  @map("service_interest")
   partnerId      String?   @map("partner_id") // userId with PARTNER role who referred lead
   convertedToId  String?   @map("converted_to_id") // customer_id if converted
   createdAt      DateTime  @default(now()) @map("created_at")
@@ -767,4 +774,64 @@ model NotificationLog {
   @@index([recipient])
   @@index([status])
   @@map("notification_logs")
+}
+
+// ─── DOMAIN 13: CMS & KNOWLEDGE BASE DOMAIN ─────────────────────────────────
+
+model BlogCategory {
+  id             String    @id @default(uuid())
+  organizationId String    @map("organization_id")
+  name           String
+  slug           String    @unique
+  description    String?
+  icon           String?
+  sortOrder      Int       @default(0) @map("sort_order")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  posts          BlogPost[]
+
+  @@map("blog_categories")
+}
+
+model BlogPost {
+  id              String    @id @default(uuid())
+  organizationId  String    @map("organization_id")
+  categoryId      String?   @map("category_id")
+  authorId        String?   @map("author_id")
+  title           String
+  slug            String    @unique
+  excerpt         String
+  content         String    @db.Text
+  coverImage      String?   @map("cover_image")
+  readingTimeMin  Int       @default(5) @map("reading_time_min")
+  status          String    @default("DRAFT") // DRAFT, PUBLISHED, ARCHIVED
+  publishedAt     DateTime? @map("published_at")
+  tags            String[]  @default([])
+  featured        Boolean   @default(false)
+  viewCount       Int       @default(0) @map("view_count")
+
+  // SEO Metadata
+  metaTitle       String?   @map("meta_title")
+  metaDescription String?   @map("meta_description")
+  metaKeywords    String?   @map("meta_keywords")
+  canonicalUrl    String?   @map("canonical_url")
+  ogTitle         String?   @map("og_title")
+  ogDescription   String?   @map("og_description")
+  ogImage         String?   @map("og_image")
+  twitterCard     String?   @default("summary_large_image") @map("twitter_card")
+
+  createdAt       DateTime  @default(now()) @map("created_at")
+  updatedAt       DateTime  @updatedAt @map("updated_at")
+  deletedAt       DateTime? @map("deleted_at")
+
+  organization    Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  category        BlogCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  author          User?         @relation("AuthorBlogPosts", fields: [authorId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status])
+  @@index([slug])
+  @@index([categoryId])
+  @@map("blog_posts")
 }

@@ -18,16 +18,19 @@
     "db:seed": "npm run --workspace=@cc/api prisma:seed",
     "lint": "turbo run lint",
     "test": "turbo run test",
+    "test:browser": "node scripts/browser-acceptance-suite.js",
+    "start:stack": "node scripts/start-local-stack.js",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "node -e \"try { require('husky') } catch (e) {}\""
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
-    "prettier": "^3.3.0",
-    "husky": "^9.0.0",
-    "lint-staged": "^15.0.0",
     "@commitlint/cli": "^19.0.0",
     "@commitlint/config-conventional": "^19.0.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "playwright-core": "^1.62.1",
+    "prettier": "^3.3.0",
+    "turbo": "^2.0.0",
     "typescript": "^5.5.0"
   },
   "engines": {

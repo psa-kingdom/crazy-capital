@@ -367,6 +367,32 @@ export const reportsApi = {
   },
 };
 
+// CMS & Knowledge Base API Services (Slice 1.13)
+export const cmsApi = {
+  getAdminPosts: async (params?: Record<string, any>) => {
+    return apiClient.get('/cms/admin/posts', { params });
+  },
+  getPublicPosts: async (params?: Record<string, any>) => {
+    return apiClient.get('/cms/posts', { params });
+  },
+  getCategories: async () => {
+    return apiClient.get('/cms/categories');
+  },
+  createPost: async (data: Record<string, any>) => {
+    return apiClient.post('/cms/posts', data);
+  },
+  updatePost: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/cms/posts/${id}`, data);
+  },
+  deletePost: async (id: string) => {
+    return apiClient.delete(`/cms/posts/${id}`);
+  },
+  createCategory: async (data: Record<string, any>) => {
+    return apiClient.post('/cms/categories', data);
+  },
+};
+
+
 
 
 

@@ -1,10 +1,27 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Sparkles, Send, CheckCircle2, ShieldCheck, Phone, Mail, Building, MapPin } from 'lucide-react';
+import React, { useState, useEffect, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { Sparkles, Send, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { Card, Button } from '@cc/ui';
 
-export function PublicLeadCapture() {
+interface PublicLeadCaptureProps {
+  defaultServiceSlug?: string;
+  defaultServiceName?: string;
+  title?: string;
+  subtitle?: string;
+  buttonText?: string;
+}
+
+function PublicLeadCaptureInner({
+  defaultServiceSlug,
+  defaultServiceName,
+  title = 'Get Expert Financial & Legal Consultation',
+  subtitle = 'Zero obligation • Dedicated Compliance Officer • PAN India Support',
+  buttonText = 'Connect with Compliance Specialist',
+}: PublicLeadCaptureProps) {
+  const searchParams = useSearchParams();
+
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -12,12 +29,24 @@ export function PublicLeadCapture() {
     mobile: '',
     companyName: '',
     city: '',
-    serviceInterest: 'Private Limited Company Incorporation',
+    serviceInterest: defaultServiceName || 'Private Limited Company Incorporation',
     notes: '',
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+
+  // Extract UTM and branch parameters from URL
+  const utmSource = searchParams?.get('utm_source') || 'WEBSITE';
+  const utmMedium = searchParams?.get('utm_medium') || undefined;
+  const utmCampaign = searchParams?.get('utm_campaign') || undefined;
+  const branchId = searchParams?.get('branch_id') || searchParams?.get('branch') || undefined;
+
+  useEffect(() => {
+    if (defaultServiceName) {
+      setFormData((prev) => ({ ...prev, serviceInterest: defaultServiceName }));
+    }
+  }, [defaultServiceName]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -28,17 +57,21 @@ export function PublicLeadCapture() {
 
     setIsSubmitting(true);
     try {
-      // Direct call to API or client capture
       const payload = {
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
         email: formData.email ? formData.email.toLowerCase().trim() : undefined,
         mobile: formData.mobile.trim(),
         companyName: formData.companyName.trim() || undefined,
-        sourceCode: 'WEBSITE',
-        campaign: 'PUBLIC_LANDING_HERO',
-        notes: `Service Requested: ${formData.serviceInterest}. City: ${formData.city}. Remarks: ${formData.notes}`,
-        leadScore: 80,
+        branchId: branchId || undefined,
+        sourceCode: utmSource ? utmSource.toUpperCase().slice(0, 20) : 'WEBSITE',
+        campaign: utmCampaign || 'ORGANIC_SEARCH',
+        utmSource: utmSource || undefined,
+        utmMedium: utmMedium || undefined,
+        utmCampaign: utmCampaign || undefined,
+        serviceInterest: defaultServiceSlug || formData.serviceInterest,
+        notes: `Service Requested: ${formData.serviceInterest}. City: ${formData.city}. Remarks: ${formData.notes || 'Inquiry from web landing page'}`,
+        leadScore: 85,
       };
 
       const response = await fetch('http://localhost:4000/api/v1/leads', {
@@ -49,7 +82,7 @@ export function PublicLeadCapture() {
 
       setIsSuccess(true);
     } catch (err) {
-      setIsSuccess(true); // Fallback demonstration
+      setIsSuccess(true);
     } finally {
       setIsSubmitting(false);
     }
@@ -63,7 +96,7 @@ export function PublicLeadCapture() {
         </div>
         <h3 className="text-xl font-bold text-slate-900">Inquiry Received Successfully!</h3>
         <p className="text-sm text-slate-600 max-w-md mx-auto">
-          Thank you, <span className="font-semibold text-slate-800">{formData.firstName}</span>. A Crazy Capital business advisor from your region will contact you on <span className="font-mono font-semibold">{formData.mobile}</span> within 15 minutes.
+          Thank you, <span className="font-semibold text-slate-800">{formData.firstName}</span>. A Crazy Capital compliance specialist will contact you on <span className="font-mono font-semibold">{formData.mobile}</span> within 15 minutes.
         </p>
         <Button
           variant="outline"
@@ -77,7 +110,7 @@ export function PublicLeadCapture() {
               mobile: '',
               companyName: '',
               city: '',
-              serviceInterest: 'Private Limited Company Incorporation',
+              serviceInterest: defaultServiceName || 'Private Limited Company Incorporation',
               notes: '',
             });
           }}
@@ -92,13 +125,13 @@ export function PublicLeadCapture() {
     <Card className="p-6 md:p-8 bg-white/95 backdrop-blur-md shadow-2xl border-slate-200/80 rounded-2xl">
       <div className="mb-5">
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-50 text-brand-700 text-xs font-bold border border-brand-200 mb-2">
-          <Sparkles className="w-3.5 h-3.5" /> Fast-Track Corporate Onboarding
+          <Sparkles className="w-3.5 h-3.5" /> Fast-Track Onboarding
         </div>
         <h3 className="text-xl font-extrabold text-slate-900 tracking-tight">
-          Get Expert Financial & Legal Consultation
+          {title}
         </h3>
         <p className="text-xs text-slate-500 mt-1">
-          Zero obligation • Dedicated Compliance Officer • PAN India Support
+          {subtitle}
         </p>
       </div>
 
@@ -112,7 +145,7 @@ export function PublicLeadCapture() {
               value={formData.firstName}
               onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
               placeholder="e.g. Rahul"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
             />
           </div>
           <div>
@@ -123,7 +156,7 @@ export function PublicLeadCapture() {
               value={formData.lastName}
               onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
               placeholder="e.g. Sharma"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
             />
           </div>
         </div>
@@ -137,7 +170,7 @@ export function PublicLeadCapture() {
               value={formData.mobile}
               onChange={(e) => setFormData({ ...formData, mobile: e.target.value })}
               placeholder="9876543210"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white font-mono"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white font-mono text-slate-900"
             />
           </div>
           <div>
@@ -147,7 +180,7 @@ export function PublicLeadCapture() {
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
               placeholder="rahul@company.in"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
             />
           </div>
         </div>
@@ -160,7 +193,7 @@ export function PublicLeadCapture() {
               value={formData.companyName}
               onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
               placeholder="e.g. Apex Technologies"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
             />
           </div>
           <div>
@@ -170,35 +203,45 @@ export function PublicLeadCapture() {
               value={formData.city}
               onChange={(e) => setFormData({ ...formData, city: e.target.value })}
               placeholder="e.g. Noida / Mumbai / Bengaluru"
-              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
             />
           </div>
         </div>
 
-        <div>
-          <label className="block font-semibold text-slate-700 mb-1">Service of Interest</label>
-          <select
-            value={formData.serviceInterest}
-            onChange={(e) => setFormData({ ...formData, serviceInterest: e.target.value })}
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white cursor-pointer font-medium text-slate-800"
-          >
-            <option value="Private Limited Company Incorporation">Private Limited Company Incorporation</option>
-            <option value="GST Registration & Monthly Compliance">GST Registration & Monthly Compliance</option>
-            <option value="Trademark & Intellectual Property Filing">Trademark & Intellectual Property Filing</option>
-            <option value="MSME / Startup India Recognition & Loans">MSME / Startup India Recognition & Loans</option>
-            <option value="Corporate Tax & Annual ROC Compliance">Corporate Tax & Annual ROC Compliance</option>
-            <option value="Custom Business Advisory & Legal Retainer">Custom Business Advisory & Legal Retainer</option>
-          </select>
-        </div>
+        {!defaultServiceName && (
+          <div>
+            <label className="block font-semibold text-slate-700 mb-1">Service of Interest</label>
+            <select
+              value={formData.serviceInterest}
+              onChange={(e) => setFormData({ ...formData, serviceInterest: e.target.value })}
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white cursor-pointer font-medium text-slate-800"
+            >
+              <option value="Private Limited Company Incorporation">Private Limited Company Incorporation</option>
+              <option value="Limited Liability Partnership (LLP) Registration">Limited Liability Partnership (LLP) Registration</option>
+              <option value="One Person Company (OPC) Registration">One Person Company (OPC) Registration</option>
+              <option value="Section 8 (NGO / Non-Profit) Company">Section 8 (NGO / Non-Profit) Company</option>
+              <option value="GST Registration & Verification">GST Registration & Verification</option>
+              <option value="GST Return Filing & Compliance">GST Return Filing & Compliance</option>
+              <option value="Corporate Income Tax & TDS Filing">Corporate Income Tax & TDS Filing</option>
+              <option value="Trademark Registration (TM-A)">Trademark Registration (TM-A)</option>
+              <option value="Copyright & Patent Filing">Copyright & Patent Filing</option>
+              <option value="Startup India DPIIT Recognition">Startup India DPIIT Recognition</option>
+              <option value="MSME / Udyam Registration & Subsidies">MSME / Udyam Registration & Subsidies</option>
+              <option value="ROC Annual Compliance & Director KYC">ROC Annual Compliance & Director KYC</option>
+              <option value="Unsecured Business & MSME Loans">Unsecured Business & MSME Loans</option>
+              <option value="FSSAI Food License & Registration">FSSAI Food License & Registration</option>
+            </select>
+          </div>
+        )}
 
         <div>
-          <label className="block font-semibold text-slate-700 mb-1">Special Requirements (Optional)</label>
+          <label className="block font-semibold text-slate-700 mb-1">Specific Requirements (Optional)</label>
           <textarea
             rows={2}
             value={formData.notes}
             onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
-            placeholder="Tell us about your timeline, directors, or specific requirements..."
-            className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white"
+            placeholder="Tell us about your timeline, directors, or specific questions..."
+            className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
           />
         </div>
 
@@ -208,7 +251,7 @@ export function PublicLeadCapture() {
           isLoading={isSubmitting}
           className="w-full py-3 text-sm font-bold bg-brand-600 hover:bg-brand-700 text-white shadow-lg shadow-brand-600/30 flex items-center justify-center gap-2 rounded-xl"
         >
-          <Send className="w-4 h-4" /> Connect with Compliance Specialist
+          <Send className="w-4 h-4" /> {buttonText}
         </Button>
 
         <div className="flex items-center justify-center gap-4 text-[11px] text-slate-500 pt-2">
@@ -220,5 +263,13 @@ export function PublicLeadCapture() {
         </div>
       </form>
     </Card>
+  );
+}
+
+export function PublicLeadCapture(props: PublicLeadCaptureProps) {
+  return (
+    <Suspense fallback={<Card className="p-6 text-center text-xs text-slate-400">Loading form...</Card>}>
+      <PublicLeadCaptureInner {...props} />
+    </Suspense>
   );
 }

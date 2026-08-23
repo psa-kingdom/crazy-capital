@@ -52,6 +52,26 @@ export class CreateLeadDto {
   @IsString()
   campaign?: string;
 
+  @ApiPropertyOptional({ example: 'google_ads', description: 'UTM source tracking' })
+  @IsOptional()
+  @IsString()
+  utmSource?: string;
+
+  @ApiPropertyOptional({ example: 'cpc', description: 'UTM medium tracking' })
+  @IsOptional()
+  @IsString()
+  utmMedium?: string;
+
+  @ApiPropertyOptional({ example: 'pvt_ltd_launch_2026', description: 'UTM campaign name' })
+  @IsOptional()
+  @IsString()
+  utmCampaign?: string;
+
+  @ApiPropertyOptional({ example: 'pvt-ltd-incorporation', description: 'Service vertical slug or name of interest' })
+  @IsOptional()
+  @IsString()
+  serviceInterest?: string;
+
   @ApiPropertyOptional({ example: 25, description: 'Initial lead score (0-100)', default: 0 })
   @IsOptional()
   @IsInt()
@@ -59,3 +79,4 @@ export class CreateLeadDto {
   @Max(100)
   leadScore?: number;
 }
+

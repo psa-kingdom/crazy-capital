@@ -64,6 +64,10 @@ export class LeadsService {
           leadScore: dto.leadScore ?? 0,
           notes: dto.notes?.trim() || null,
           campaign: dto.campaign?.trim() || null,
+          utmSource: dto.utmSource?.trim() || null,
+          utmMedium: dto.utmMedium?.trim() || null,
+          utmCampaign: dto.utmCampaign?.trim() || dto.campaign?.trim() || null,
+          serviceInterest: dto.serviceInterest?.trim() || null,
         },
         include: {
           source: true,
@@ -72,12 +76,19 @@ export class LeadsService {
       });
 
       // Log creation activity
+      const activityNotes = [
+        'Lead captured',
+        dto.serviceInterest ? `Service: ${dto.serviceInterest}` : null,
+        dto.utmSource ? `Source: ${dto.utmSource}` : null,
+        dto.utmCampaign ? `Campaign: ${dto.utmCampaign}` : null,
+      ].filter(Boolean).join(' | ');
+
       await tx.leadActivity.create({
         data: {
           leadId: lead.id,
           performedById: currentUser?.id || null,
           activityType: 'NOTE',
-          notes: dto.notes ? `Lead created: ${dto.notes}` : 'Lead created via inquiry',
+          notes: activityNotes,
         },
       });
 

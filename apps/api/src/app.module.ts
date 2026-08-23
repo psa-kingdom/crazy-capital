@@ -15,6 +15,7 @@ import { BillingModule } from './modules/billing/billing.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { PartnersModule } from './modules/partners/partners.module';
 import { ReportsModule } from './modules/reports/reports.module';
+import { CmsModule } from './modules/cms/cms.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -39,6 +40,7 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     NotificationsModule,
     PartnersModule,
     ReportsModule,
+    CmsModule,
   ],
   controllers: [AppController],
   providers: [
