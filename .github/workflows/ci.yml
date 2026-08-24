@@ -28,9 +28,14 @@ jobs:
 
       - name: Run Linters
         run: npx turbo run lint
+        env:
+          ESLINT_USE_FLAT_CONFIG: 'false'
 
       - name: Run Typecheck
         run: npx turbo run typecheck
+
+      - name: Run Unit Tests
+        run: npm test --workspace=@cc/api
 
   build:
     name: Build Apps & Packages
