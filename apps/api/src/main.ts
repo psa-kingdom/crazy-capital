@@ -73,9 +73,10 @@ async function bootstrap() {
   });
 
   const port = configService.get<number>('port', 4000);
-  await app.listen(port);
-  logger.log(`🚀 Crazy Capital API running on: http://localhost:${port}/${apiPrefix}`);
-  logger.log(`📚 Swagger documentation available at: http://localhost:${port}/api/docs`);
+  await app.listen(port, '0.0.0.0');
+  logger.log(`🚀 Crazy Capital API running on port ${port} (prefix: /${apiPrefix})`);
+  logger.log(`📚 Swagger documentation available at /api/docs`);
 }
 
 bootstrap();
+

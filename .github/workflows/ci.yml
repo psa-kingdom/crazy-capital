@@ -2,9 +2,9 @@ name: CI / CD Pipeline
 
 on:
   push:
-    branches: [main, develop, staging]
+    branches: [main, develop, staging, deployment-ready]
   pull_request:
-    branches: [main, develop]
+    branches: [main, develop, deployment-ready]
 
 jobs:
   lint-and-typecheck:
