@@ -445,6 +445,102 @@ export const partnersApi = {
   getPayouts: async (params?: Record<string, any>) => {
     return apiClient.get('/partners/payouts', { params });
   },
+  // Phase 3.1 & 3.3
+  getProfile: async () => {
+    return apiClient.get('/partners/me/profile');
+  },
+  updateKyc: async (data: Record<string, any>) => {
+    return apiClient.patch('/partners/me/kyc', data);
+  },
+  getAnalytics: async () => {
+    return apiClient.get('/partners/me/analytics');
+  },
+  reviewKyc: async (partnerId: string, data: { status: string; notes?: string }) => {
+    return apiClient.patch(`/partners/${partnerId}/kyc-review`, data);
+  },
+  getReferralCode: async () => {
+    return apiClient.get('/partners/me/referral-code');
+  },
+  getReferralTree: async () => {
+    return apiClient.get('/partners/me/referral-tree');
+  },
+  attributeReferral: async (data: { referralCode: string; leadId?: string; referredUserId?: string }) => {
+    return apiClient.post('/partners/referrals/attribute', data);
+  },
+  getCoupons: async (partnerId?: string) => {
+    return apiClient.get('/partners/coupons', { params: { partnerId } });
+  },
+  createCoupon: async (data: Record<string, any>) => {
+    return apiClient.post('/partners/coupons', data);
+  },
+  validateCoupon: async (data: { code: string; customerId: string; serviceId: string; orderAmount: number; franchiseId?: string }) => {
+    return apiClient.post('/partners/coupons/validate', data);
+  },
+  getCommissionSlabs: async (tier?: string) => {
+    return apiClient.get('/partners/commission-slabs', { params: { tier } });
+  },
+  createCommissionSlab: async (data: Record<string, any>) => {
+    return apiClient.post('/partners/commission-slabs', data);
+  },
+  updateCommissionSlab: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/partners/commission-slabs/${id}`, data);
+  },
+  getIncentiveRules: async () => {
+    return apiClient.get('/partners/incentive-rules');
+  },
+  createIncentiveRule: async (data: Record<string, any>) => {
+    return apiClient.post('/partners/incentive-rules', data);
+  },
+};
+
+// Franchise Management & Revenue Sharing API Services (Slice 3.2)
+export const franchisesApi = {
+  getFranchises: async (params?: { regionId?: string }) => {
+    return apiClient.get('/franchises', { params });
+  },
+  getFranchiseById: async (id: string) => {
+    return apiClient.get(`/franchises/${id}`);
+  },
+  createFranchise: async (data: Record<string, any>) => {
+    return apiClient.post('/franchises', data);
+  },
+  updateFranchise: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/franchises/${id}`, data);
+  },
+  getPricingOverrides: async (franchiseId: string) => {
+    return apiClient.get(`/franchises/${franchiseId}/pricing`);
+  },
+  setPricingOverride: async (franchiseId: string, data: Record<string, any>) => {
+    return apiClient.post(`/franchises/${franchiseId}/pricing/override`, data);
+  },
+  getSettlements: async (franchiseId: string) => {
+    return apiClient.get(`/franchises/${franchiseId}/settlements`);
+  },
+  generateSettlement: async (franchiseId: string, data: { periodStart: string; periodEnd: string; notes?: string }) => {
+    return apiClient.post(`/franchises/${franchiseId}/settlements/generate`, data);
+  },
+  approveSettlement: async (settlementId: string) => {
+    return apiClient.patch(`/franchises/settlements/${settlementId}/approve`);
+  },
+};
+
+// Identity & Statutory Verification API Services (Slice 3.4)
+export const identityVerificationApi = {
+  verifyPan: async (data: { pan: string; expectedName?: string; userId?: string; partnerId?: string }) => {
+    return apiClient.post('/identity-verification/pan', data);
+  },
+  verifyGst: async (data: { gstin: string; expectedTradeName?: string; userId?: string; partnerId?: string; franchiseId?: string }) => {
+    return apiClient.post('/identity-verification/gst', data);
+  },
+  verifyDigiLocker: async (data: { documentType: string; authCode?: string; userId?: string; partnerId?: string }) => {
+    return apiClient.post('/identity-verification/digilocker', data);
+  },
+  getQueue: async (params?: { status?: string }) => {
+    return apiClient.get('/identity-verification/queue', { params });
+  },
+  retryVerification: async (id: string) => {
+    return apiClient.post(`/identity-verification/${id}/retry`);
+  },
 };
 
 // Customer Self-Service Portal API (Slice 1.11)

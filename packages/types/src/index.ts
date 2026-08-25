@@ -2264,4 +2264,390 @@ export interface QueryBranchTargetsInput {
   status?: string;
 }
 
+// ─── PHASE 3: NATIONWIDE PARTNER ECOSYSTEM & FRANCHISE EXPANSION ─────────────
+
+// Vertical Slice 3.1: Partner Portal V2 & Tiered Commission Slabs
+export const PartnerTier = {
+  SILVER: 'SILVER',
+  GOLD: 'GOLD',
+  PLATINUM: 'PLATINUM',
+} as const;
+export type PartnerTier = (typeof PartnerTier)[keyof typeof PartnerTier];
+
+export const PartnerKycStatus = {
+  PENDING_KYC: 'PENDING_KYC',
+  UNDER_REVIEW: 'UNDER_REVIEW',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+  SUSPENDED: 'SUSPENDED',
+} as const;
+export type PartnerKycStatus = (typeof PartnerKycStatus)[keyof typeof PartnerKycStatus];
+
+export const PartnerType = {
+  INDIVIDUAL: 'INDIVIDUAL',
+  BUSINESS: 'BUSINESS',
+  FRANCHISE_AFFILIATE: 'FRANCHISE_AFFILIATE',
+} as const;
+export type PartnerType = (typeof PartnerType)[keyof typeof PartnerType];
+
+export interface PartnerProfileDto {
+  id: string;
+  userId: string;
+  partnerCode: string;
+  partnerType: PartnerType | string;
+  tier: PartnerTier | string;
+  kycStatus: PartnerKycStatus | string;
+  businessName?: string | null;
+  panMasked?: string | null;
+  gstin?: string | null;
+  aadhaarMasked?: string | null;
+  digilockerVerifiedAt?: Date | string | null;
+  lifetimeEarnings: number;
+  lifetimeConversions: number;
+  bankAccountNumberMasked?: string | null;
+  bankIfsc?: string | null;
+  bankBeneficiaryName?: string | null;
+  onboardingNotes?: string | null;
+  tierPromotedAt?: Date | string | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface UpdatePartnerKycInput {
+  partnerType?: PartnerType | string;
+  businessName?: string;
+  pan?: string;
+  gstin?: string;
+  aadhaar?: string;
+  bankAccountNumber?: string;
+  bankIfsc?: string;
+  bankBeneficiaryName?: string;
+}
+
+export interface CommissionSlabRuleDto {
+  id: string;
+  organizationId: string;
+  tier: PartnerTier | string;
+  serviceCategoryId?: string | null;
+  serviceId?: string | null;
+  ratePercentage: number;
+  flatBonusAmount: number;
+  effectiveFrom: Date | string;
+  effectiveTo?: Date | string | null;
+  status: string;
+  notes?: string | null;
+  serviceCategoryName?: string | null;
+  serviceName?: string | null;
+}
+
+export interface CreateCommissionSlabInput {
+  tier: PartnerTier | string;
+  serviceCategoryId?: string;
+  serviceId?: string;
+  ratePercentage: number;
+  flatBonusAmount?: number;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+  notes?: string;
+}
+
+// Vertical Slice 3.2: Franchise Management & Revenue Sharing
+export const FranchiseType = {
+  MASTER_FRANCHISE: 'MASTER_FRANCHISE',
+  CITY_FRANCHISE: 'CITY_FRANCHISE',
+  OUTPOST: 'OUTPOST',
+} as const;
+export type FranchiseType = (typeof FranchiseType)[keyof typeof FranchiseType];
+
+export const FranchiseStatus = {
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  TERMINATED: 'TERMINATED',
+} as const;
+export type FranchiseStatus = (typeof FranchiseStatus)[keyof typeof FranchiseStatus];
+
+export const FranchiseSettlementStatus = {
+  DRAFT: 'DRAFT',
+  PENDING_APPROVAL: 'PENDING_APPROVAL',
+  APPROVED: 'APPROVED',
+  SETTLED: 'SETTLED',
+  DISPUTED: 'DISPUTED',
+} as const;
+export type FranchiseSettlementStatus = (typeof FranchiseSettlementStatus)[keyof typeof FranchiseSettlementStatus];
+
+export interface FranchiseDto {
+  id: string;
+  organizationId: string;
+  regionId?: string | null;
+  branchId?: string | null;
+  managerId?: string | null;
+  name: string;
+  code: string;
+  franchiseType: FranchiseType | string;
+  legalEntityName?: string | null;
+  cinGstin?: string | null;
+  primaryContactName?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  addressLine?: string | null;
+  city?: string | null;
+  state?: string | null;
+  pincode?: string | null;
+  status: FranchiseStatus | string;
+  agreementStartDate?: Date | string | null;
+  agreementEndDate?: Date | string | null;
+  revenueSharePct: number;
+  settlementFrequency: string;
+  securityDeposit: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+  pricingOverridesCount?: number;
+}
+
+export interface CreateFranchiseInput {
+  name: string;
+  code: string;
+  regionId?: string;
+  branchId?: string;
+  managerId?: string;
+  franchiseType?: FranchiseType | string;
+  legalEntityName?: string;
+  cinGstin?: string;
+  primaryContactName?: string;
+  phone?: string;
+  email?: string;
+  addressLine?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  agreementStartDate?: string;
+  agreementEndDate?: string;
+  revenueSharePct?: number;
+  settlementFrequency?: string;
+  securityDeposit?: number;
+}
+
+export interface UpdateFranchiseInput {
+  name?: string;
+  regionId?: string;
+  branchId?: string;
+  managerId?: string;
+  franchiseType?: FranchiseType | string;
+  legalEntityName?: string;
+  cinGstin?: string;
+  primaryContactName?: string;
+  phone?: string;
+  email?: string;
+  addressLine?: string;
+  city?: string;
+  state?: string;
+  pincode?: string;
+  status?: FranchiseStatus | string;
+  agreementStartDate?: string;
+  agreementEndDate?: string;
+  revenueSharePct?: number;
+  settlementFrequency?: string;
+  securityDeposit?: number;
+}
+
+export interface SetFranchisePricingOverrideInput {
+  franchiseId: string;
+  serviceId: string;
+  customPrice: number;
+  customMinPrice?: number;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+  status?: string;
+}
+
+export interface GenerateFranchiseSettlementInput {
+  franchiseId: string;
+  periodStart: string;
+  periodEnd: string;
+  notes?: string;
+}
+
+// Vertical Slice 3.3: Multi-Tier Referral & Incentive Engine
+export const ReferralTierLevel = {
+  TIER_1_DIRECT: 'TIER_1_DIRECT',
+  TIER_2_PARENT: 'TIER_2_PARENT',
+  TIER_3_MASTER: 'TIER_3_MASTER',
+} as const;
+export type ReferralTierLevel = (typeof ReferralTierLevel)[keyof typeof ReferralTierLevel];
+
+export const ReferralStatus = {
+  PENDING: 'PENDING',
+  CONVERTED: 'CONVERTED',
+  EXPIRED: 'EXPIRED',
+  CANCELLED: 'CANCELLED',
+} as const;
+export type ReferralStatus = (typeof ReferralStatus)[keyof typeof ReferralStatus];
+
+export const DiscountType = {
+  PERCENTAGE: 'PERCENTAGE',
+  FIXED_AMOUNT: 'FIXED_AMOUNT',
+} as const;
+export type DiscountType = (typeof DiscountType)[keyof typeof DiscountType];
+
+export const CouponStatus = {
+  ACTIVE: 'ACTIVE',
+  EXPIRED: 'EXPIRED',
+  DISABLED: 'DISABLED',
+} as const;
+export type CouponStatus = (typeof CouponStatus)[keyof typeof CouponStatus];
+
+export interface ReferralAttributionDto {
+  id: string;
+  referrerId: string;
+  referredUserId?: string | null;
+  leadId?: string | null;
+  applicationId?: string | null;
+  referralCode: string;
+  tierLevel: ReferralTierLevel | string;
+  status: ReferralStatus | string;
+  commissionRate?: number | null;
+  commissionEarned?: number | null;
+  attributedAt: Date | string;
+  convertedAt?: Date | string | null;
+}
+
+export interface PartnerReferralTreeDto {
+  partnerId: string;
+  parentPartnerId?: string | null;
+  masterPartnerId?: string | null;
+  treeDepth: number;
+  partnerName?: string;
+  parentPartnerName?: string | null;
+  masterPartnerName?: string | null;
+}
+
+export interface CouponDto {
+  id: string;
+  code: string;
+  description?: string | null;
+  discountType: DiscountType | string;
+  discountValue: number;
+  maxDiscountAmount?: number | null;
+  minOrderAmount?: number | null;
+  validFrom: Date | string;
+  validTo?: Date | string | null;
+  maxTotalUsage?: number | null;
+  maxUsagePerCustomer: number;
+  currentUsageCount: number;
+  applicableServiceIds: string[];
+  applicableFranchiseIds: string[];
+  partnerId?: string | null;
+  status: CouponStatus | string;
+  createdAt: Date | string;
+}
+
+export interface CreateCouponInput {
+  code: string;
+  description?: string;
+  discountType?: DiscountType | string;
+  discountValue: number;
+  maxDiscountAmount?: number;
+  minOrderAmount?: number;
+  validFrom?: string;
+  validTo?: string;
+  maxTotalUsage?: number;
+  maxUsagePerCustomer?: number;
+  applicableServiceIds?: string[];
+  applicableFranchiseIds?: string[];
+  partnerId?: string;
+}
+
+export interface ValidateCouponInput {
+  code: string;
+  customerId: string;
+  serviceId: string;
+  orderAmount: number;
+  franchiseId?: string;
+}
+
+export interface IncentiveRuleDto {
+  id: string;
+  organizationId: string;
+  name: string;
+  targetType: string;
+  thresholdValue: number;
+  bonusAmount: number;
+  period: string;
+  applicableTier: string;
+  effectiveFrom: Date | string;
+  effectiveTo?: Date | string | null;
+  status: string;
+}
+
+export interface CreateIncentiveRuleInput {
+  name: string;
+  targetType?: string;
+  thresholdValue: number;
+  bonusAmount: number;
+  period?: string;
+  applicableTier?: string;
+  effectiveFrom?: string;
+  effectiveTo?: string;
+}
+
+// Vertical Slice 3.4: DigiLocker & Identity Verification APIs
+export const VerificationType = {
+  DIGILOCKER: 'DIGILOCKER',
+  PAN: 'PAN',
+  GSTIN: 'GSTIN',
+  AADHAAR_OTP: 'AADHAAR_OTP',
+} as const;
+export type VerificationType = (typeof VerificationType)[keyof typeof VerificationType];
+
+export const VerificationStatus = {
+  PENDING: 'PENDING',
+  VERIFIED: 'VERIFIED',
+  REJECTED: 'REJECTED',
+  FAILED: 'FAILED',
+} as const;
+export type VerificationStatus = (typeof VerificationStatus)[keyof typeof VerificationStatus];
+
+export interface IdentityVerificationRecordDto {
+  id: string;
+  organizationId: string;
+  userId?: string | null;
+  partnerId?: string | null;
+  franchiseId?: string | null;
+  verificationType: VerificationType | string;
+  identifierMasked: string;
+  provider: string;
+  providerReferenceId?: string | null;
+  verificationStatus: VerificationStatus | string;
+  matchScore?: number | null;
+  verifiedName?: string | null;
+  failureReason?: string | null;
+  verifiedAt?: Date | string | null;
+  expiresAt?: Date | string | null;
+  createdAt: Date | string;
+}
+
+export interface VerifyPanInput {
+  pan: string;
+  expectedName?: string;
+  userId?: string;
+  partnerId?: string;
+}
+
+export interface VerifyGstInput {
+  gstin: string;
+  expectedTradeName?: string;
+  userId?: string;
+  partnerId?: string;
+  franchiseId?: string;
+}
+
+export interface VerifyDigiLockerInput {
+  documentType: string; // AADHAAR, PAN, DRIVING_LICENSE
+  authCode?: string;
+  userId?: string;
+  partnerId?: string;
+}
+
+
 

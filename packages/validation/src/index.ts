@@ -408,3 +408,140 @@ export const queryDocumentsSchema = paginationSchema.extend({
   status: documentStatusEnum.optional(),
 });
 
+// ─── Domain 12: Phase 3 Nationwide Partner Ecosystem & Franchise Schemas ─────
+
+// Vertical Slice 3.1: Partner Portal V2 & Tiered Commission Slabs
+export const partnerTierEnum = z.enum(['SILVER', 'GOLD', 'PLATINUM']);
+export const partnerKycStatusEnum = z.enum(['PENDING_KYC', 'UNDER_REVIEW', 'VERIFIED', 'REJECTED', 'SUSPENDED']);
+export const partnerTypeEnum = z.enum(['INDIVIDUAL', 'BUSINESS', 'FRANCHISE_AFFILIATE']);
+
+export const updatePartnerKycSchema = z.object({
+  partnerType: partnerTypeEnum.optional(),
+  businessName: z.string().max(255).optional().nullable(),
+  pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format (e.g. ABCDE1234F)').optional().nullable(),
+  gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GSTIN format').optional().nullable(),
+  aadhaar: z.string().regex(/^[0-9]{12}$/, 'Aadhaar must be a 12-digit numeric identifier').optional().nullable(),
+  bankAccountNumber: z.string().min(9).max(18).optional().nullable(),
+  bankIfsc: z.string().regex(/^[A-Z]{4}0[A-Z0-9]{6}$/, 'Invalid IFSC code format').optional().nullable(),
+  bankBeneficiaryName: z.string().min(2).max(100).optional().nullable(),
+});
+
+export const createCommissionSlabSchema = z.object({
+  tier: partnerTierEnum,
+  serviceCategoryId: z.string().uuid().optional().nullable(),
+  serviceId: z.string().uuid().optional().nullable(),
+  ratePercentage: z.number().min(0).max(100, 'Commission rate percentage must be between 0 and 100'),
+  flatBonusAmount: z.number().min(0).default(0),
+  effectiveFrom: z.string().datetime().or(z.string()).optional(),
+  effectiveTo: z.string().datetime().or(z.string()).optional().nullable(),
+  notes: z.string().optional().nullable(),
+});
+
+// Vertical Slice 3.2: Franchise Management & Revenue Sharing
+export const franchiseTypeEnum = z.enum(['MASTER_FRANCHISE', 'CITY_FRANCHISE', 'OUTPOST']);
+export const franchiseStatusEnum = z.enum(['PENDING_APPROVAL', 'ACTIVE', 'SUSPENDED', 'TERMINATED']);
+
+export const createFranchiseSchema = z.object({
+  name: z.string().min(2, 'Franchise name is required'),
+  code: z.string().min(2, 'Franchise code is required').regex(/^[A-Z0-9_-]+$/, 'Code must be alphanumeric with dashes or underscores'),
+  regionId: z.string().uuid().optional().nullable(),
+  branchId: z.string().uuid().optional().nullable(),
+  managerId: z.string().uuid().optional().nullable(),
+  franchiseType: franchiseTypeEnum.default('CITY_FRANCHISE'),
+  legalEntityName: z.string().max(255).optional().nullable(),
+  cinGstin: z.string().max(50).optional().nullable(),
+  primaryContactName: z.string().min(2).optional().nullable(),
+  phone: z.string().min(10).optional().nullable(),
+  email: z.string().email().optional().nullable(),
+  addressLine: z.string().optional().nullable(),
+  city: z.string().optional().nullable(),
+  state: z.string().optional().nullable(),
+  pincode: z.string().optional().nullable(),
+  agreementStartDate: z.string().optional().nullable(),
+  agreementEndDate: z.string().optional().nullable(),
+  revenueSharePct: z.number().min(0).max(100).default(70.0),
+  settlementFrequency: z.enum(['MONTHLY', 'WEEKLY']).default('MONTHLY'),
+  securityDeposit: z.number().min(0).default(0),
+});
+
+export const updateFranchiseSchema = createFranchiseSchema.partial().extend({
+  status: franchiseStatusEnum.optional(),
+});
+
+export const setFranchisePricingOverrideSchema = z.object({
+  franchiseId: z.string().uuid('Valid Franchise ID is required'),
+  serviceId: z.string().uuid('Valid Service ID is required'),
+  customPrice: z.number().positive('Custom price must be positive'),
+  customMinPrice: z.number().positive().optional().nullable(),
+  effectiveFrom: z.string().optional(),
+  effectiveTo: z.string().optional().nullable(),
+  status: z.string().default('ACTIVE'),
+});
+
+export const generateFranchiseSettlementSchema = z.object({
+  franchiseId: z.string().uuid('Valid Franchise ID is required'),
+  periodStart: z.string().min(1, 'Period start is required'),
+  periodEnd: z.string().min(1, 'Period end is required'),
+  notes: z.string().optional().nullable(),
+});
+
+// Vertical Slice 3.3: Multi-Tier Referral & Incentive Engine
+export const createCouponSchema = z.object({
+  code: z.string().min(3, 'Coupon code must be at least 3 characters').regex(/^[A-Z0-9_-]+$/, 'Coupon code must be uppercase alphanumeric'),
+  description: z.string().optional().nullable(),
+  discountType: z.enum(['PERCENTAGE', 'FIXED_AMOUNT']).default('PERCENTAGE'),
+  discountValue: z.number().positive('Discount value must be positive'),
+  maxDiscountAmount: z.number().positive().optional().nullable(),
+  minOrderAmount: z.number().min(0).optional().nullable(),
+  validFrom: z.string().optional(),
+  validTo: z.string().optional().nullable(),
+  maxTotalUsage: z.number().int().positive().optional().nullable(),
+  maxUsagePerCustomer: z.number().int().positive().default(1),
+  applicableServiceIds: z.array(z.string().uuid()).default([]),
+  applicableFranchiseIds: z.array(z.string().uuid()).default([]),
+  partnerId: z.string().uuid().optional().nullable(),
+});
+
+export const validateCouponSchema = z.object({
+  code: z.string().min(1, 'Coupon code is required'),
+  customerId: z.string().uuid('Customer ID is required'),
+  serviceId: z.string().uuid('Service ID is required'),
+  orderAmount: z.number().positive('Order amount must be positive'),
+  franchiseId: z.string().uuid().optional().nullable(),
+});
+
+export const createIncentiveRuleSchema = z.object({
+  name: z.string().min(2, 'Incentive rule name is required'),
+  targetType: z.enum(['CONVERSIONS_COUNT', 'REVENUE_VOLUME']).default('CONVERSIONS_COUNT'),
+  thresholdValue: z.number().positive('Threshold value must be positive'),
+  bonusAmount: z.number().positive('Bonus amount must be positive'),
+  period: z.enum(['MONTHLY', 'QUARTERLY']).default('MONTHLY'),
+  applicableTier: z.enum(['ALL', 'SILVER', 'GOLD', 'PLATINUM']).default('ALL'),
+  effectiveFrom: z.string().optional(),
+  effectiveTo: z.string().optional().nullable(),
+});
+
+// Vertical Slice 3.4: DigiLocker & Identity Verification APIs
+export const verifyPanSchema = z.object({
+  pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format'),
+  expectedName: z.string().optional().nullable(),
+  userId: z.string().uuid().optional().nullable(),
+  partnerId: z.string().uuid().optional().nullable(),
+});
+
+export const verifyGstSchema = z.object({
+  gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GSTIN format'),
+  expectedTradeName: z.string().optional().nullable(),
+  userId: z.string().uuid().optional().nullable(),
+  partnerId: z.string().uuid().optional().nullable(),
+  franchiseId: z.string().uuid().optional().nullable(),
+});
+
+export const verifyDigiLockerSchema = z.object({
+  documentType: z.enum(['AADHAAR', 'PAN', 'DRIVING_LICENSE', 'PASSPORT']),
+  authCode: z.string().optional().nullable(),
+  userId: z.string().uuid().optional().nullable(),
+  partnerId: z.string().uuid().optional().nullable(),
+});
+
+

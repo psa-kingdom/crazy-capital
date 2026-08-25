@@ -12,6 +12,7 @@ import { Prisma } from '@prisma/client';
 import { ApproveCommissionDto } from './dto/approve-commission.dto';
 import { RejectCommissionDto } from './dto/reject-commission.dto';
 import { QueryCommissionsDto } from './dto/query-commissions.dto';
+import { CommissionSlabsService } from './commission-slabs.service';
 
 @Injectable()
 export class CommissionsService {
@@ -20,6 +21,7 @@ export class CommissionsService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly notificationsService: NotificationsService,
+    private readonly commissionSlabsService: CommissionSlabsService,
   ) {}
 
   /**
@@ -44,7 +46,17 @@ export class CommissionsService {
       return this.mapToDto(existing);
     }
 
-    // Determine partner commission rate from ServicePricing or default standard 10%
+    // Determine partner commission rate from Tiered Commission Slab Rules
+    const slabResult = await this.commissionSlabsService.getApplicableRate({
+      partnerId,
+      serviceId,
+      organizationId,
+    });
+
+    let rate = slabResult.rate;
+    let commissionAmount = (baseAmount * rate) / 100 + slabResult.flatBonus;
+
+    // Fallback/Override check: ServicePricing specific partner pricing if present
     const partnerPricing = await this.prisma.servicePricing.findFirst({
       where: {
         serviceId,
@@ -52,13 +64,9 @@ export class CommissionsService {
       },
     });
 
-    let rate = 10.0; // Default 10% partner referral commission
-    let commissionAmount = (baseAmount * rate) / 100;
-
     if (partnerPricing) {
       const partnerBase = Number(partnerPricing.amount);
       if (partnerBase > 0 && partnerBase < baseAmount) {
-        // Flat markup margin model
         commissionAmount = baseAmount - partnerBase;
         rate = Math.round(((commissionAmount / baseAmount) * 100) * 100) / 100;
       }

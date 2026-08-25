@@ -2,6 +2,7 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { CommissionsService } from './commissions.service';
 import { PayoutsService } from './payouts.service';
 import { PartnersService } from './partners.service';
+import { CommissionSlabsService } from './commission-slabs.service';
 import { PrismaService } from '../../common/prisma/prisma.service';
 import { NotificationsService } from '../notifications/notifications.service';
 import { RazorpayXPayoutProvider } from './providers/razorpayx-payout.provider';
@@ -141,6 +142,12 @@ describe('Partner Management & Commission Engine (Vertical Slice 1.9 - ADR-011 &
         PartnersService,
         { provide: PrismaService, useValue: prisma },
         { provide: NotificationsService, useValue: notificationsService },
+        {
+          provide: CommissionSlabsService,
+          useValue: {
+            getApplicableRate: jest.fn().mockResolvedValue({ rate: 10.0, flatBonus: 0, tier: 'SILVER' }),
+          },
+        },
         {
           provide: RazorpayXPayoutProvider,
           useValue: {

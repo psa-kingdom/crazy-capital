@@ -19,6 +19,8 @@ import { CmsModule } from './modules/cms/cms.module';
 import { SlaModule } from './modules/sla/sla.module';
 import { TasksModule } from './modules/tasks/tasks.module';
 import { BranchesModule } from './modules/branches/branches.module';
+import { FranchisesModule } from './modules/franchises/franchises.module';
+import { IdentityVerificationModule } from './modules/identity-verification/identity-verification.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -47,6 +49,8 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     SlaModule,
     TasksModule,
     BranchesModule,
+    FranchisesModule,
+    IdentityVerificationModule,
   ],
   controllers: [AppController],
   providers: [
