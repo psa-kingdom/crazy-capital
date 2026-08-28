@@ -22,6 +22,10 @@ import { BranchesModule } from './modules/branches/branches.module';
 import { FranchisesModule } from './modules/franchises/franchises.module';
 import { IdentityVerificationModule } from './modules/identity-verification/identity-verification.module';
 import { CopilotModule } from './modules/copilot/copilot.module';
+import { MobileModule } from './modules/mobile/mobile.module';
+import { SaasModule } from './modules/saas/saas.module';
+import { DeveloperApiModule } from './modules/developer-api/developer-api.module';
+import { GovernmentIntegrationsModule } from './modules/government-integrations/government-integrations.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -53,6 +57,10 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     FranchisesModule,
     IdentityVerificationModule,
     CopilotModule,
+    MobileModule,
+    SaasModule,
+    DeveloperApiModule,
+    GovernmentIntegrationsModule,
   ],
   controllers: [AppController],
   providers: [

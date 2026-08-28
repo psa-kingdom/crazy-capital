@@ -2867,3 +2867,412 @@ export interface PredictiveBottleneckDto {
   bottleneckSeverity: 'HIGH' | 'MEDIUM' | 'LOW';
   recommendedIntervention: string;
 }
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 5: NATIONAL SCALE PLATFORM & ENTERPRISE MULTI-TENANT SAAS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Vertical Slice 5.1: Mobile Applications (iOS & Android) Bridge ─────────
+
+export const MobilePlatform = {
+  IOS: 'IOS',
+  ANDROID: 'ANDROID',
+  WEB_PUSH: 'WEB_PUSH',
+} as const;
+export type MobilePlatform = (typeof MobilePlatform)[keyof typeof MobilePlatform];
+
+export interface MobileDeviceTokenDto {
+  id: string;
+  organizationId: string;
+  userId: string;
+  deviceToken: string;
+  platform: MobilePlatform | string;
+  deviceModel?: string | null;
+  osVersion?: string | null;
+  appVersion?: string | null;
+  biometricEnabled: boolean;
+  pushPreferences?: MobilePushPreferencesDto | null;
+  isActive: boolean;
+  lastActiveAt: Date | string;
+  createdAt: Date | string;
+}
+
+export interface MobilePushPreferencesDto {
+  leadAlerts: boolean;
+  statusUpdates: boolean;
+  commissionAlerts: boolean;
+  marketing: boolean;
+}
+
+export interface RegisterMobileDeviceInput {
+  deviceToken: string;
+  platform: MobilePlatform | string;
+  deviceModel?: string;
+  osVersion?: string;
+  appVersion?: string;
+  biometricEnabled?: boolean;
+  biometricPublicKey?: string;
+  pushPreferences?: Partial<MobilePushPreferencesDto>;
+}
+
+export interface RevokeMobileDeviceInput {
+  deviceToken: string;
+}
+
+export interface BiometricChallengeResponseDto {
+  challengeNonce: string;
+  expiresAt: string;
+}
+
+export interface VerifyBiometricAuthInput {
+  challengeNonce: string;
+  signature: string;
+  deviceToken: string;
+}
+
+export interface MobileCustomerSummaryDto {
+  customerName: string;
+  activeApplicationsCount: number;
+  pendingDocumentsCount: number;
+  unpaidInvoicesCount: number;
+  recentApplications: Array<{
+    id: string;
+    applicationNumber: string;
+    serviceName: string;
+    status: string;
+    currentStageName: string;
+    submittedAt: string;
+  }>;
+  quickActionServices: Array<{
+    id: string;
+    title: string;
+    slug: string;
+    priceFormatted: string;
+    icon: string;
+  }>;
+}
+
+export interface MobilePartnerSummaryDto {
+  partnerName: string;
+  tier: string;
+  lifetimeEarnings: number;
+  pendingCommissions: number;
+  activeReferralsCount: number;
+  conversionRatePct: number;
+  quickReferralCode: string;
+  recentLeads: Array<{
+    id: string;
+    fullName: string;
+    serviceInterested: string;
+    status: string;
+    leadScore: number;
+    createdAt: string;
+  }>;
+}
+
+// ─── Vertical Slice 5.2: Multi-Tenant SaaS & White-Label Theming ───────────
+
+export const TenantPlanType = {
+  STARTER: 'STARTER',
+  PROFESSIONAL: 'PROFESSIONAL',
+  ENTERPRISE: 'ENTERPRISE',
+} as const;
+export type TenantPlanType = (typeof TenantPlanType)[keyof typeof TenantPlanType];
+
+export const TenantStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED',
+  TRIAL: 'TRIAL',
+} as const;
+export type TenantStatus = (typeof TenantStatus)[keyof typeof TenantStatus];
+
+export interface TenantThemeConfig {
+  primaryColor: string; // e.g. '#4f46e5'
+  secondaryColor: string; // e.g. '#0d9488'
+  accentColor: string; // e.g. '#d97706'
+  logoUrl: string;
+  faviconUrl?: string;
+  fontHeading: string; // e.g. 'Manrope'
+  fontBody: string; // e.g. 'Inter'
+  borderRadius: string; // e.g. '0.75rem'
+  darkThemeEnabled: boolean;
+  customCss?: string;
+}
+
+export interface TenantInvoiceConfig {
+  legalName: string;
+  tradeName?: string;
+  gstin?: string;
+  pan?: string;
+  address?: string;
+  invoicePrefix: string; // e.g. 'ACM-'
+  footerNote?: string;
+  authorizedSignatoryUrl?: string;
+}
+
+export interface TenantEmailConfig {
+  fromName: string;
+  fromEmail: string;
+  replyTo?: string;
+  headerHtml?: string;
+  footerHtml?: string;
+}
+
+export interface TenantDto {
+  id: string;
+  organizationId: string;
+  name: string;
+  slug: string;
+  subdomain: string;
+  customDomain?: string | null;
+  cnameTarget: string;
+  domainVerified: boolean;
+  isWhiteLabel: boolean;
+  planType: TenantPlanType | string;
+  status: TenantStatus | string;
+  themeConfig: TenantThemeConfig;
+  invoiceConfig?: TenantInvoiceConfig | null;
+  emailConfig?: TenantEmailConfig | null;
+  featuresEnabled?: Record<string, boolean> | null;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface CreateTenantInput {
+  name: string;
+  slug: string;
+  subdomain: string;
+  customDomain?: string;
+  planType?: TenantPlanType;
+  themeConfig: TenantThemeConfig;
+  invoiceConfig?: TenantInvoiceConfig;
+  emailConfig?: TenantEmailConfig;
+}
+
+export interface UpdateTenantBrandingInput {
+  themeConfig?: Partial<TenantThemeConfig>;
+  invoiceConfig?: Partial<TenantInvoiceConfig>;
+  emailConfig?: Partial<TenantEmailConfig>;
+}
+
+export interface VerifyDomainResponseDto {
+  domain: string;
+  cnameTarget: string;
+  isVerified: boolean;
+  dnsRecordsChecked: Array<{
+    type: string;
+    host: string;
+    expected: string;
+    actual?: string;
+    status: 'MATCH' | 'MISMATCH' | 'PENDING';
+  }>;
+  verifiedAt?: string;
+}
+
+// ─── Vertical Slice 5.3: Public Developer API & Webhooks Platform ──────────
+
+export const ApiKeyScope = {
+  LEADS_READ: 'leads:read',
+  LEADS_WRITE: 'leads:write',
+  APPLICATIONS_READ: 'applications:read',
+  APPLICATIONS_WRITE: 'applications:write',
+  DOCUMENTS_READ: 'documents:read',
+  DOCUMENTS_WRITE: 'documents:write',
+  SERVICES_READ: 'services:read',
+  WEBHOOKS_MANAGE: 'webhooks:manage',
+} as const;
+export type ApiKeyScope = (typeof ApiKeyScope)[keyof typeof ApiKeyScope];
+
+export interface ApiKeyDto {
+  id: string;
+  organizationId: string;
+  userId: string;
+  name: string;
+  keyPrefix: string;
+  environment: 'LIVE' | 'SANDBOX';
+  scopes: ApiKeyScope[] | string[];
+  rateLimitPerMin: number;
+  lastUsedAt?: Date | string | null;
+  expiresAt?: Date | string | null;
+  isActive: boolean;
+  createdAt: Date | string;
+}
+
+export interface CreateApiKeyInput {
+  name: string;
+  environment?: 'LIVE' | 'SANDBOX';
+  scopes: ApiKeyScope[] | string[];
+  rateLimitPerMin?: number;
+  expiresInDays?: number;
+}
+
+export interface CreatedApiKeyResponseDto {
+  apiKey: ApiKeyDto;
+  rawSecretKey: string; // e.g. "cc_live_9a8f...XYZ" - ONLY returned once on creation
+}
+
+export interface WebhookSubscriptionDto {
+  id: string;
+  organizationId: string;
+  userId: string;
+  name: string;
+  targetUrl: string;
+  events: string[];
+  isActive: boolean;
+  failureCount: number;
+  lastDeliveryAt?: Date | string | null;
+  createdAt: Date | string;
+}
+
+export interface CreateWebhookSubscriptionInput {
+  name: string;
+  targetUrl: string;
+  events: string[];
+}
+
+export interface UpdateWebhookSubscriptionInput {
+  name?: string;
+  targetUrl?: string;
+  events?: string[];
+  isActive?: boolean;
+}
+
+export interface WebhookDeliveryLogDto {
+  id: string;
+  subscriptionId: string;
+  organizationId: string;
+  eventId: string;
+  eventType: string;
+  payload: Record<string, any>;
+  signature: string;
+  attemptNumber: number;
+  responseStatusCode?: number | null;
+  responseBody?: string | null;
+  durationMs?: number | null;
+  status: 'SUCCESS' | 'FAILED' | 'RETRYING';
+  deliveredAt: Date | string;
+}
+
+export interface DeveloperUsageStatsDto {
+  totalRequestsToday: number;
+  rateLimitRemaining: number;
+  activeApiKeysCount: number;
+  activeWebhooksCount: number;
+  recentDeliveriesSuccessRatePct: number;
+  topEndpoints: Array<{
+    endpoint: string;
+    callsCount: number;
+    avgLatencyMs: number;
+  }>;
+}
+
+// ─── Vertical Slice 5.4: Government Systems Direct Integrations ────────────
+
+export const GovernmentServiceType = {
+  MCA_V3: 'MCA_V3',
+  GSTN_PORTAL: 'GSTN_PORTAL',
+  INCOME_TAX: 'INCOME_TAX',
+  ACCOUNT_AGGREGATOR: 'ACCOUNT_AGGREGATOR',
+} as const;
+export type GovernmentServiceType = (typeof GovernmentServiceType)[keyof typeof GovernmentServiceType];
+
+export interface McaDirectorDto {
+  din: string;
+  name: string;
+  appointmentDate: string;
+  designation: string;
+  surrenderedDin?: boolean;
+}
+
+export interface McaCompanyLookupDto {
+  cin: string;
+  companyName: string;
+  rocCode: string;
+  registrationNumber: string;
+  companyCategory: string;
+  companyClass: string;
+  authorizedCapital: number;
+  paidUpCapital: number;
+  dateOfIncorporation: string;
+  registeredAddress: string;
+  email: string;
+  status: string; // ACTIVE, DORMANT, UNDER_LIQUIDATION
+  directors: McaDirectorDto[];
+  nameAvailabilityCheck?: {
+    isAvailable: boolean;
+    similarityScore: number;
+    phoneticConflicts: string[];
+    trademarkConflicts: string[];
+    suggestedAlternatives: string[];
+  };
+}
+
+export interface GstnTaxpayerLookupDto {
+  gstin: string;
+  legalName: string;
+  tradeName: string;
+  registrationDate: string;
+  constitutionOfBusiness: string;
+  taxpayerType: string; // REGULAR, COMPOSITION, SEZ_DEVELOPER
+  gstinStatus: string; // ACTIVE, CANCELLED, SUSPENDED
+  principalAddress: {
+    buildingNumber?: string;
+    street?: string;
+    city: string;
+    state: string;
+    pincode: string;
+  };
+  jurisdiction: {
+    stateCode: string;
+    centerWard?: string;
+    stateWard?: string;
+  };
+  filingFrequency: string; // MONTHLY, QUARTERLY
+  einvoiceEnabled: boolean;
+}
+
+export interface AccountAggregatorConsentDto {
+  consentId: string;
+  consentHandle: string;
+  status: 'PENDING' | 'ACTIVE' | 'REJECTED' | 'REVOKED' | 'EXPIRED';
+  customerId: string;
+  fipId: string; // Financial Information Provider e.g. HDFC, ICICI, SBI
+  fipName: string;
+  dataRange: {
+    from: string;
+    to: string;
+  };
+  consentExpiry: string;
+  redirectUrl?: string;
+}
+
+export interface InitiateAaConsentInput {
+  customerId: string;
+  mobile: string;
+  vpa?: string; // e.g. user@aa
+  fipId: string;
+  statementMonthsCount?: number;
+}
+
+export interface GovernmentIntegrationLogDto {
+  id: string;
+  organizationId: string;
+  serviceType: GovernmentServiceType | string;
+  endpoint: string;
+  requestIdentifier: string;
+  status: 'SUCCESS' | 'NOT_FOUND' | 'FAILED' | 'TIMEOUT';
+  environment: 'LIVE' | 'SANDBOX';
+  cachedResult: boolean;
+  responsePayload: Record<string, any>;
+  responseTimeMs: number;
+  errorMessage?: string | null;
+  createdAt: Date | string;
+}
+
+export interface GovernmentIntegrationsHealthDto {
+  mcaGateway: { status: 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE'; latencyMs: number; provider: string };
+  gstnGateway: { status: 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE'; latencyMs: number; provider: string };
+  incomeTaxGateway: { status: 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE'; latencyMs: number; provider: string };
+  accountAggregator: { status: 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE'; latencyMs: number; provider: string };
+}
+

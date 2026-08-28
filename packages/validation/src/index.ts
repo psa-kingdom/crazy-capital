@@ -596,5 +596,156 @@ export const predictiveForecastQuerySchema = z.object({
   branchId: z.string().uuid().optional().nullable(),
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 5: NATIONAL SCALE PLATFORM & ENTERPRISE MULTI-TENANT SAAS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Vertical Slice 5.1: Mobile Applications (iOS & Android) Bridge ─────────
+
+export const registerMobileDeviceSchema = z.object({
+  deviceToken: z.string().min(10, 'Valid device push token is required'),
+  platform: z.enum(['IOS', 'ANDROID', 'WEB_PUSH']).default('ANDROID'),
+  deviceModel: z.string().max(100).optional().nullable(),
+  osVersion: z.string().max(50).optional().nullable(),
+  appVersion: z.string().max(50).optional().nullable(),
+  biometricEnabled: z.boolean().default(false),
+  biometricPublicKey: z.string().optional().nullable(),
+  pushPreferences: z
+    .object({
+      leadAlerts: z.boolean().default(true),
+      statusUpdates: z.boolean().default(true),
+      commissionAlerts: z.boolean().default(true),
+      marketing: z.boolean().default(false),
+    })
+    .optional(),
+});
+
+export const revokeMobileDeviceSchema = z.object({
+  deviceToken: z.string().min(1, 'Device token is required'),
+});
+
+export const verifyBiometricAuthSchema = z.object({
+  challengeNonce: z.string().min(16, 'Valid challenge nonce is required'),
+  signature: z.string().min(1, 'Cryptographic biometric signature is required'),
+  deviceToken: z.string().min(1, 'Device token is required'),
+});
+
+export const updateMobilePushPreferencesSchema = z.object({
+  leadAlerts: z.boolean().optional(),
+  statusUpdates: z.boolean().optional(),
+  commissionAlerts: z.boolean().optional(),
+  marketing: z.boolean().optional(),
+});
+
+// ─── Vertical Slice 5.2: Multi-Tenant SaaS & White-Label Theming ───────────
+
+export const tenantThemeConfigSchema = z.object({
+  primaryColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, 'Valid hex color required'),
+  secondaryColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, 'Valid hex color required'),
+  accentColor: z.string().regex(/^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/, 'Valid hex color required'),
+  logoUrl: z.string().min(1, 'Logo URL is required'),
+  faviconUrl: z.string().optional(),
+  fontHeading: z.string().default('Manrope'),
+  fontBody: z.string().default('Inter'),
+  borderRadius: z.string().default('0.75rem'),
+  darkThemeEnabled: z.boolean().default(false),
+  customCss: z.string().max(5000).optional(),
+});
+
+export const tenantInvoiceConfigSchema = z.object({
+  legalName: z.string().min(2, 'Legal entity name is required'),
+  tradeName: z.string().optional(),
+  gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GSTIN').optional().nullable(),
+  pan: z.string().regex(/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN').optional().nullable(),
+  address: z.string().optional(),
+  invoicePrefix: z.string().min(2).max(10).default('CC-'),
+  footerNote: z.string().max(300).optional(),
+  authorizedSignatoryUrl: z.string().optional(),
+});
+
+export const tenantEmailConfigSchema = z.object({
+  fromName: z.string().min(2, 'From name is required'),
+  fromEmail: z.string().email('Valid from email required'),
+  replyTo: z.string().email('Valid reply-to email required').optional(),
+  headerHtml: z.string().optional(),
+  footerHtml: z.string().optional(),
+});
+
+export const createTenantSchema = z.object({
+  name: z.string().min(2, 'Tenant name is required'),
+  slug: z.string().min(2).regex(/^[a-z0-9-]+$/, 'Slug must contain only lowercase alphanumeric characters and dashes'),
+  subdomain: z.string().min(2).regex(/^[a-z0-9-]+$/, 'Subdomain must contain only lowercase alphanumeric characters and dashes'),
+  customDomain: z.string().regex(/^[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, 'Invalid domain format').optional().nullable(),
+  planType: z.enum(['STARTER', 'PROFESSIONAL', 'ENTERPRISE']).default('ENTERPRISE'),
+  themeConfig: tenantThemeConfigSchema,
+  invoiceConfig: tenantInvoiceConfigSchema.optional(),
+  emailConfig: tenantEmailConfigSchema.optional(),
+});
+
+export const updateTenantBrandingSchema = z.object({
+  themeConfig: tenantThemeConfigSchema.partial().optional(),
+  invoiceConfig: tenantInvoiceConfigSchema.partial().optional(),
+  emailConfig: tenantEmailConfigSchema.partial().optional(),
+});
+
+export const verifyDomainSchema = z.object({
+  tenantId: z.string().uuid('Valid Tenant ID is required'),
+  customDomain: z.string().min(3, 'Domain name is required'),
+});
+
+// ─── Vertical Slice 5.3: Public Developer API & Webhooks Platform ──────────
+
+export const apiKeyScopeEnum = z.enum([
+  'leads:read',
+  'leads:write',
+  'applications:read',
+  'applications:write',
+  'documents:read',
+  'documents:write',
+  'services:read',
+  'webhooks:manage',
+]);
+
+export const createApiKeySchema = z.object({
+  name: z.string().min(2, 'API key name is required'),
+  environment: z.enum(['LIVE', 'SANDBOX']).default('LIVE'),
+  scopes: z.array(apiKeyScopeEnum).min(1, 'At least one scope must be selected'),
+  rateLimitPerMin: z.number().int().min(10).max(1000).default(60),
+  expiresInDays: z.number().int().positive().optional().nullable(),
+});
+
+export const createWebhookSubscriptionSchema = z.object({
+  name: z.string().min(2, 'Webhook name is required'),
+  targetUrl: z.string().url('Target URL must be a valid HTTP/HTTPS URL'),
+  events: z.array(z.string()).min(1, 'At least one event must be selected'),
+});
+
+export const updateWebhookSubscriptionSchema = z.object({
+  name: z.string().min(2).optional(),
+  targetUrl: z.string().url().optional(),
+  events: z.array(z.string()).min(1).optional(),
+  isActive: z.boolean().optional(),
+});
+
+// ─── Vertical Slice 5.4: Government Systems Direct Integrations ────────────
+
+export const mcaCompanyLookupQuerySchema = z.object({
+  name: z.string().min(2, 'Company or LLP name search string required'),
+  checkAvailability: z.coerce.boolean().default(true),
+});
+
+export const gstnLookupQuerySchema = z.object({
+  gstin: z.string().regex(/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$/, 'Invalid GSTIN format'),
+});
+
+export const initiateAaConsentSchema = z.object({
+  customerId: z.string().uuid('Valid customer ID required'),
+  mobile: z.string().regex(indianMobileRegex, 'Valid 10-digit mobile required'),
+  vpa: z.string().optional().nullable(),
+  fipId: z.string().min(2, 'Financial Institution ID required'),
+  statementMonthsCount: z.number().int().min(1).max(24).default(6),
+});
+
+
 
 

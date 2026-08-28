@@ -157,7 +157,7 @@ async function runLiveAcceptance() {
     }
 
     // 10. Phase 4.4: Executive Predictive Intelligence Hub
-    console.log('\n[10/10] Testing Slice 4.4: Predictive Revenue & Turnaround Analytics...');
+    console.log('\n[10/14] Testing Slice 4.4: Predictive Revenue & Turnaround Analytics...');
     const predRes = await page.goto(`${BASE_URL}/admin/reports/predictive`, { waitUntil: 'networkidle', timeout: 20000 });
     assert(predRes.status() === 200, 'Predictive Reports Route Status 200');
     
@@ -175,6 +175,34 @@ async function runLiveAcceptance() {
       assert(true, 'Deployed Preventive Bottleneck Mitigation Measure');
     }
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '12-admin-predictive-hub.png'), fullPage: true });
+
+    // 11. Phase 5.1: Customer Mobile Devices & Push Preferences
+    console.log('\n[11/14] Testing Slice 5.1: Mobile Devices Bridge & Push Preferences...');
+    const mobileDevRes = await page.goto(`${BASE_URL}/customer/devices`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(mobileDevRes.status() === 200, 'Customer Devices Route /customer/devices Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '13-customer-mobile-devices.png'), fullPage: true });
+
+    // 12. Phase 5.2: Multi-Tenant SaaS & White-Label Theming
+    console.log('\n[12/14] Testing Slice 5.2: White-Label Theming & Multi-Tenant SaaS Hub...');
+    const whiteLabelRes = await page.goto(`${BASE_URL}/admin/settings/white-label`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(whiteLabelRes.status() === 200, 'White-Label Settings Route Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '14-admin-white-label-hub.png'), fullPage: true });
+
+    // 13. Phase 5.3: Public Developer Portal & Admin API Settings
+    console.log('\n[13/14] Testing Slice 5.3: Public Developer Portal & Admin Webhooks...');
+    const devPortalRes = await page.goto(`${BASE_URL}/developers`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(devPortalRes.status() === 200, 'Public Developer Portal /developers Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '15-public-developer-portal.png'), fullPage: true });
+
+    const devAdminRes = await page.goto(`${BASE_URL}/admin/settings/developer-api`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(devAdminRes.status() === 200, 'Admin Developer API Settings Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '16-admin-developer-api.png'), fullPage: true });
+
+    // 14. Phase 5.4: Government Systems Direct Integrations Hub
+    console.log('\n[14/14] Testing Slice 5.4: Government & Statutory Integrations Hub...');
+    const govRes = await page.goto(`${BASE_URL}/admin/integrations/government`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(govRes.status() === 200, 'Government Integrations Hub Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '17-admin-government-integrations.png'), fullPage: true });
 
     // Earlier Phase Admin Regression Suite
     console.log('\n[Regression] Testing Admin Core Modules (Phase 1, 2, 3)...');

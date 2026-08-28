@@ -24,6 +24,9 @@ import {
   ListTodo,
   TrendingUp,
   Sparkles,
+  Palette,
+  Code2,
+  Landmark,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 import { AiCopilotDrawer } from '../copilot/ai-copilot-drawer';
@@ -40,6 +43,9 @@ export function AdminShell({ children }: AdminShellProps) {
   const navItems = [
     { label: 'Executive Dashboard', href: '/admin', icon: LayoutDashboard },
     { label: 'Predictive Intelligence', href: '/admin/reports/predictive', icon: TrendingUp, badge: 'Slice 4.4' },
+    { label: 'White-Label & SaaS', href: '/admin/settings/white-label', icon: Palette, badge: 'Slice 5.2' },
+    { label: 'Developer & Webhooks', href: '/admin/settings/developer-api', icon: Code2, badge: 'Slice 5.3' },
+    { label: 'Gov Integrations Hub', href: '/admin/integrations/government', icon: Landmark, badge: 'Slice 5.4' },
     { label: 'CRM Leads & Priority', href: '/admin/leads', icon: Users2, badge: 'AI Hot' },
     { label: 'Workflow Builder', href: '/admin/workflows', icon: GitFork, badge: 'Slice 2.1' },
     { label: 'SLA & Escalations', href: '/admin/sla', icon: AlertTriangle, badge: 'Slice 2.2' },

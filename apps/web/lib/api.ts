@@ -771,3 +771,138 @@ export const predictiveReportsApi = {
   },
 };
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 5: NATIONAL SCALE PLATFORM & ENTERPRISE MULTI-TENANT SAAS
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Vertical Slice 5.1: Mobile Applications (iOS & Android) Bridge
+export const mobileApi = {
+  registerDevice: async (data: {
+    deviceToken: string;
+    platform?: 'IOS' | 'ANDROID' | 'WEB_PUSH';
+    deviceModel?: string;
+    osVersion?: string;
+    appVersion?: string;
+    biometricEnabled?: boolean;
+    biometricPublicKey?: string;
+    pushPreferences?: Record<string, boolean>;
+  }) => {
+    return apiClient.post('/mobile/devices/register', data);
+  },
+  revokeDevice: async (deviceToken: string) => {
+    return apiClient.post('/mobile/devices/revoke', { deviceToken });
+  },
+  getDevices: async () => {
+    return apiClient.get('/mobile/devices');
+  },
+  getBiometricChallenge: async () => {
+    return apiClient.post('/mobile/biometric/challenge');
+  },
+  verifyBiometric: async (data: { challengeNonce: string; signature: string; deviceToken: string }) => {
+    return apiClient.post('/mobile/biometric/verify', data);
+  },
+  getCustomerSummary: async () => {
+    return apiClient.get('/mobile/customer/summary');
+  },
+  getPartnerSummary: async () => {
+    return apiClient.get('/mobile/partner/summary');
+  },
+};
+
+// Vertical Slice 5.2: Multi-Tenant SaaS & White-Label Theming
+export const saasApi = {
+  resolveTenant: async (params: { host?: string; subdomain?: string }) => {
+    return apiClient.get('/saas/tenant/resolve', { params });
+  },
+  getBranding: async () => {
+    return apiClient.get('/saas/branding');
+  },
+  updateBranding: async (data: {
+    themeConfig?: Record<string, any>;
+    invoiceConfig?: Record<string, any>;
+    emailConfig?: Record<string, any>;
+  }) => {
+    return apiClient.patch('/saas/branding', data);
+  },
+  listTenants: async () => {
+    return apiClient.get('/saas/tenants');
+  },
+  createTenant: async (data: Record<string, any>) => {
+    return apiClient.post('/saas/tenants', data);
+  },
+  verifyCustomDomain: async (data: { tenantId: string; customDomain: string }) => {
+    return apiClient.post('/saas/domains/verify', data);
+  },
+};
+
+// Vertical Slice 5.3: Public Developer API & Webhooks Platform
+export const developerApi = {
+  listKeys: async () => {
+    return apiClient.get('/developer/keys');
+  },
+  createKey: async (data: {
+    name: string;
+    environment?: 'LIVE' | 'SANDBOX';
+    scopes: string[];
+    rateLimitPerMin?: number;
+    expiresInDays?: number;
+  }) => {
+    return apiClient.post('/developer/keys', data);
+  },
+  revokeKey: async (keyId: string) => {
+    return apiClient.delete(`/developer/keys/${keyId}`);
+  },
+  listWebhooks: async () => {
+    return apiClient.get('/developer/webhooks');
+  },
+  createWebhook: async (data: { name: string; targetUrl: string; events: string[] }) => {
+    return apiClient.post('/developer/webhooks', data);
+  },
+  updateWebhook: async (id: string, data: Record<string, any>) => {
+    return apiClient.patch(`/developer/webhooks/${id}`, data);
+  },
+  deleteWebhook: async (id: string) => {
+    return apiClient.delete(`/developer/webhooks/${id}`);
+  },
+  testWebhook: async (id: string) => {
+    return apiClient.post(`/developer/webhooks/${id}/test`);
+  },
+  getDeliveries: async (subscriptionId: string) => {
+    return apiClient.get(`/developer/webhooks/${subscriptionId}/deliveries`);
+  },
+  getUsageStats: async () => {
+    return apiClient.get('/developer/usage');
+  },
+};
+
+// Vertical Slice 5.4: Government Systems Direct Integrations
+export const governmentApi = {
+  lookupMcaCompany: async (name: string, checkAvailability = true) => {
+    return apiClient.get('/integrations/government/mca/company-lookup', {
+      params: { name, checkAvailability },
+    });
+  },
+  lookupGstnTaxpayer: async (gstin: string) => {
+    return apiClient.get(`/integrations/government/gstn/lookup/${gstin}`);
+  },
+  initiateAaConsent: async (data: {
+    customerId: string;
+    mobile: string;
+    vpa?: string;
+    fipId: string;
+    statementMonthsCount?: number;
+  }) => {
+    return apiClient.post('/integrations/government/account-aggregator/consent', data);
+  },
+  getAaStatementData: async (consentId: string) => {
+    return apiClient.get(`/integrations/government/account-aggregator/consent/${consentId}`);
+  },
+  getHealth: async () => {
+    return apiClient.get('/integrations/government/health');
+  },
+  getAuditLogs: async () => {
+    return apiClient.get('/integrations/government/logs');
+  },
+};
+
+
