@@ -22,6 +22,9 @@ import {
   GitFork,
   AlertTriangle,
   ListTodo,
+  ShieldAlert,
+  CreditCard,
+  Activity,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 
@@ -42,6 +45,9 @@ export function AdminShell({ children }: AdminShellProps) {
     { label: 'Branch & Regional Hubs', href: '/branches', icon: Building2, badge: 'Slice 2.4' },
     { label: 'Reports & Analytics', href: '/reports', icon: BarChart3, badge: 'Slice 1.12' },
 
+    { label: 'Audit Logs & DPDP', href: '/audit-logs', icon: ShieldAlert, badge: 'Slice 6.1' },
+    { label: 'UPI AutoPay Mandates', href: '/mandates', icon: CreditCard, badge: 'Slice 6.2' },
+    { label: 'System Health & Latency', href: '/system-health', icon: Activity, badge: 'Slice 6.4' },
 
     { label: 'CMS & Knowledge Base', href: '/cms', icon: BookOpen, badge: 'Slice 1.13' },
     { label: 'CRM Leads Engine', href: '/leads', icon: Users2, badge: 'Sprint 2' },

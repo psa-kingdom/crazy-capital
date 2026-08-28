@@ -527,5 +527,72 @@ export const branchesApi = {
   },
 };
 
+// Phase 6 API Services
+export const complianceApi = {
+  getAuditLogs: async (params?: Record<string, any>) => {
+    return apiClient.get('/compliance/audit-logs', { params });
+  },
+  createExport: async (data: {
+    exportType: string;
+    format?: string;
+    dateRangeFrom?: string;
+    dateRangeTo?: string;
+    targetUserId?: string;
+    filters?: Record<string, any>;
+  }) => {
+    return apiClient.post('/compliance/exports', data);
+  },
+  listExports: async () => {
+    return apiClient.get('/compliance/exports');
+  },
+  executeDataErasure: async (targetUserId: string) => {
+    return apiClient.post('/compliance/data-erasure', { targetUserId });
+  },
+};
+
+export const mandatesApi = {
+  createMandate: async (data: {
+    customerId: string;
+    serviceId?: string;
+    planName: string;
+    frequency: string;
+    amount: number;
+    paymentMethod?: string;
+    vpaOrAccount?: string;
+    startDate?: string;
+  }) => {
+    return apiClient.post('/mandates', data);
+  },
+  listMandates: async (customerId?: string) => {
+    return apiClient.get('/mandates', { params: { customerId } });
+  },
+  executeDebit: async (mandateId: string, data?: { amountOverride?: number; description?: string }) => {
+    return apiClient.post(`/mandates/${mandateId}/debit`, data || {});
+  },
+  updateStatus: async (mandateId: string, data: { status: 'ACTIVE' | 'PAUSED' | 'CANCELLED'; reason?: string }) => {
+    return apiClient.patch(`/mandates/${mandateId}/status`, data);
+  },
+};
+
+export const telemetryApi = {
+  getHealth: async () => {
+    return apiClient.get('/telemetry/health');
+  },
+  recordProbe: async (data: {
+    serviceName: string;
+    endpoint: string;
+    statusCode: number;
+    latencyMs: number;
+    status?: string;
+    errorMessage?: string;
+  }) => {
+    return apiClient.post('/telemetry/probes', data);
+  },
+  getProbeHistory: async (serviceName?: string, limit?: number) => {
+    return apiClient.get('/telemetry/probes', { params: { serviceName, limit } });
+  },
+};
+
+
 
 
