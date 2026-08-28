@@ -10,6 +10,7 @@ import {
 import { ApiTags, ApiOperation, ApiResponse, ApiBearerAuth } from '@nestjs/swagger';
 import { Response } from 'express';
 import { ReportsService } from './reports.service';
+import { PredictiveAnalyticsService } from './predictive-analytics.service';
 import { QueryReportsDto } from './dto/query-reports.dto';
 import { ExportReportDto } from './dto/export-report.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
@@ -19,7 +20,41 @@ import { RequirePermissions } from '../auth/decorators/require-permissions.decor
 @ApiBearerAuth()
 @Controller('reports')
 export class ReportsController {
-  constructor(private readonly reportsService: ReportsService) {}
+  constructor(
+    private readonly reportsService: ReportsService,
+    private readonly predictiveService: PredictiveAnalyticsService,
+  ) {}
+
+  @Get('predictive/revenue')
+  @RequirePermissions('report.view')
+  @ApiOperation({ summary: 'Predictive Revenue & Conversion Forecasting (Pipeline weighting, optimism bounds)' })
+  @ApiResponse({ status: 200, description: 'Predictive revenue forecast' })
+  getPredictiveRevenue(
+    @Query('period') period?: string,
+    @Query('branchId') branchId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    return this.predictiveService.getRevenueForecast(period, branchId, user);
+  }
+
+  @Get('predictive/turnaround')
+  @RequirePermissions('report.view')
+  @ApiOperation({ summary: 'Predictive Turnaround & Stage Velocity Modeling' })
+  @ApiResponse({ status: 200, description: 'Predictive turnaround analytics' })
+  getPredictiveTurnaround(
+    @Query('branchId') branchId?: string,
+    @CurrentUser() user?: any,
+  ) {
+    return this.predictiveService.getTurnaroundAnalytics(branchId, user);
+  }
+
+  @Get('predictive/bottlenecks')
+  @RequirePermissions('report.view')
+  @ApiOperation({ summary: 'Bottleneck Radar & SLA Breach Risk Early Warning' })
+  @ApiResponse({ status: 200, description: 'List of stage bottleneck alerts' })
+  getPredictiveBottlenecks(@CurrentUser() user?: any) {
+    return this.predictiveService.getBottleneckRadar(user);
+  }
 
   @Get('dashboard')
   @RequirePermissions('report.view')

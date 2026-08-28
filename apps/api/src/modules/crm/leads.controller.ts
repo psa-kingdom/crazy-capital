@@ -16,6 +16,7 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { LeadsService } from './leads.service';
+import { LeadScoringService } from './lead-scoring.service';
 import { CreateLeadDto } from './dto/create-lead.dto';
 import { UpdateLeadDto } from './dto/update-lead.dto';
 import { ChangeLeadStatusDto } from './dto/change-lead-status.dto';
@@ -30,7 +31,10 @@ import { JwtPayload } from '@cc/types';
 @ApiTags('CRM / Leads')
 @Controller('leads')
 export class LeadsController {
-  constructor(private readonly leadsService: LeadsService) {}
+  constructor(
+    private readonly leadsService: LeadsService,
+    private readonly leadScoringService: LeadScoringService,
+  ) {}
 
   @Public()
   @Post()
@@ -46,7 +50,33 @@ export class LeadsController {
     const userScope = user
       ? { organizationId: user.organizationId, branchId: user.branchId, id: user.sub }
       : undefined;
-    return this.leadsService.create(dto, userScope);
+    const lead = await this.leadsService.create(dto, userScope);
+    // Asynchronously trigger AI lead score calculation
+    this.leadScoringService.calculateScore(lead.id).catch(() => {});
+    return lead;
+  }
+
+  @ApiBearerAuth('bearer')
+  @Get('priority-queue')
+  @RequirePermissions('lead.view')
+  @ApiOperation({
+    summary: 'Get AI-prioritized leads queue ranked by conversion probability',
+    description: 'Returns hot and high-velocity leads for sales and operations triage.',
+  })
+  @ApiResponse({ status: 200, description: 'Ranked priority queue items' })
+  async getPriorityQueue(
+    @Query('minScore') minScore?: number,
+    @Query('grade') grade?: string,
+    @Query('priorityRank') priorityRank?: string,
+    @Query('limit') limit?: number,
+    @Query('offset') offset?: number,
+    @CurrentUser() user?: JwtPayload,
+  ) {
+    const userContext = user ? { organizationId: user.organizationId, branchId: user.branchId } : undefined;
+    return this.leadScoringService.getPriorityQueue(
+      { minScore, grade, priorityRank, limit, offset },
+      userContext,
+    );
   }
 
   @ApiBearerAuth('bearer')
@@ -190,5 +220,23 @@ export class LeadsController {
       roles: user.roles,
     };
     return this.leadsService.remove(id, userContext);
+  }
+
+  @ApiBearerAuth('bearer')
+  @Post(':id/recalculate-score')
+  @RequirePermissions('lead.update')
+  @ApiOperation({ summary: 'Recalculate AI lead score & factors' })
+  @ApiResponse({ status: 200, description: 'Newly calculated score record' })
+  async recalculateScore(@Param('id') id: string) {
+    return this.leadScoringService.calculateScore(id);
+  }
+
+  @ApiBearerAuth('bearer')
+  @Get(':id/score-breakdown')
+  @RequirePermissions('lead.view')
+  @ApiOperation({ summary: 'Get AI score breakdown & factor explanations for a lead' })
+  @ApiResponse({ status: 200, description: 'Score factor breakdown' })
+  async getScoreBreakdown(@Param('id') id: string) {
+    return this.leadScoringService.getScoreBreakdown(id);
   }
 }

@@ -544,4 +544,57 @@ export const verifyDigiLockerSchema = z.object({
   partnerId: z.string().uuid().optional().nullable(),
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 4: AUTOMATION, AI & DOCUMENT INTELLIGENCE
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Vertical Slice 4.1: AI-Powered Lead Scoring & Priority Queue
+export const recalculateLeadScoreSchema = z.object({
+  leadId: z.string().uuid('Valid Lead ID is required'),
+});
+
+export const priorityQueueFilterSchema = z.object({
+  minScore: z.coerce.number().min(0).max(100).optional(),
+  grade: z.enum(['A_HOT', 'B_WARM', 'C_COLD', 'D_UNQUALIFIED', 'ALL']).optional(),
+  priorityRank: z.enum(['URGENT', 'HIGH', 'MEDIUM', 'LOW', 'ALL']).optional(),
+  limit: z.coerce.number().int().positive().max(100).default(50),
+  offset: z.coerce.number().int().min(0).default(0),
+});
+
+// Vertical Slice 4.2: Document OCR & Automated Verification Assistant
+export const runDocumentOcrSchema = z.object({
+  documentId: z.string().uuid('Valid Document ID is required'),
+  documentType: z.string().optional(),
+  applicationId: z.string().uuid().optional().nullable(),
+});
+
+export const autoVerifyDocumentOcrSchema = z.object({
+  documentId: z.string().uuid('Valid Document ID is required'),
+  remarks: z.string().optional().nullable(),
+  overrideDecision: z.enum(['APPROVE', 'REJECT']).optional(),
+});
+
+// Vertical Slice 4.3: Crazy Capital AI Operations Copilot
+export const chatCopilotSchema = z.object({
+  sessionId: z.string().uuid().optional().nullable(),
+  message: z.string().min(1, 'Message cannot be empty'),
+  contextType: z.enum(['GENERAL', 'APPLICATION', 'LEAD', 'WORKFLOW', 'COMPLIANCE_QUERY', 'CUSTOMER_COMMUNICATION']).default('GENERAL'),
+  contextId: z.string().optional().nullable(),
+});
+
+export const draftFollowupSchema = z.object({
+  leadId: z.string().uuid().optional().nullable(),
+  applicationId: z.string().uuid().optional().nullable(),
+  channel: z.enum(['EMAIL', 'WHATSAPP', 'SMS']),
+  intent: z.enum(['DOCUMENT_MISSING', 'PAYMENT_PENDING', 'STAGE_UPDATE', 'WELCOME_PROPOSAL', 'GENERAL']),
+  customInstructions: z.string().max(500).optional().nullable(),
+});
+
+// Vertical Slice 4.4: Predictive Revenue & Turnaround Analytics
+export const predictiveForecastQuerySchema = z.object({
+  period: z.string().default('NEXT_30_DAYS'),
+  branchId: z.string().uuid().optional().nullable(),
+});
+
+
 

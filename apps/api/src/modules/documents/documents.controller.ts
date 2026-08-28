@@ -12,6 +12,7 @@ import { ApiTags, ApiOperation, ApiBearerAuth } from '@nestjs/swagger';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RequirePermissions } from '../auth/decorators/require-permissions.decorator';
 import { DocumentsService } from './documents.service';
+import { DocumentOcrService } from './document-ocr.service';
 import { RequestPresignedUploadDto } from './dto/request-presigned-upload.dto';
 import { ConfirmUploadDto } from './dto/confirm-upload.dto';
 import { VerifyDocumentDto } from './dto/verify-document.dto';
@@ -22,7 +23,10 @@ import { QueryDocumentsDto } from './dto/query-documents.dto';
 @ApiBearerAuth()
 @Controller('documents')
 export class DocumentsController {
-  constructor(private readonly documentsService: DocumentsService) {}
+  constructor(
+    private readonly documentsService: DocumentsService,
+    private readonly documentOcrService: DocumentOcrService,
+  ) {}
 
   @Post('presigned-upload')
   @RequirePermissions('document.upload')
@@ -37,12 +41,15 @@ export class DocumentsController {
   @Post(':id/confirm-upload')
   @RequirePermissions('document.upload')
   @ApiOperation({ summary: 'Confirm that client direct upload to storage was completed' })
-  confirmUpload(
+  async confirmUpload(
     @Param('id') id: string,
     @Body() dto: ConfirmUploadDto,
     @CurrentUser() user: any,
   ) {
-    return this.documentsService.confirmUpload(id, dto, user);
+    const res = await this.documentsService.confirmUpload(id, dto, user);
+    // Asynchronously trigger OCR extraction
+    this.documentOcrService.processDocumentOcr(id, user).catch(() => {});
+    return res;
   }
 
   @Get(':id/preview-url')
@@ -50,6 +57,31 @@ export class DocumentsController {
   @ApiOperation({ summary: 'Get a temporary, secure presigned download/preview URL' })
   getPreviewUrl(@Param('id') id: string, @CurrentUser() user: any) {
     return this.documentsService.getPreviewUrl(id, user);
+  }
+
+  @Post(':id/ocr')
+  @RequirePermissions('document.read')
+  @ApiOperation({ summary: 'Run OCR extraction & statutory matching on document' })
+  runOcr(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.documentOcrService.processDocumentOcr(id, user);
+  }
+
+  @Get(':id/ocr')
+  @RequirePermissions('document.read')
+  @ApiOperation({ summary: 'Get latest OCR results, extracted fields, and match status' })
+  getOcrResult(@Param('id') id: string) {
+    return this.documentOcrService.getOcrResult(id);
+  }
+
+  @Patch(':id/auto-verify')
+  @RequirePermissions('document.verify')
+  @ApiOperation({ summary: 'Apply OCR Auto-Verification or manual verification override' })
+  autoVerify(
+    @Param('id') id: string,
+    @Body() body: { remarks?: string; overrideDecision?: 'APPROVE' | 'REJECT' },
+    @CurrentUser() user: any,
+  ) {
+    return this.documentOcrService.autoVerify(id, body?.remarks, body?.overrideDecision, user);
   }
 
   @Patch(':id/verify')

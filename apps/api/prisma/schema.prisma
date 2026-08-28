@@ -36,6 +36,12 @@ model Organization {
   incentiveRules  IncentiveRule[]
   identityVerifications IdentityVerificationRecord[]
 
+  // Phase 4: Automation, AI & Document Intelligence
+  leadScores          LeadScoreRecord[]
+  documentOcrs        DocumentOcrRecord[]
+  copilotSessions     AiCopilotSession[]
+  predictiveForecasts PredictiveForecastRecord[]
+
   @@map("organizations")
 }
 
@@ -92,6 +98,7 @@ model Branch {
   tasks         Task[]
   targets       BranchTarget[]
   franchise     Franchise?
+  predictiveForecasts PredictiveForecastRecord[]
 
   @@unique([organizationId, code])
   @@map("branches")
@@ -216,6 +223,7 @@ model User {
   managedFranchises     Franchise[]                  @relation("FranchiseManager")
   approvedSettlements   FranchiseSettlement[]        @relation("AdminApprovedSettlements")
   verificationRecords   IdentityVerificationRecord[] @relation("UserVerifications")
+  copilotSessions       AiCopilotSession[]           @relation("UserCopilotSessions")
 
   @@index([organizationId, email])
   @@index([organizationId, mobile])
@@ -340,6 +348,7 @@ model Lead {
   activities   LeadActivity[]
   assignments  LeadAssignment[]
   referralAttributions ReferralAttribution[]
+  scoreRecords LeadScoreRecord[]
 
   @@index([organizationId, status])
   @@index([organizationId, mobile])
@@ -833,6 +842,7 @@ model Document {
   application  Application?           @relation(fields: [applicationId], references: [id], onDelete: SetNull)
   documentType DocumentType           @relation(fields: [documentTypeId], references: [id], onDelete: Restrict)
   verifications DocumentVerification[]
+  ocrRecord     DocumentOcrRecord?
 
   @@map("documents")
 }
@@ -1332,4 +1342,99 @@ model IdentityVerificationRecord {
   @@index([organizationId, verificationType])
   @@index([verificationStatus])
   @@map("identity_verification_records")
+}
+
+// ─── DOMAIN 11: AI, AUTOMATION & PREDICTIVE INTELLIGENCE (PHASE 4) ─────────
+
+// Vertical Slice 4.1: AI-Powered Lead Scoring & Priority Queue
+model LeadScoreRecord {
+  id                    String    @id @default(uuid())
+  organizationId        String    @map("organization_id")
+  leadId                String    @map("lead_id")
+  score                 Int       @default(0) // 0-100
+  grade                 String    @default("C_COLD") @map("grade") // A_HOT, B_WARM, C_COLD, D_UNQUALIFIED
+  predictedDealValue    Decimal?  @db.Decimal(12, 2) @map("predicted_deal_value")
+  conversionProbability Decimal?  @db.Decimal(5, 2) @map("conversion_probability") // 0.00 - 1.00
+  scoreFactorsJson      Json      @map("score_factors_json") // Breakdown array of [{ factor, weight, contribution, explanation }]
+  recommendedAction     String?   @map("recommended_action") // e.g. "Instant Call: High-intent Pvt Ltd incorporation query"
+  calculatedAt          DateTime  @default(now()) @map("calculated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  lead         Lead         @relation(fields: [leadId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, score])
+  @@index([leadId])
+  @@map("lead_score_records")
+}
+
+// Vertical Slice 4.2: Document OCR & Automated Verification Assistant
+model DocumentOcrRecord {
+  id                  String    @id @default(uuid())
+  organizationId      String    @map("organization_id")
+  documentId          String    @unique @map("document_id")
+  documentType        String    @map("document_type") // PAN, AADHAAR, GST_CERTIFICATE, BANK_STATEMENT, INCORPORATION_CERTIFICATE, CANCELLED_CHEQUE
+  extractedDataJson   Json      @map("extracted_data_json") // { panNumber, name, dob, fatherName, gstin, legalName, tradeName, accountNumber, ifsc }
+  confidenceScore     Decimal   @db.Decimal(5, 2) @map("confidence_score") // 0 - 100%
+  clarityScore        Decimal?  @db.Decimal(5, 2) @map("clarity_score") // 0 - 100%
+  tamperCheckPassed   Boolean   @default(true) @map("tamper_check_passed")
+  matchStatus         String    @default("MANUAL_REVIEW_REQUIRED") @map("match_status") // FULL_MATCH, PARTIAL_MATCH, MISMATCH, MANUAL_REVIEW_REQUIRED
+  discrepanciesJson   Json?     @map("discrepancies_json") // Array of [{ field, applicationValue, ocrValue, matchRatio }]
+  suggestedAction     String    @default("MANUAL_REVIEW") @map("suggested_action") // AUTO_APPROVE, MANUAL_REVIEW, REJECT_TAMPERED, REQUEST_REUPLOAD
+  ocrProvider         String    @default("INTELLIGENT_OCR_SANDBOX") @map("ocr_provider") // INTELLIGENT_OCR_SANDBOX, GOOGLE_VISION, AWS_TEXTRACT, SUREPASS_OCR
+  processedAt         DateTime  @default(now()) @map("processed_at")
+  createdAt           DateTime  @default(now()) @map("created_at")
+  updatedAt           DateTime  @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  document     Document     @relation(fields: [documentId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, matchStatus])
+  @@index([documentId])
+  @@map("document_ocr_records")
+}
+
+// Vertical Slice 4.3: Crazy Capital AI Operations Copilot
+model AiCopilotSession {
+  id             String    @id @default(uuid())
+  organizationId String    @map("organization_id")
+  userId         String    @map("user_id")
+  title          String    @default("Operations Copilot Session")
+  contextType    String    @default("GENERAL") @map("context_type") // GENERAL, APPLICATION, LEAD, WORKFLOW, COMPLIANCE_QUERY, CUSTOMER_COMMUNICATION
+  contextId      String?   @map("context_id") // applicationId or leadId
+  messagesJson   Json      @map("messages_json") // Array of [{ role: "user"|"assistant"|"system", content, timestamp, citations, suggestedActions, draftPayload }]
+  lastMessageAt  DateTime  @default(now()) @map("last_message_at")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user         User         @relation("UserCopilotSessions", fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, userId])
+  @@index([contextType, contextId])
+  @@map("ai_copilot_sessions")
+}
+
+// Vertical Slice 4.4: Predictive Revenue & Turnaround Analytics
+model PredictiveForecastRecord {
+  id                     String    @id @default(uuid())
+  organizationId         String    @map("organization_id")
+  branchId               String?   @map("branch_id")
+  forecastPeriod         String    @map("forecast_period") // e.g. "2026-09", "2026-Q4", "ANNUAL-2026"
+  predictedRevenue       Decimal   @db.Decimal(14, 2) @map("predicted_revenue")
+  confidenceIntervalLow  Decimal   @db.Decimal(14, 2) @map("confidence_interval_low")
+  confidenceIntervalHigh Decimal   @db.Decimal(14, 2) @map("confidence_interval_high")
+  predictedConversions   Int       @map("predicted_conversions")
+  predictedPartnerPayouts Decimal  @db.Decimal(14, 2) @map("predicted_partner_payouts")
+  predictedAvgTurnaroundHours Float @map("predicted_avg_turnaround_hours")
+  predictedBottleneckStageId String? @map("predicted_bottleneck_stage_id")
+  slaBreachRiskCount     Int       @default(0) @map("sla_breach_risk_count")
+  factorsJson            Json?     @map("factors_json") // { pipelineWeight, velocityTrend, seasonalMultiplier, branchCapacityRatio }
+  generatedAt            DateTime  @default(now()) @map("generated_at")
+
+  organization Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  branch       Branch?      @relation(fields: [branchId], references: [id], onDelete: SetNull)
+
+  @@unique([organizationId, branchId, forecastPeriod])
+  @@index([organizationId, forecastPeriod])
+  @@map("predictive_forecast_records")
 }

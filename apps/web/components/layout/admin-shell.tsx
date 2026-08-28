@@ -22,8 +22,11 @@ import {
   GitFork,
   AlertTriangle,
   ListTodo,
+  TrendingUp,
+  Sparkles,
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
+import { AiCopilotDrawer } from '../copilot/ai-copilot-drawer';
 
 export interface AdminShellProps {
   children: React.ReactNode;
@@ -36,15 +39,16 @@ export function AdminShell({ children }: AdminShellProps) {
 
   const navItems = [
     { label: 'Executive Dashboard', href: '/admin', icon: LayoutDashboard },
+    { label: 'Predictive Intelligence', href: '/admin/reports/predictive', icon: TrendingUp, badge: 'Slice 4.4' },
+    { label: 'CRM Leads & Priority', href: '/admin/leads', icon: Users2, badge: 'AI Hot' },
     { label: 'Workflow Builder', href: '/admin/workflows', icon: GitFork, badge: 'Slice 2.1' },
     { label: 'SLA & Escalations', href: '/admin/sla', icon: AlertTriangle, badge: 'Slice 2.2' },
     { label: 'Task Engine & Workload', href: '/admin/tasks', icon: ListTodo, badge: 'Slice 2.3' },
     { label: 'Branch & Regional Hubs', href: '/admin/branches', icon: Building2, badge: 'Slice 2.4' },
     { label: 'Reports & Analytics', href: '/admin/reports', icon: BarChart3, badge: 'Slice 1.12' },
     { label: 'CMS & Knowledge Base', href: '/admin/cms', icon: BookOpen, badge: 'Slice 1.13' },
-    { label: 'CRM Leads Engine', href: '/admin/leads', icon: Users2, badge: 'Sprint 2' },
     { label: 'Customer 360 Hub', href: '/admin/customers', icon: UserCheck, badge: 'Sprint 2' },
-    { label: 'Document Vault (ADR-018)', href: '/admin/documents', icon: FileCheck2, badge: 'Slice 1.7' },
+    { label: 'Document Vault (ADR-018)', href: '/admin/documents', icon: FileCheck2, badge: 'OCR AI' },
     { label: 'Billing & Invoices (ADR-014)', href: '/admin/invoices', icon: Receipt, badge: 'Slice 1.8' },
     { label: 'Notifications & Alerts', href: '/admin/notifications', icon: Bell, badge: 'Slice 1.9' },
     { label: 'Commissions & Payouts', href: '/admin/commissions', icon: Coins, badge: 'Slice 2.5' },
@@ -230,6 +234,9 @@ export function AdminShell({ children }: AdminShellProps) {
         {/* Main Content Pane */}
         <main className="flex-1 min-w-0">{children}</main>
       </div>
+
+      {/* Floating AI Operations Copilot Drawer (Slice 4.3) */}
+      <AiCopilotDrawer />
     </div>
   );
 }

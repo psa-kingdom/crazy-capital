@@ -705,3 +705,69 @@ export const branchesApi = {
     });
   },
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 4: AUTOMATION, AI & DOCUMENT INTELLIGENCE
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Vertical Slice 4.1: AI-Powered Lead Scoring & Priority Queue
+export const leadScoringApi = {
+  getPriorityQueue: async (params?: { minScore?: number; grade?: string; priorityRank?: string; limit?: number; offset?: number }) => {
+    return apiClient.get('/leads/priority-queue', { params });
+  },
+  recalculateScore: async (leadId: string) => {
+    return apiClient.post(`/leads/${leadId}/recalculate-score`);
+  },
+  getScoreBreakdown: async (leadId: string) => {
+    return apiClient.get(`/leads/${leadId}/score-breakdown`);
+  },
+};
+
+// Vertical Slice 4.2: Document OCR & Automated Verification Assistant
+export const documentOcrApi = {
+  runOcr: async (documentId: string) => {
+    return apiClient.post(`/documents/${documentId}/ocr`);
+  },
+  getOcrResult: async (documentId: string) => {
+    return apiClient.get(`/documents/${documentId}/ocr`);
+  },
+  autoVerify: async (documentId: string, data?: { remarks?: string; overrideDecision?: 'APPROVE' | 'REJECT' }) => {
+    return apiClient.patch(`/documents/${documentId}/auto-verify`, data || {});
+  },
+};
+
+// Vertical Slice 4.3: Crazy Capital AI Operations Copilot
+export const copilotApi = {
+  chat: async (data: { sessionId?: string; message: string; contextType?: string; contextId?: string }) => {
+    return apiClient.post('/copilot/chat', data);
+  },
+  draftFollowup: async (data: {
+    leadId?: string;
+    applicationId?: string;
+    channel: 'EMAIL' | 'WHATSAPP' | 'SMS';
+    intent: 'DOCUMENT_MISSING' | 'PAYMENT_PENDING' | 'STAGE_UPDATE' | 'WELCOME_PROPOSAL' | 'GENERAL';
+    customInstructions?: string;
+  }) => {
+    return apiClient.post('/copilot/draft-followup', data);
+  },
+  suggestNextAction: async (applicationId: string) => {
+    return apiClient.get(`/copilot/suggest-action/${applicationId}`);
+  },
+  searchKnowledge: async (q?: string) => {
+    return apiClient.get('/copilot/knowledge', { params: q ? { q } : {} });
+  },
+};
+
+// Vertical Slice 4.4: Predictive Revenue & Turnaround Analytics
+export const predictiveReportsApi = {
+  getRevenueForecast: async (params?: { period?: string; branchId?: string }) => {
+    return apiClient.get('/reports/predictive/revenue', { params });
+  },
+  getTurnaroundForecast: async (params?: { branchId?: string }) => {
+    return apiClient.get('/reports/predictive/turnaround', { params });
+  },
+  getBottleneckRadar: async () => {
+    return apiClient.get('/reports/predictive/bottlenecks');
+  },
+};
+

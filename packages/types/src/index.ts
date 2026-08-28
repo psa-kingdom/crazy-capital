@@ -2649,5 +2649,221 @@ export interface VerifyDigiLockerInput {
   partnerId?: string;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 4: AUTOMATION, AI & DOCUMENT INTELLIGENCE
+// ═══════════════════════════════════════════════════════════════════════════
 
+// Vertical Slice 4.1: AI-Powered Lead Scoring & Priority Queue
+export const LeadScoreGrade = {
+  A_HOT: 'A_HOT',
+  B_WARM: 'B_WARM',
+  C_COLD: 'C_COLD',
+  D_UNQUALIFIED: 'D_UNQUALIFIED',
+} as const;
+export type LeadScoreGrade = (typeof LeadScoreGrade)[keyof typeof LeadScoreGrade];
 
+export interface LeadScoreFactor {
+  factor: string;
+  weight: number;
+  contribution: number;
+  explanation: string;
+}
+
+export interface LeadScoreRecordDto {
+  id: string;
+  organizationId: string;
+  leadId: string;
+  score: number;
+  grade: LeadScoreGrade | string;
+  predictedDealValue?: number | null;
+  conversionProbability?: number | null;
+  scoreFactors: LeadScoreFactor[];
+  recommendedAction?: string | null;
+  calculatedAt: Date | string;
+}
+
+export interface PriorityQueueItemDto {
+  leadId: string;
+  firstName: string;
+  lastName: string;
+  email?: string | null;
+  mobile: string;
+  companyName?: string | null;
+  serviceInterest?: string | null;
+  status: string;
+  score: number;
+  grade: LeadScoreGrade | string;
+  conversionProbability: number;
+  predictedDealValue: number;
+  recommendedAction: string;
+  priorityRank: 'URGENT' | 'HIGH' | 'MEDIUM' | 'LOW';
+  sourceName?: string | null;
+  assignedToName?: string | null;
+  timeInCurrentStatusHours: number;
+  createdAt: Date | string;
+}
+
+// Vertical Slice 4.2: Document OCR & Automated Verification Assistant
+export const DocumentOcrMatchStatus = {
+  FULL_MATCH: 'FULL_MATCH',
+  PARTIAL_MATCH: 'PARTIAL_MATCH',
+  MISMATCH: 'MISMATCH',
+  MANUAL_REVIEW_REQUIRED: 'MANUAL_REVIEW_REQUIRED',
+} as const;
+export type DocumentOcrMatchStatus = (typeof DocumentOcrMatchStatus)[keyof typeof DocumentOcrMatchStatus];
+
+export const DocumentOcrSuggestedAction = {
+  AUTO_APPROVE: 'AUTO_APPROVE',
+  MANUAL_REVIEW: 'MANUAL_REVIEW',
+  REJECT_TAMPERED: 'REJECT_TAMPERED',
+  REQUEST_REUPLOAD: 'REQUEST_REUPLOAD',
+} as const;
+export type DocumentOcrSuggestedAction = (typeof DocumentOcrSuggestedAction)[keyof typeof DocumentOcrSuggestedAction];
+
+export interface OcrDiscrepancy {
+  field: string;
+  applicationValue: string;
+  ocrValue: string;
+  matchRatio: number;
+}
+
+export interface DocumentOcrExtractedData {
+  panNumber?: string;
+  name?: string;
+  dob?: string;
+  fatherName?: string;
+  gstin?: string;
+  legalName?: string;
+  tradeName?: string;
+  state?: string;
+  accountNumber?: string;
+  ifsc?: string;
+  bankName?: string;
+  address?: string;
+  rawText?: string;
+}
+
+export interface DocumentOcrRecordDto {
+  id: string;
+  organizationId: string;
+  documentId: string;
+  documentType: string;
+  extractedData: DocumentOcrExtractedData;
+  confidenceScore: number;
+  clarityScore?: number | null;
+  tamperCheckPassed: boolean;
+  matchStatus: DocumentOcrMatchStatus | string;
+  discrepancies: OcrDiscrepancy[];
+  suggestedAction: DocumentOcrSuggestedAction | string;
+  ocrProvider: string;
+  processedAt: Date | string;
+}
+
+export interface RunDocumentOcrInput {
+  documentId: string;
+  documentType?: string;
+  applicationId?: string;
+}
+
+// Vertical Slice 4.3: Crazy Capital AI Operations Copilot
+export interface AiCopilotMessage {
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: string;
+  citations?: string[];
+  suggestedActions?: string[];
+  draftPayload?: {
+    channel?: 'EMAIL' | 'WHATSAPP' | 'SMS';
+    subject?: string;
+    body?: string;
+    recipientName?: string;
+    recipientContact?: string;
+  };
+}
+
+export interface AiCopilotSessionDto {
+  id: string;
+  organizationId: string;
+  userId: string;
+  title: string;
+  contextType: string;
+  contextId?: string | null;
+  messages: AiCopilotMessage[];
+  lastMessageAt: Date | string;
+  createdAt: Date | string;
+}
+
+export interface ChatCopilotInput {
+  sessionId?: string;
+  message: string;
+  contextType?: 'GENERAL' | 'APPLICATION' | 'LEAD' | 'WORKFLOW' | 'COMPLIANCE_QUERY' | 'CUSTOMER_COMMUNICATION' | string;
+  contextId?: string;
+}
+
+export interface DraftFollowupInput {
+  leadId?: string;
+  applicationId?: string;
+  channel: 'EMAIL' | 'WHATSAPP' | 'SMS';
+  intent: 'DOCUMENT_MISSING' | 'PAYMENT_PENDING' | 'STAGE_UPDATE' | 'WELCOME_PROPOSAL' | 'GENERAL';
+  customInstructions?: string;
+}
+
+export interface ComplianceKnowledgeItem {
+  id: string;
+  topic: string;
+  category: string;
+  summary: string;
+  keyRequirements: string[];
+  applicableActs: string[];
+  statutoryTimelines: string;
+  penaltiesForNonCompliance?: string;
+}
+
+// Vertical Slice 4.4: Predictive Revenue & Turnaround Analytics
+export interface PredictiveForecastRecordDto {
+  id: string;
+  organizationId: string;
+  branchId?: string | null;
+  forecastPeriod: string;
+  predictedRevenue: number;
+  confidenceIntervalLow: number;
+  confidenceIntervalHigh: number;
+  predictedConversions: number;
+  predictedPartnerPayouts: number;
+  predictedAvgTurnaroundHours: number;
+  predictedBottleneckStageId?: string | null;
+  slaBreachRiskCount: number;
+  factors?: Record<string, any> | null;
+  generatedAt: Date | string;
+}
+
+export interface PredictiveRevenueForecastDto {
+  period: string;
+  baseRevenue: number;
+  optimisticRevenue: number;
+  conservativeRevenue: number;
+  projectedConversions: number;
+  projectedPartnerCommissions: number;
+  historicalComparisonPct: number;
+}
+
+export interface PredictiveTurnaroundForecastDto {
+  overallAvgHours: number;
+  fastestStageName: string;
+  fastestStageHours: number;
+  slowestStageName: string;
+  slowestStageHours: number;
+  stagesAtRiskCount: number;
+}
+
+export interface PredictiveBottleneckDto {
+  stageId: string;
+  stageName: string;
+  serviceName: string;
+  currentActiveCount: number;
+  avgHoursSpent: number;
+  slaTargetHours: number;
+  breachRiskProbability: number;
+  bottleneckSeverity: 'HIGH' | 'MEDIUM' | 'LOW';
+  recommendedIntervention: string;
+}

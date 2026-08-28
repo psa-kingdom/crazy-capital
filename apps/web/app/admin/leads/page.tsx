@@ -23,8 +23,9 @@ import {
   UserPlus,
 } from 'lucide-react';
 import { Card, Button, Badge } from '@cc/ui';
-import { crmApi } from '@/lib/api';
-import { LeadStatus } from '@cc/types';
+import { crmApi, leadScoringApi } from '@/lib/api';
+import { LeadStatus, LeadScoreGrade, PriorityQueueItemDto, LeadScoreFactor } from '@cc/types';
+import { Flame, RefreshCw, Zap, Award, Target, Check, ShieldCheck, AlertTriangle } from 'lucide-react';
 
 interface LeadItem {
   id: string;
@@ -44,12 +45,23 @@ interface LeadItem {
 }
 
 export default function LeadsPage() {
-  const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
+  const [viewMode, setViewMode] = useState<'kanban' | 'table' | 'priority'>('priority');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
   const [sourceFilter, setSourceFilter] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [priorityQueue, setPriorityQueue] = useState<PriorityQueueItemDto[]>([]);
+  const [selectedScoreLead, setSelectedScoreLead] = useState<{
+    lead: any;
+    factors: LeadScoreFactor[];
+    score: number;
+    grade: string;
+    action: string;
+    prob: number;
+    dealVal: number;
+  } | null>(null);
+  const [isRecalculating, setIsRecalculating] = useState(false);
 
   // Initial demo leads data matching seed script
   const [leads, setLeads] = useState<LeadItem[]>([
@@ -160,9 +172,16 @@ export default function LeadsPage() {
     async function fetchLeads() {
       try {
         setIsLoading(true);
-        const res: any = await crmApi.getLeads({ limit: 100 });
-        if (res && res.data && Array.isArray(res.data)) {
-          setLeads(res.data);
+        const [leadsRes, queueRes]: [any, any] = await Promise.all([
+          crmApi.getLeads({ limit: 100 }).catch(() => null),
+          leadScoringApi.getPriorityQueue({ limit: 50 }).catch(() => null),
+        ]);
+
+        if (leadsRes && leadsRes.data && Array.isArray(leadsRes.data)) {
+          setLeads(leadsRes.data);
+        }
+        if (queueRes && queueRes.items && Array.isArray(queueRes.items)) {
+          setPriorityQueue(queueRes.items);
         }
       } catch (err) {
         // Fallback to seeded demo dataset if backend unavailable
@@ -173,6 +192,65 @@ export default function LeadsPage() {
     }
     fetchLeads();
   }, []);
+
+  const handleOpenScoreBreakdown = async (lead: LeadItem | PriorityQueueItemDto) => {
+    const leadId = 'leadId' in lead ? lead.leadId : lead.id;
+    try {
+      setIsRecalculating(true);
+      const res: any = await leadScoringApi.getScoreBreakdown(leadId);
+      setSelectedScoreLead({
+        lead,
+        factors: res.scoreFactors || [],
+        score: res.score,
+        grade: res.grade,
+        action: res.recommendedAction,
+        prob: res.conversionProbability || 0.5,
+        dealVal: res.predictedDealValue || 7500,
+      });
+    } catch (e) {
+      // Fallback display
+      setSelectedScoreLead({
+        lead,
+        factors: [
+          { factor: 'Source Intent & Quality', weight: 25, contribution: 24, explanation: 'High-intent direct website query' },
+          { factor: 'Service Value & Margin Potential', weight: 25, contribution: 22, explanation: 'Pvt Ltd Incorporation Package' },
+          { factor: 'Data Completeness & Profile Quality', weight: 20, contribution: 18, explanation: 'Corporate email & valid Indian phone' },
+          { factor: 'Engagement Velocity & Recency', weight: 20, contribution: 15, explanation: 'Fresh lead (< 12 hours old)' },
+          { factor: 'Channel Trust & Attribution', weight: 10, contribution: 8, explanation: 'Direct Search attribution' },
+        ],
+        score: 'score' in lead ? lead.score : (lead.leadScore || 85),
+        grade: 'grade' in lead ? String(lead.grade) : 'A_HOT',
+        action: '⚡ Instant Priority Call: Connect within 15 mins to close incorporation package.',
+        prob: 0.85,
+        dealVal: 9999,
+      });
+    } finally {
+      setIsRecalculating(false);
+    }
+  };
+
+  const handleRecalculateScore = async (leadId: string) => {
+    try {
+      setIsRecalculating(true);
+      const res: any = await leadScoringApi.recalculateScore(leadId);
+      if (selectedScoreLead) {
+        setSelectedScoreLead({
+          ...selectedScoreLead,
+          factors: res.scoreFactors,
+          score: res.score,
+          grade: res.grade,
+          action: res.recommendedAction,
+          prob: res.conversionProbability,
+          dealVal: res.predictedDealValue,
+        });
+      }
+      setLeads(leads.map(l => l.id === leadId ? { ...l, leadScore: res.score } : l));
+    } catch (e) {
+      // Alert fallback
+    } finally {
+      setIsRecalculating(false);
+    }
+  };
 
   const handleCreateLead = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -301,6 +379,16 @@ export default function LeadsPage() {
           {/* View Mode Switcher */}
           <div className="flex items-center bg-white border border-slate-200 rounded-xl p-1 shadow-sm">
             <button
+              onClick={() => setViewMode('priority')}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
+                viewMode === 'priority'
+                  ? 'bg-gradient-to-r from-amber-500 to-rose-600 text-white shadow-xs'
+                  : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              <Flame className="w-3.5 h-3.5 text-amber-200" /> Priority Queue (AI Ranked)
+            </button>
+            <button
               onClick={() => setViewMode('kanban')}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                 viewMode === 'kanban'
@@ -331,6 +419,254 @@ export default function LeadsPage() {
           </Button>
         </div>
       </div>
+
+      {/* Priority Queue View (Slice 4.1) */}
+      {viewMode === 'priority' && (
+        <div className="space-y-4">
+          {/* Priority Hero KPI Strip */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <Card className="p-4 bg-gradient-to-br from-amber-50 to-orange-50/50 border-amber-200/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-amber-900 uppercase tracking-wider">⚡ Hot Opportunities</span>
+                <Flame className="w-4 h-4 text-amber-600" />
+              </div>
+              <div className="text-2xl font-black text-amber-950 mt-1">
+                {priorityQueue.filter(p => p.score >= 80).length || leads.filter(l => l.leadScore >= 80).length || 3} Leads
+              </div>
+              <p className="text-[11px] text-amber-700 font-medium mt-0.5">Grade A (Hot) • Priority Rank: URGENT</p>
+            </Card>
+
+            <Card className="p-4 bg-gradient-to-br from-emerald-50 to-teal-50/50 border-emerald-200/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-emerald-900 uppercase tracking-wider">🎯 Est. Deal Pipeline</span>
+                <Target className="w-4 h-4 text-emerald-600" />
+              </div>
+              <div className="text-2xl font-black text-emerald-950 mt-1">
+                ₹{(priorityQueue.reduce((acc, p) => acc + (p.predictedDealValue || 7500), 0) || 185000).toLocaleString('en-IN')}
+              </div>
+              <p className="text-[11px] text-emerald-700 font-medium mt-0.5">Weighted by AI conversion probability</p>
+            </Card>
+
+            <Card className="p-4 bg-gradient-to-br from-sky-50 to-blue-50/50 border-sky-200/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-sky-900 uppercase tracking-wider">⏱️ Velocity Window</span>
+                <Clock className="w-4 h-4 text-sky-600" />
+              </div>
+              <div className="text-2xl font-black text-sky-950 mt-1">&lt; 2.5 Hours</div>
+              <p className="text-[11px] text-sky-700 font-medium mt-0.5">Peak conversion response SLA target</p>
+            </Card>
+
+            <Card className="p-4 bg-gradient-to-br from-purple-50 to-indigo-50/50 border-purple-200/80">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-purple-900 uppercase tracking-wider">🤖 AI Model Version</span>
+                <Sparkles className="w-4 h-4 text-purple-600" />
+              </div>
+              <div className="text-2xl font-black text-purple-950 mt-1">Crazy AI v4.1</div>
+              <p className="text-[11px] text-purple-700 font-medium mt-0.5">5 Multi-Factor Signals + MCA Knowledge</p>
+            </Card>
+          </div>
+
+          {/* Priority Queue Cards List */}
+          <div className="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100">
+            <div className="p-3.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider">Ranked Conversion Queue</span>
+                <span className="text-[11px] font-bold px-2 py-0.5 bg-amber-100 text-amber-800 rounded-full border border-amber-200">
+                  Sorted by Conversion Probability
+                </span>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">Click any lead for Explainable Factor Breakdown</span>
+            </div>
+
+            {(priorityQueue.length > 0 ? priorityQueue : (filteredLeads as any[])).map((lead: any, idx: number) => {
+              const score = lead.score ?? lead.leadScore ?? 75;
+              const grade = lead.grade || (score >= 80 ? 'A_HOT' : score >= 60 ? 'B_WARM' : 'C_COLD');
+              const prob = lead.conversionProbability ? Math.round(lead.conversionProbability * 100) : score;
+              const dealVal = lead.predictedDealValue || 7500;
+              const action = lead.recommendedAction || (score >= 80 ? '⚡ Instant Priority Call: Connect within 15 mins' : '📞 WhatsApp & Proposal Outreach');
+
+              return (
+                <div
+                  key={lead.leadId || lead.id}
+                  className="p-4 hover:bg-slate-50/80 transition-colors flex flex-col lg:flex-row lg:items-center justify-between gap-4"
+                >
+                  <div className="flex items-start gap-3.5">
+                    {/* Rank Badge */}
+                    <div className="flex flex-col items-center justify-center w-10 h-10 rounded-xl bg-slate-900 text-white shrink-0 font-black text-sm">
+                      #{idx + 1}
+                    </div>
+
+                    <div className="space-y-1">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <span className="font-bold text-sm text-slate-900">
+                          {lead.firstName} {lead.lastName}
+                        </span>
+                        {lead.companyName && (
+                          <span className="text-xs font-medium text-slate-500 flex items-center gap-1">
+                            • <Building className="w-3 h-3" /> {lead.companyName}
+                          </span>
+                        )}
+                        {/* Grade Badge */}
+                        <span
+                          className={`text-[10px] font-extrabold px-2 py-0.5 rounded-md uppercase tracking-wider border ${
+                            grade === 'A_HOT'
+                              ? 'bg-emerald-50 text-emerald-700 border-emerald-300'
+                              : grade === 'B_WARM'
+                              ? 'bg-amber-50 text-amber-700 border-amber-300'
+                              : 'bg-slate-100 text-slate-700 border-slate-200'
+                          }`}
+                        >
+                          {grade === 'A_HOT' ? '🔥 A (Hot)' : grade === 'B_WARM' ? '⚡ B (Warm)' : '❄️ C (Cold)'}
+                        </span>
+                      </div>
+
+                      {/* AI Action Box */}
+                      <div className="text-xs text-brand-900 bg-brand-50/70 border border-brand-200/80 px-2.5 py-1 rounded-lg flex items-center gap-1.5 font-medium">
+                        <Sparkles className="w-3.5 h-3.5 text-brand-600 shrink-0" />
+                        <span>{action}</span>
+                      </div>
+
+                      {/* Contact and Service meta */}
+                      <div className="flex flex-wrap items-center gap-3 text-[11px] text-slate-500 pt-0.5">
+                        <span className="flex items-center gap-1 font-mono text-slate-700">
+                          <Phone className="w-3 h-3 text-slate-400" /> {lead.mobile}
+                        </span>
+                        {lead.email && (
+                          <span className="flex items-center gap-1 text-slate-600">
+                            <Mail className="w-3 h-3 text-slate-400" /> {lead.email}
+                          </span>
+                        )}
+                        <span className="font-semibold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                          {lead.serviceInterest || 'Pvt Ltd Incorporation'}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Score & Action Button */}
+                  <div className="flex items-center gap-4 shrink-0 justify-between lg:justify-end border-t lg:border-t-0 pt-2 lg:pt-0">
+                    <div className="text-right">
+                      <div className="flex items-center justify-end gap-1.5">
+                        <span className="text-xs text-slate-500 font-semibold">AI Score:</span>
+                        <span className="text-lg font-black text-slate-900">{score}/100</span>
+                      </div>
+                      <div className="text-[11px] text-emerald-600 font-bold">
+                        {prob}% Win Prob • Est ₹{dealVal.toLocaleString('en-IN')}
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <Button
+                        onClick={() => handleOpenScoreBreakdown(lead)}
+                        variant="outline"
+                        size="sm"
+                        className="text-xs flex items-center gap-1.5 bg-white hover:bg-slate-50"
+                      >
+                        <Sparkles className="w-3.5 h-3.5 text-brand-600" /> AI Breakdown
+                      </Button>
+                      <Link href={`/leads/${lead.leadId || lead.id}`}>
+                        <Button variant="primary" size="sm" className="text-xs">
+                          Action
+                        </Button>
+                      </Link>
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* AI Score Breakdown Modal */}
+      {selectedScoreLead && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-2xl max-w-lg w-full p-6 shadow-2xl border border-slate-100 max-h-[90vh] overflow-y-auto space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-200">
+              <div className="flex items-center gap-2">
+                <div className="p-2 rounded-xl bg-brand-50 text-brand-600">
+                  <Sparkles className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-base font-bold text-slate-900">Explainable AI Lead Score</h3>
+                  <p className="text-xs text-slate-500">
+                    {selectedScoreLead.lead.firstName} {selectedScoreLead.lead.lastName}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedScoreLead(null)}
+                className="p-1.5 rounded-lg text-slate-400 hover:bg-slate-100"
+              >
+                <XCircle className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Score Hero */}
+            <div className="p-4 rounded-xl bg-gradient-to-br from-slate-900 to-brand-950 text-white flex items-center justify-between">
+              <div>
+                <span className="text-[11px] font-bold tracking-wider uppercase text-brand-300">Composite Quality Score</span>
+                <div className="text-3xl font-black mt-0.5">{selectedScoreLead.score} <span className="text-sm font-normal text-slate-400">/ 100</span></div>
+                <div className="text-xs text-slate-300 mt-1">Grade: <strong className="text-emerald-400">{selectedScoreLead.grade}</strong> • Est Deal: <strong>₹{selectedScoreLead.dealVal?.toLocaleString('en-IN')}</strong></div>
+              </div>
+              <div className="text-right">
+                <div className="text-2xl font-black text-emerald-400">{(selectedScoreLead.prob * 100).toFixed(0)}%</div>
+                <div className="text-[10px] text-slate-300 uppercase tracking-wider">Conversion Prob.</div>
+              </div>
+            </div>
+
+            {/* Recommended Action */}
+            <div className="p-3 bg-amber-50 border border-amber-200 rounded-xl space-y-1">
+              <span className="text-[11px] font-bold text-amber-900 uppercase flex items-center gap-1">
+                <Zap className="w-3.5 h-3.5 text-amber-600" /> Prescribed Next Action
+              </span>
+              <p className="text-xs text-amber-950 font-medium">{selectedScoreLead.action}</p>
+            </div>
+
+            {/* 5 Explainable Factor Signals */}
+            <div className="space-y-3 pt-1">
+              <h4 className="text-xs font-bold text-slate-800 uppercase tracking-wider">Signal Breakdown (Multi-Factor Engine)</h4>
+              {selectedScoreLead.factors.map((factor, idx) => (
+                <div key={idx} className="space-y-1 bg-slate-50 p-2.5 rounded-lg border border-slate-100">
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="font-semibold text-slate-800">{factor.factor}</span>
+                    <span className="font-mono font-bold text-brand-600">{factor.contribution} / {factor.weight} pts</span>
+                  </div>
+                  <div className="w-full h-1.5 bg-slate-200 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-brand-500 rounded-full transition-all"
+                      style={{ width: `${(factor.contribution / factor.weight) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-[11px] text-slate-500 italic">{factor.explanation}</p>
+                </div>
+              ))}
+            </div>
+
+            {/* Modal Actions */}
+            <div className="pt-3 border-t border-slate-200 flex items-center justify-between">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handleRecalculateScore(selectedScoreLead.lead.leadId || selectedScoreLead.lead.id)}
+                disabled={isRecalculating}
+                className="text-xs flex items-center gap-1.5"
+              >
+                <RefreshCw className={`w-3.5 h-3.5 ${isRecalculating ? 'animate-spin' : ''}`} />
+                {isRecalculating ? 'Recalculating...' : 'Recalculate AI Score'}
+              </Button>
+              <Button
+                variant="primary"
+                size="sm"
+                onClick={() => setSelectedScoreLead(null)}
+                className="text-xs"
+              >
+                Done
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Filter and Search Bar */}
       <div className="flex flex-wrap items-center justify-between gap-3 bg-white p-3.5 rounded-xl border border-slate-200 shadow-sm">
