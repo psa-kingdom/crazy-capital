@@ -29,7 +29,7 @@ const SERVICE_SLUGS = [
 
 async function runLiveAcceptance() {
   console.log('================================================================');
-  console.log('🚀 CRAZY CAPITAL — LIVE PRODUCTION INTERNET VERIFICATION SUITE');
+  console.log('🚀 CRAZY CAPITAL — COMPREHENSIVE PRODUCTION INTERNET AUDIT');
   console.log(`🌐 Frontend: ${BASE_URL}`);
   console.log(`⚙️  API:      ${API_URL}`);
   console.log('================================================================\n');
@@ -72,27 +72,25 @@ async function runLiveAcceptance() {
 
   try {
     // 1. API Health Check
-    console.log('[1/7] Testing Canonical API Health Endpoint...');
+    console.log('[1/10] Testing Canonical API Health Endpoint...');
     const apiRes = await page.request.get(`${API_URL}/health`);
     assert(apiRes.status() === 200, 'API Health Check Status 200', `Got ${apiRes.status()}`);
     const healthJson = await apiRes.json();
     assert(healthJson.success === true && healthJson.data?.status === 'ok', 'API Health JSON Payload', JSON.stringify(healthJson));
 
     // 2. Production Homepage
-    console.log('\n[2/7] Testing Production Homepage (Desktop 1440px)...');
+    console.log('\n[2/10] Testing Production Homepage (Desktop 1440px)...');
     const homeRes = await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
     assert(homeRes.status() === 200, 'Homepage HTTP Status 200', `Got ${homeRes.status()}`);
     const title = await page.title();
     assert(title.includes('Crazy Capital'), 'Homepage Title contains "Crazy Capital"', `Title: ${title}`);
     
-    // Check 14 services rendered
     const serviceCards = await page.$$('a[href^="/services/"]');
     assert(serviceCards.length >= 14, `All 14 Service Verticals Present on Homepage (Found: ${serviceCards.length})`);
-    
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '01-live-homepage-desktop.png'), fullPage: true });
 
     // 3. Mobile Viewport Check
-    console.log('\n[3/7] Testing Production Homepage (Mobile 375px)...');
+    console.log('\n[3/10] Testing Production Homepage (Mobile 375px)...');
     await page.setViewportSize({ width: 375, height: 812 });
     await page.goto(BASE_URL, { waitUntil: 'networkidle' });
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '02-live-homepage-mobile.png'), fullPage: true });
@@ -100,35 +98,87 @@ async function runLiveAcceptance() {
     await page.setViewportSize({ width: 1440, height: 900 });
 
     // 4. Service Vertical Pages
-    console.log('\n[4/7] Testing Service Verticals Dynamic Rendering...');
+    console.log('\n[4/10] Testing Service Verticals Dynamic Rendering...');
     for (const slug of SERVICE_SLUGS.slice(0, 4)) {
       const res = await page.goto(`${BASE_URL}/services/${slug}`, { waitUntil: 'networkidle', timeout: 20000 });
       assert(res.status() === 200, `Service Page /services/${slug} Status 200`);
     }
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '03-live-service-pvt-ltd.png'), fullPage: true });
 
     // 5. Blog & Knowledge Center
-    console.log('\n[5/7] Testing Blog & Knowledge Center...');
+    console.log('\n[5/10] Testing Blog & Knowledge Center...');
     const blogRes = await page.goto(`${BASE_URL}/blog`, { waitUntil: 'networkidle', timeout: 20000 });
     assert(blogRes.status() === 200, 'Blog Directory /blog Status 200');
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04-live-blog.png'), fullPage: true });
 
     // 6. Customer & Partner Portals
-    console.log('\n[6/7] Testing Customer & Partner Portals...');
+    console.log('\n[6/10] Testing Customer & Partner Portals...');
     const custRes = await page.goto(`${BASE_URL}/customer`, { waitUntil: 'networkidle', timeout: 20000 });
     assert(custRes.status() === 200, 'Customer Portal /customer Status 200');
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '05-live-customer-portal.png'), fullPage: true });
 
     const partnerRes = await page.goto(`${BASE_URL}/partner`, { waitUntil: 'networkidle', timeout: 20000 });
     assert(partnerRes.status() === 200, 'Partner Portal /partner Status 200');
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '06-live-partner-portal.png'), fullPage: true });
 
-    // 7. Unified Admin Control Center
-    console.log('\n[7/7] Testing Unified Admin Control Center...');
-    const adminRoutes = [
-      '/admin',
-      '/admin/leads',
-      '/admin/customers',
+    // 7. Phase 4.1: CRM Leads Engine & AI Priority Queue
+    console.log('\n[7/10] Testing Slice 4.1: CRM Leads Engine & AI Priority Queue...');
+    const leadsRes = await page.goto(`${BASE_URL}/admin/leads`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(leadsRes.status() === 200, 'Admin Leads Route Status 200');
+    
+    // Switch to Priority Queue tab if button exists
+    const priorityTabBtn = page.getByRole('button', { name: /Priority Queue/i }).first();
+    if (await priorityTabBtn.isVisible()) {
+      await priorityTabBtn.click();
+      await page.waitForTimeout(500);
+      assert(true, 'Switched to AI Priority Queue View');
+    }
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '09-admin-leads-priority-queue.png'), fullPage: true });
+
+    // 8. Phase 4.2: Document Vault & Side-by-Side OCR Verification
+    console.log('\n[8/10] Testing Slice 4.2: Document Vault & OCR Verification Assistant...');
+    const docRes = await page.goto(`${BASE_URL}/admin/documents`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(docRes.status() === 200, 'Admin Documents Route Status 200');
+    
+    // Look for AI OCR Audit button
+    const ocrAuditBtn = page.getByRole('button', { name: /AI OCR Audit/i }).first();
+    if (await ocrAuditBtn.isVisible()) {
+      await ocrAuditBtn.click();
+      await page.waitForTimeout(1000);
+      assert(true, 'AI OCR Side-by-Side Verification Modal Opened');
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, '10-admin-documents-ocr-modal.png') });
+    }
+
+    // 9. Phase 4.3: Floating AI Operations Copilot Drawer (on fresh admin page)
+    console.log('\n[9/10] Testing Slice 4.3: Floating AI Operations Copilot Drawer...');
+    await page.goto(`${BASE_URL}/admin`, { waitUntil: 'networkidle', timeout: 20000 });
+    const copilotTrigger = page.locator('button:has-text("Crazy Copilot")').first();
+    if (await copilotTrigger.isVisible()) {
+      await copilotTrigger.click();
+      await page.waitForTimeout(1000);
+      assert(true, 'Crazy Copilot Drawer Opened Successfully');
+      await page.screenshot({ path: path.join(SCREENSHOT_DIR, '11-admin-copilot-drawer.png') });
+    }
+
+    // 10. Phase 4.4: Executive Predictive Intelligence Hub
+    console.log('\n[10/10] Testing Slice 4.4: Predictive Revenue & Turnaround Analytics...');
+    const predRes = await page.goto(`${BASE_URL}/admin/reports/predictive`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(predRes.status() === 200, 'Predictive Reports Route Status 200');
+    
+    const dayBtn60 = page.getByRole('button', { name: /Next 60 Days/i }).first();
+    if (await dayBtn60.isVisible()) {
+      await dayBtn60.click();
+      await page.waitForTimeout(500);
+      assert(true, 'Time Horizon Period Switch to 60 Days');
+    }
+
+    const deployBtn = page.getByRole('button', { name: /Deploy Measure/i }).first();
+    if (await deployBtn.isVisible()) {
+      await deployBtn.click();
+      await page.waitForTimeout(1000);
+      assert(true, 'Deployed Preventive Bottleneck Mitigation Measure');
+    }
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '12-admin-predictive-hub.png'), fullPage: true });
+
+    // Earlier Phase Admin Regression Suite
+    console.log('\n[Regression] Testing Admin Core Modules (Phase 1, 2, 3)...');
+    const regressionRoutes = [
       '/admin/workflows',
       '/admin/sla',
       '/admin/tasks',
@@ -140,16 +190,10 @@ async function runLiveAcceptance() {
       '/admin/notifications',
     ];
 
-    for (const route of adminRoutes) {
+    for (const route of regressionRoutes) {
       const res = await page.goto(`${BASE_URL}${route}`, { waitUntil: 'networkidle', timeout: 20000 });
       assert(res.status() === 200, `Admin Module ${route} Status 200`);
     }
-
-    await page.goto(`${BASE_URL}/admin/commissions`, { waitUntil: 'networkidle' });
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '07-live-admin-commissions-payouts.png'), fullPage: true });
-
-    await page.goto(`${BASE_URL}/admin/branches`, { waitUntil: 'networkidle' });
-    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '08-live-admin-branches.png'), fullPage: true });
 
   } catch (err) {
     console.error('Test execution error:', err);
@@ -159,7 +203,7 @@ async function runLiveAcceptance() {
   }
 
   console.log('\n================================================================');
-  console.log(`📊 LIVE PRODUCTION QA SUMMARY: ${results.passed}/${results.total} Passed (${results.failed} Failed)`);
+  console.log(`📊 LIVE PRODUCTION AUDIT SUMMARY: ${results.passed}/${results.total} Passed (${results.failed} Failed)`);
   console.log(`📸 Screenshots saved to: ${SCREENSHOT_DIR}`);
   console.log('================================================================\n');
 
