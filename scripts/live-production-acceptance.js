@@ -199,10 +199,28 @@ async function runLiveAcceptance() {
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '16-admin-developer-api.png'), fullPage: true });
 
     // 14. Phase 5.4: Government Systems Direct Integrations Hub
-    console.log('\n[14/14] Testing Slice 5.4: Government & Statutory Integrations Hub...');
+    console.log('\n[14/17] Testing Slice 5.4: Government & Statutory Integrations Hub...');
     const govRes = await page.goto(`${BASE_URL}/admin/integrations/government`, { waitUntil: 'networkidle', timeout: 20000 });
     assert(govRes.status() === 200, 'Government Integrations Hub Status 200');
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '17-admin-government-integrations.png'), fullPage: true });
+
+    // 15. Phase 6.1: Real-Time Audit Log Vault & DPDP Regulatory Compliance Center
+    console.log('\n[15/17] Testing Slice 6.1: Audit Log Vault & DPDP Regulatory Compliance...');
+    const auditRes = await page.goto(`${BASE_URL}/admin/audit-logs`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(auditRes.status() === 200, 'Audit Logs & DPDP Center /admin/audit-logs Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '18-admin-audit-logs-dpdp.png'), fullPage: true });
+
+    // 16. Phase 6.2: Recurring Retainers & UPI AutoPay Mandates Hub
+    console.log('\n[16/17] Testing Slice 6.2: UPI AutoPay & Recurring Mandates Hub...');
+    const mandatesRes = await page.goto(`${BASE_URL}/admin/mandates`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(mandatesRes.status() === 200, 'Mandates Hub /admin/mandates Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '19-admin-mandates-hub.png'), fullPage: true });
+
+    // 17. Phase 6.4: Unified System Health Telemetry & Latency Diagnostics
+    console.log('\n[17/17] Testing Slice 6.4: System Health Telemetry & Latency Monitor...');
+    const healthRes = await page.goto(`${BASE_URL}/admin/system-health`, { waitUntil: 'networkidle', timeout: 20000 });
+    assert(healthRes.status() === 200, 'System Health /admin/system-health Status 200');
+    await page.screenshot({ path: path.join(SCREENSHOT_DIR, '20-admin-system-health.png'), fullPage: true });
 
     // Earlier Phase Admin Regression Suite
     console.log('\n[Regression] Testing Admin Core Modules (Phase 1, 2, 3)...');

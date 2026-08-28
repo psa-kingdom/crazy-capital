@@ -26,6 +26,9 @@ import { MobileModule } from './modules/mobile/mobile.module';
 import { SaasModule } from './modules/saas/saas.module';
 import { DeveloperApiModule } from './modules/developer-api/developer-api.module';
 import { GovernmentIntegrationsModule } from './modules/government-integrations/government-integrations.module';
+import { ComplianceModule } from './modules/compliance/compliance.module';
+import { MandatesModule } from './modules/mandates/mandates.module';
+import { TelemetryModule } from './modules/telemetry/telemetry.module';
 import { AppController } from './app.controller';
 import { JwtAuthGuard } from './modules/auth/guards/jwt-auth.guard';
 import { RbacGuard } from './modules/auth/guards/rbac.guard';
@@ -61,6 +64,9 @@ import { RbacGuard } from './modules/auth/guards/rbac.guard';
     SaasModule,
     DeveloperApiModule,
     GovernmentIntegrationsModule,
+    ComplianceModule,
+    MandatesModule,
+    TelemetryModule,
   ],
   controllers: [AppController],
   providers: [

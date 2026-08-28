@@ -746,6 +746,69 @@ export const initiateAaConsentSchema = z.object({
   statementMonthsCount: z.number().int().min(1).max(24).default(6),
 });
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 6: ENTERPRISE COMPLIANCE, SUBSCRIPTIONS & TELEMETRY
+// ═══════════════════════════════════════════════════════════════════════════
+
+// ─── Vertical Slice 6.1: Immutable Audit Log Vault & DPDP Compliance ───────
+
+export const createComplianceExportSchema = z.object({
+  exportType: z.enum(['AUDIT_TRAIL', 'CUSTOMER_DATA', 'FINANCIAL_LEDGER', 'STATUTORY_FILINGS']),
+  format: z.enum(['JSON', 'CSV', 'PDF']).default('JSON'),
+  dateRangeFrom: z.string().optional(),
+  dateRangeTo: z.string().optional(),
+  targetUserId: z.string().uuid().optional().nullable(),
+  filters: z.record(z.any()).optional(),
+});
+
+export const queryAuditLogsSchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(50),
+  action: z.string().optional(),
+  entityType: z.string().optional(),
+  userId: z.string().uuid().optional(),
+  startDate: z.string().optional(),
+  endDate: z.string().optional(),
+  search: z.string().optional(),
+});
+
+// ─── Vertical Slice 6.2: Open Banking & Recurring Mandate Subscriptions ───
+
+export const createSubscriptionMandateSchema = z.object({
+  customerId: z.string().uuid('Customer ID is required'),
+  serviceId: z.string().uuid().optional().nullable(),
+  planName: z.string().min(2, 'Plan name is required'),
+  frequency: z.enum(['MONTHLY', 'QUARTERLY', 'ANNUALLY']).default('MONTHLY'),
+  amount: z.number().positive('Amount must be positive'),
+  paymentMethod: z.enum(['UPI_AUTOPAY', 'ENACH_NETBANKING', 'CREDIT_CARD']).default('UPI_AUTOPAY'),
+  vpaOrAccount: z.string().optional().nullable(),
+  startDate: z.string().optional(),
+});
+
+export const executeMandateDebitSchema = z.object({
+  mandateId: z.string().uuid('Mandate ID is required'),
+  amountOverride: z.number().positive().optional(),
+  description: z.string().max(200).optional(),
+});
+
+export const updateSubscriptionMandateStatusSchema = z.object({
+  status: z.enum(['ACTIVE', 'PAUSED', 'CANCELLED']),
+  reason: z.string().max(300).optional(),
+});
+
+// ─── Vertical Slice 6.4: System Health & Telemetry Probes ───────────────────
+
+export const recordTelemetryProbeSchema = z.object({
+  serviceName: z.string().min(2),
+  endpoint: z.string().min(1),
+  statusCode: z.number().int(),
+  latencyMs: z.number().int().min(0),
+  status: z.enum(['HEALTHY', 'DEGRADED', 'DOWN']).default('HEALTHY'),
+  errorMessage: z.string().optional().nullable(),
+  region: z.string().default('ap-south-1'),
+});
+
+
 
 
 

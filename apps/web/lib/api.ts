@@ -905,4 +905,77 @@ export const governmentApi = {
   },
 };
 
+// ═══════════════════════════════════════════════════════════════════════════
+// PHASE 6: ENTERPRISE COMPLIANCE, SUBSCRIPTIONS & TELEMETRY
+// ═══════════════════════════════════════════════════════════════════════════
+
+// Vertical Slice 6.1: Immutable Audit Log Vault & Regulatory DPDP Compliance
+export const complianceApi = {
+  getAuditLogs: async (params?: Record<string, any>) => {
+    return apiClient.get('/compliance/audit-logs', { params });
+  },
+  createExport: async (data: {
+    exportType: string;
+    format?: string;
+    dateRangeFrom?: string;
+    dateRangeTo?: string;
+    targetUserId?: string;
+    filters?: Record<string, any>;
+  }) => {
+    return apiClient.post('/compliance/exports', data);
+  },
+  listExports: async () => {
+    return apiClient.get('/compliance/exports');
+  },
+  executeDataErasure: async (targetUserId: string) => {
+    return apiClient.post('/compliance/data-erasure', { targetUserId });
+  },
+};
+
+// Vertical Slice 6.2: Open Banking & Recurring UPI/e-Mandate Subscriptions
+export const mandatesApi = {
+  createMandate: async (data: {
+    customerId: string;
+    serviceId?: string;
+    planName: string;
+    frequency: string;
+    amount: number;
+    paymentMethod?: string;
+    vpaOrAccount?: string;
+    startDate?: string;
+  }) => {
+    return apiClient.post('/mandates', data);
+  },
+  listMandates: async (customerId?: string) => {
+    return apiClient.get('/mandates', { params: { customerId } });
+  },
+  executeDebit: async (mandateId: string, data?: { amountOverride?: number; description?: string }) => {
+    return apiClient.post(`/mandates/${mandateId}/debit`, data || {});
+  },
+  updateStatus: async (mandateId: string, data: { status: 'ACTIVE' | 'PAUSED' | 'CANCELLED'; reason?: string }) => {
+    return apiClient.patch(`/mandates/${mandateId}/status`, data);
+  },
+};
+
+// Vertical Slice 6.4: Unified Synthetic Health & Telemetry Diagnostics
+export const telemetryApi = {
+  getHealth: async () => {
+    return apiClient.get('/telemetry/health');
+  },
+  recordProbe: async (data: {
+    serviceName: string;
+    endpoint: string;
+    statusCode: number;
+    latencyMs: number;
+    status?: string;
+    errorMessage?: string;
+  }) => {
+    return apiClient.post('/telemetry/probes', data);
+  },
+  getProbeHistory: async (serviceName?: string, limit?: number) => {
+    return apiClient.get('/telemetry/probes', { params: { serviceName, limit } });
+  },
+};
+
+
 

@@ -3276,3 +3276,133 @@ export interface GovernmentIntegrationsHealthDto {
   accountAggregator: { status: 'OPERATIONAL' | 'DEGRADED' | 'MAINTENANCE'; latencyMs: number; provider: string };
 }
 
+// ─── DOMAIN 13: ENTERPRISE COMPLIANCE, SUBSCRIPTIONS & TELEMETRY (PHASE 6) ─
+
+export type ComplianceExportType = 'AUDIT_TRAIL' | 'CUSTOMER_DATA' | 'FINANCIAL_LEDGER' | 'STATUTORY_FILINGS';
+export type ComplianceExportFormat = 'JSON' | 'CSV' | 'PDF';
+export type ComplianceExportStatus = 'PENDING' | 'PROCESSING' | 'COMPLETED' | 'FAILED';
+
+export interface CreateComplianceExportInput {
+  exportType: ComplianceExportType;
+  format?: ComplianceExportFormat;
+  dateRangeFrom?: string;
+  dateRangeTo?: string;
+  targetUserId?: string;
+  filters?: Record<string, any>;
+}
+
+export interface ComplianceExportDto {
+  id: string;
+  organizationId: string;
+  requestedById: string;
+  exportType: ComplianceExportType;
+  format: ComplianceExportFormat;
+  status: ComplianceExportStatus;
+  fileUrl?: string | null;
+  recordCount: number;
+  checksumSha256?: string | null;
+  expiresAt: Date | string;
+  createdAt: Date | string;
+  downloadUrl?: string;
+}
+
+export interface AuditLogEntryDto {
+  id: string;
+  organizationId: string;
+  userId?: string | null;
+  userName?: string | null;
+  action: string;
+  entityType: string;
+  entityId: string;
+  ipAddress?: string | null;
+  userAgent?: string | null;
+  metadata?: Record<string, any> | null;
+  createdAt: Date | string;
+}
+
+export interface QueryAuditLogsInput {
+  page?: number;
+  limit?: number;
+  action?: string;
+  entityType?: string;
+  userId?: string;
+  startDate?: string;
+  endDate?: string;
+  search?: string;
+}
+
+export type MandateFrequency = 'MONTHLY' | 'QUARTERLY' | 'ANNUALLY';
+export type MandateStatus = 'PENDING_AUTH' | 'ACTIVE' | 'PAUSED' | 'CANCELLED' | 'EXPIRED';
+export type MandatePaymentMethod = 'UPI_AUTOPAY' | 'ENACH_NETBANKING' | 'CREDIT_CARD';
+
+export interface CreateSubscriptionMandateInput {
+  customerId: string;
+  serviceId?: string;
+  planName: string;
+  frequency: MandateFrequency;
+  amount: number;
+  paymentMethod?: MandatePaymentMethod;
+  vpaOrAccount?: string;
+  startDate?: string;
+}
+
+export interface SubscriptionMandateDto {
+  id: string;
+  organizationId: string;
+  customerId: string;
+  customerName?: string;
+  serviceId?: string | null;
+  serviceName?: string | null;
+  planName: string;
+  frequency: MandateFrequency;
+  amount: number;
+  status: MandateStatus;
+  gatewayMandateId?: string | null;
+  paymentMethod: string;
+  nextBillingDate: Date | string;
+  lastBilledDate?: Date | string | null;
+  retryCount: number;
+  createdAt: Date | string;
+  updatedAt: Date | string;
+}
+
+export interface ExecuteMandateDebitInput {
+  mandateId: string;
+  amountOverride?: number;
+  description?: string;
+}
+
+export interface MandateExecutionResultDto {
+  success: boolean;
+  transactionId: string;
+  mandateId: string;
+  amountDebited: number;
+  status: string;
+  message: string;
+  executedAt: string;
+}
+
+export type SystemComponentStatus = 'HEALTHY' | 'DEGRADED' | 'DOWN';
+
+export interface ComponentTelemetryDto {
+  name: string;
+  type: 'DATABASE' | 'STORAGE' | 'PAYMENT' | 'STATUTORY_GATEWAY' | 'EDGE_NETWORK';
+  status: SystemComponentStatus;
+  latencyMs: number;
+  uptime90dPct: number;
+  lastCheckedAt: string;
+  details?: Record<string, any>;
+}
+
+export interface SystemHealthSummaryDto {
+  status: 'OPTIMAL' | 'DEGRADED' | 'CRITICAL';
+  region: string;
+  environment: 'PRODUCTION' | 'STAGING';
+  activeInstances: number;
+  averageLatencyMs: number;
+  uptimePct: number;
+  components: ComponentTelemetryDto[];
+  timestamp: string;
+}
+
+
