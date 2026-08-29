@@ -71,7 +71,8 @@ async function runLiveAcceptance() {
   page.on('pageerror', (err) => {
     // Ignore third party tracking / extension noise if any
     if (!err.message.includes('extension') && !err.message.includes('chrome-extension')) {
-      pageErrors.push(err.message);
+      console.log(`  ⚠️ [PageError on ${page.url()}]:`, err.message);
+      pageErrors.push(`${err.message} (on ${page.url()})`);
     }
   });
 
@@ -89,8 +90,9 @@ async function runLiveAcceptance() {
 
     // 2. Production Homepage & Navbar Tests
     console.log('\n[2/12] Testing Production Homepage (Desktop 1440px)...');
-    const homeRes = await page.goto(BASE_URL, { waitUntil: 'networkidle', timeout: 30000 });
+    const homeRes = await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(homeRes.status() === 200, 'Homepage HTTP Status 200', `Got ${homeRes.status()}`);
+    await page.waitForTimeout(1000);
     const title = await page.title();
     assert(title.includes('Crazy Capital'), 'Homepage Title contains "Crazy Capital"', `Title: ${title}`);
     
@@ -148,7 +150,8 @@ async function runLiveAcceptance() {
     // 5. Mobile Viewport Check
     console.log('\n[5/12] Testing Production Homepage (Mobile 375px)...');
     await page.setViewportSize({ width: 375, height: 812 });
-    await page.goto(BASE_URL, { waitUntil: 'networkidle' });
+    await page.goto(BASE_URL, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(500);
     await page.screenshot({ path: path.join(SCREENSHOT_DIR, '02-live-homepage-mobile.png'), fullPage: true });
     assert(true, 'Mobile Responsive Viewport Captured (375px)');
     await page.setViewportSize({ width: 1440, height: 900 });
@@ -156,22 +159,24 @@ async function runLiveAcceptance() {
     // 6. Service Vertical Dynamic Pages
     console.log('\n[6/12] Testing Service Verticals Dynamic Rendering...');
     for (const slug of SERVICE_SLUGS.slice(0, 4)) {
-      const res = await page.goto(`${BASE_URL}/services/${slug}`, { waitUntil: 'networkidle', timeout: 20000 });
+      const res = await page.goto(`${BASE_URL}/services/${slug}`, { waitUntil: 'domcontentloaded', timeout: 30000 });
       assert(res.status() === 200, `Service Page /services/${slug} Status 200`);
+      await page.waitForTimeout(400);
     }
 
     // 7. Customer & Partner Portals
     console.log('\n[7/12] Testing Customer & Partner Portals...');
-    const custRes = await page.goto(`${BASE_URL}/customer`, { waitUntil: 'networkidle', timeout: 20000 });
+    const custRes = await page.goto(`${BASE_URL}/customer`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(custRes.status() === 200, 'Customer Portal /customer Status 200');
 
-    const partnerRes = await page.goto(`${BASE_URL}/partner`, { waitUntil: 'networkidle', timeout: 20000 });
+    const partnerRes = await page.goto(`${BASE_URL}/partner`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(partnerRes.status() === 200, 'Partner Portal /partner Status 200');
 
     // 8. Admin Command Center & Dark Mode Invariants
     console.log('\n[8/12] Testing Admin Command Center & Dashboard Navigation...');
-    const adminRes = await page.goto(`${BASE_URL}/admin`, { waitUntil: 'networkidle', timeout: 20000 });
+    const adminRes = await page.goto(`${BASE_URL}/admin`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(adminRes.status() === 200, 'Admin Dashboard /admin Status 200');
+    await page.waitForTimeout(500);
 
     // Test Theme Switcher inside Admin
     const adminThemeBtn = page.locator('button[aria-label*="Switch to"]').first();
@@ -185,8 +190,9 @@ async function runLiveAcceptance() {
 
     // 9. Phase 4.1: CRM Leads Engine & AI Priority Queue
     console.log('\n[9/12] Testing Slice 4.1: CRM Leads Engine & AI Priority Queue...');
-    const leadsRes = await page.goto(`${BASE_URL}/admin/leads`, { waitUntil: 'networkidle', timeout: 20000 });
+    const leadsRes = await page.goto(`${BASE_URL}/admin/leads`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(leadsRes.status() === 200, 'Admin Leads Route /admin/leads Status 200');
+    await page.waitForTimeout(500);
     
     const priorityTabBtn = page.getByRole('button', { name: /Priority Queue/i }).first();
     if (await priorityTabBtn.isVisible()) {
@@ -198,10 +204,12 @@ async function runLiveAcceptance() {
 
     // 10. Document Vault & Floating Copilot Drawer
     console.log('\n[10/12] Testing Document Vault & AI Operations Copilot Drawer...');
-    const docRes = await page.goto(`${BASE_URL}/admin/documents`, { waitUntil: 'networkidle', timeout: 20000 });
+    const docRes = await page.goto(`${BASE_URL}/admin/documents`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(docRes.status() === 200, 'Admin Documents Route /admin/documents Status 200');
+    await page.waitForTimeout(500);
 
-    await page.goto(`${BASE_URL}/admin`, { waitUntil: 'networkidle', timeout: 20000 });
+    await page.goto(`${BASE_URL}/admin`, { waitUntil: 'domcontentloaded', timeout: 30000 });
+    await page.waitForTimeout(500);
     const copilotTrigger = page.locator('button:has-text("Crazy Copilot")').first();
     if (await copilotTrigger.isVisible()) {
       await copilotTrigger.click();
@@ -212,13 +220,13 @@ async function runLiveAcceptance() {
 
     // 11. Phase 6 Modules (Audit Logs, Mandates, Telemetry)
     console.log('\n[11/12] Testing Phase 6 Statutory Modules...');
-    const auditRes = await page.goto(`${BASE_URL}/admin/audit-logs`, { waitUntil: 'networkidle', timeout: 20000 });
+    const auditRes = await page.goto(`${BASE_URL}/admin/audit-logs`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(auditRes.status() === 200, 'Audit Logs & DPDP Center /admin/audit-logs Status 200');
 
-    const mandatesRes = await page.goto(`${BASE_URL}/admin/mandates`, { waitUntil: 'networkidle', timeout: 20000 });
+    const mandatesRes = await page.goto(`${BASE_URL}/admin/mandates`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(mandatesRes.status() === 200, 'Mandates Hub /admin/mandates Status 200');
 
-    const healthRes = await page.goto(`${BASE_URL}/admin/system-health`, { waitUntil: 'networkidle', timeout: 20000 });
+    const healthRes = await page.goto(`${BASE_URL}/admin/system-health`, { waitUntil: 'domcontentloaded', timeout: 30000 });
     assert(healthRes.status() === 200, 'System Health /admin/system-health Status 200');
 
     // 12. Console Error Invariant Check

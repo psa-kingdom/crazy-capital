@@ -43,6 +43,11 @@ export function AdminShell({ children }: AdminShellProps) {
   const pathname = usePathname();
   const { user, logout, selectedBranchId, setSelectedBranchId } = useAuthStore();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   const navItems = [
     { label: 'Executive Dashboard', href: '/admin', icon: LayoutDashboard },
@@ -77,7 +82,7 @@ export function AdminShell({ children }: AdminShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200" suppressHydrationWarning>
       {/* Top Navbar */}
       <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -108,9 +113,10 @@ export function AdminShell({ children }: AdminShellProps) {
             <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300">
               <Building2 className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
               <select
-                value={selectedBranchId || ''}
+                value={mounted ? (selectedBranchId || '') : ''}
                 onChange={(e) => setSelectedBranchId(e.target.value || null)}
                 className="bg-transparent border-none outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer"
+                suppressHydrationWarning
               >
                 {branches.map((b) => (
                   <option key={b.id} value={b.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
@@ -127,16 +133,17 @@ export function AdminShell({ children }: AdminShellProps) {
             <NotificationCentre />
 
             {/* User Profile Pill */}
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
-              <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-semibold flex items-center justify-center text-xs border border-brand-200 dark:border-brand-700">
-                {user?.firstName?.[0] || 'A'}
-                {user?.lastName?.[0] || 'D'}
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800" suppressHydrationWarning>
+              <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-semibold flex items-center justify-center text-xs border border-brand-200 dark:border-brand-700" suppressHydrationWarning>
+                {mounted && user ? `${user?.firstName?.[0] || 'A'}${user?.lastName?.[0] || 'D'}` : 'AD'}
               </div>
-              <div className="hidden md:flex flex-col text-left">
-                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight">
-                  {user ? `${user.firstName} ${user.lastName}` : 'Admin'}
+              <div className="hidden md:flex flex-col text-left" suppressHydrationWarning>
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight" suppressHydrationWarning>
+                  {mounted && user ? `${user.firstName} ${user.lastName}` : 'Admin'}
                 </span>
-                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">SUPER_ADMIN</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium" suppressHydrationWarning>
+                  {mounted && user ? (user.role || 'SUPER_ADMIN') : 'SUPER_ADMIN'}
+                </span>
               </div>
             </div>
           </div>

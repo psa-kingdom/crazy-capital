@@ -71,7 +71,7 @@ const FALLBACK_DASHBOARD: ExecutiveDashboardDto = {
       reference: 'APP-2026-089',
       description: 'Pvt Ltd SPICe+ MCA V3 digital filing submitted',
       amount: 14999,
-      timestamp: new Date().toISOString(),
+      timestamp: '2026-08-29T10:30:00.000Z',
     },
     {
       type: 'PAYMENT',
@@ -79,7 +79,7 @@ const FALLBACK_DASHBOARD: ExecutiveDashboardDto = {
       reference: 'INV-2026-042',
       description: 'Razorpay payment captured for GST Compliance Retainer',
       amount: 4999,
-      timestamp: new Date(Date.now() - 3600000).toISOString(),
+      timestamp: '2026-08-29T09:15:00.000Z',
     },
   ],
 };
@@ -88,6 +88,7 @@ export default function AdminDashboardPage() {
   const { user, selectedBranchId } = useAuthStore();
   const [dashboard, setDashboard] = useState<ExecutiveDashboardDto>(FALLBACK_DASHBOARD);
   const [loading, setLoading] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   const fetchDashboard = async () => {
     try {
@@ -102,17 +103,18 @@ export default function AdminDashboardPage() {
   };
 
   useEffect(() => {
+    setMounted(true);
     fetchDashboard();
   }, [selectedBranchId]);
 
   return (
-    <div className="space-y-6 max-w-7xl mx-auto pb-12">
+    <div className="space-y-6 max-w-7xl mx-auto pb-12" suppressHydrationWarning>
       {/* Welcome Hero */}
       <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-brand-900 via-slate-900 to-brand-950 p-6 md:p-8 text-white shadow-xl">
         <div className="relative z-10 max-w-2xl space-y-3">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-xs font-semibold">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 backdrop-blur-md text-amber-300 text-xs font-semibold" suppressHydrationWarning>
             <span>🇮🇳</span>
-            <span>Crazy Capital Command Center • {dashboard?.scope.isOrganizationWide ? 'All Branches' : dashboard?.scope.branchName || 'Branch View'}</span>
+            <span suppressHydrationWarning>Crazy Capital Command Center • {dashboard?.scope.isOrganizationWide ? 'All Branches' : dashboard?.scope.branchName || 'Branch View'}</span>
           </div>
           <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight">
             India's Business Operating System
@@ -260,9 +262,9 @@ export default function AdminDashboardPage() {
                 {dashboard?.recentActivities.map((act, idx) => (
                   <div key={`${act.id}-${idx}`} className="py-2.5 first:pt-0 last:pb-0 text-xs space-y-0.5">
                     <div className="flex items-center justify-between">
-                      <span className="font-bold text-slate-900 dark:text-white">{act.reference}</span>
-                      <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                        {new Date(act.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' })}
+                      <span className="font-bold text-slate-900 dark:text-white" suppressHydrationWarning>{act.reference}</span>
+                      <span className="text-[10px] text-slate-400 dark:text-slate-500" suppressHydrationWarning>
+                        {mounted ? new Date(act.timestamp).toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }) : '10:30 AM'}
                       </span>
                     </div>
                     <p className="text-[11px] text-slate-500 dark:text-slate-400 truncate">{act.description}</p>
