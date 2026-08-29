@@ -91,6 +91,9 @@ export default function AdminDashboardPage() {
   const [mounted, setMounted] = useState(false);
 
   const fetchDashboard = async () => {
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem('cc_access_token');
+    if (!token) return;
     try {
       const res = await reportsApi.getDashboard(selectedBranchId ? { branchId: selectedBranchId } : undefined);
       const data = res.data?.data || res.data;

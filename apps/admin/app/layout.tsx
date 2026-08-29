@@ -42,7 +42,7 @@ export default function AdminRootLayout({
           }}
         />
       </head>
-      <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200">
+      <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200" suppressHydrationWarning>
         <ThemeProvider>
           <AdminShell>{children}</AdminShell>
         </ThemeProvider>
