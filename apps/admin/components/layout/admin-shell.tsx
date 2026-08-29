@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -135,7 +135,7 @@ export function AdminShell({ children }: AdminShellProps) {
                   {mounted && user ? `${user.firstName} ${user.lastName}` : 'Admin'}
                 </span>
                 <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium" suppressHydrationWarning>
-                  {mounted && user ? (user.role || 'SUPER_ADMIN') : 'SUPER_ADMIN'}
+                  {mounted && user ? (user.roles?.[0] || 'SUPER_ADMIN') : 'SUPER_ADMIN'}
                 </span>
               </div>
             </div>
