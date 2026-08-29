@@ -110,6 +110,24 @@ export default function AdminDashboardPage() {
     fetchDashboard();
   }, [selectedBranchId]);
 
+  if (!mounted) {
+    return (
+      <div className="space-y-6 max-w-7xl mx-auto pb-12 animate-pulse" suppressHydrationWarning>
+        <div className="h-48 rounded-3xl bg-slate-200 dark:bg-slate-800" />
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="h-28 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+          <div className="h-28 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+          <div className="h-28 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+          <div className="h-28 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+        </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <div className="lg:col-span-2 h-64 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+          <div className="h-64 rounded-2xl bg-slate-200 dark:bg-slate-800" />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-12" suppressHydrationWarning>
       {/* Welcome Hero */}
