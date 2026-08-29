@@ -15,6 +15,28 @@ async function bootstrap() {
   // Cookie parser for refresh tokens
   app.use(cookieParser());
 
+  // Universal Express CORS middleware — guarantees CORS headers on ALL requests, OPTIONS preflights, and error handlers
+  app.use((req: any, res: any, next: any) => {
+    const origin = req.headers.origin;
+    if (origin) {
+      res.setHeader('Access-Control-Allow-Origin', origin);
+      res.setHeader('Access-Control-Allow-Credentials', 'true');
+      res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+      );
+      res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,x-api-key,x-tenant-id,x-branch-id',
+      );
+      res.setHeader('Access-Control-Max-Age', '86400');
+    }
+    if (req.method === 'OPTIONS') {
+      return res.sendStatus(204);
+    }
+    next();
+  });
+
   // Global prefix & versioning
   const apiPrefix = configService.get<string>('apiPrefix', 'api/v1');
   app.setGlobalPrefix(apiPrefix);

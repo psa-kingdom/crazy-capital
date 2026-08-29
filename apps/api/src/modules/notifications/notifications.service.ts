@@ -377,7 +377,11 @@ export class NotificationsService {
   /**
    * Query user / customer notification history with role scoping & read filtering
    */
-  async findCustomerNotifications(user: any, unreadOnly?: boolean) {
+  async findCustomerNotifications(user?: any, unreadOnly?: boolean) {
+    if (!user) {
+      return [];
+    }
+
     const userId = user.sub || user.userId || user.id || user.customerId;
     const userEmail = user.email;
     const userMobile = user.mobile;
@@ -387,8 +391,12 @@ export class NotificationsService {
     if (userEmail) userFilters.push({ recipient: userEmail });
     if (userMobile) userFilters.push({ recipient: userMobile });
 
+    if (userFilters.length === 0) {
+      return [];
+    }
+
     const where: any = {
-      OR: userFilters.length > 0 ? userFilters : undefined,
+      OR: userFilters,
     };
 
     if (unreadOnly) {
@@ -407,7 +415,11 @@ export class NotificationsService {
   /**
    * Get unread notification count for authenticated user
    */
-  async getUnreadCount(user: any): Promise<{ unreadCount: number }> {
+  async getUnreadCount(user?: any): Promise<{ unreadCount: number }> {
+    if (!user) {
+      return { unreadCount: 0 };
+    }
+
     const userId = user.sub || user.userId || user.id || user.customerId;
     const userEmail = user.email;
     const userMobile = user.mobile;
@@ -434,7 +446,7 @@ export class NotificationsService {
   /**
    * Mark individual notification as read
    */
-  async markAsRead(id: string, user: any): Promise<NotificationLogDto> {
+  async markAsRead(id: string, user?: any): Promise<NotificationLogDto> {
     const log = await this.prisma.notificationLog.findUnique({
       where: { id },
     });
@@ -454,7 +466,11 @@ export class NotificationsService {
   /**
    * Mark all unread notifications as read for current user
    */
-  async markAllAsRead(user: any): Promise<{ updatedCount: number }> {
+  async markAllAsRead(user?: any): Promise<{ updatedCount: number }> {
+    if (!user) {
+      return { updatedCount: 0 };
+    }
+
     const userId = user.sub || user.userId || user.id || user.customerId;
     const userEmail = user.email;
     const userMobile = user.mobile;

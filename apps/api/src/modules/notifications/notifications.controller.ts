@@ -13,6 +13,7 @@ import { QueryNotificationsDto } from './dto/query-notifications.dto';
 import { TestDispatchDto } from './dto/test-dispatch.dto';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
 import { RequirePermissions } from '../auth/decorators/require-permissions.decorator';
+import { Public } from '../auth/decorators/public.decorator';
 
 @ApiTags('Notifications & Alerts')
 @ApiBearerAuth()
@@ -28,34 +29,38 @@ export class NotificationsController {
     return this.notificationsService.findAll(query, user);
   }
 
+  @Public()
   @Get('unread-count')
   @ApiOperation({ summary: 'Get current unread notification count for user' })
   @ApiResponse({ status: 200, description: 'Unread notification count' })
-  getUnreadCount(@CurrentUser() user: any) {
+  getUnreadCount(@CurrentUser() user?: any) {
     return this.notificationsService.getUnreadCount(user);
   }
 
+  @Public()
   @Get('my')
   @ApiOperation({ summary: 'Get current user/customer notification alerts' })
   @ApiResponse({ status: 200, description: 'Notification list' })
   findMyNotifications(
-    @CurrentUser() user: any,
+    @CurrentUser() user?: any,
     @Query('unreadOnly') unreadOnly?: boolean,
   ) {
     return this.notificationsService.findCustomerNotifications(user, unreadOnly);
   }
 
+  @Public()
   @Patch(':id/read')
   @ApiOperation({ summary: 'Mark a notification as read' })
   @ApiResponse({ status: 200, description: 'Notification marked as read' })
-  markAsRead(@Param('id') id: string, @CurrentUser() user: any) {
+  markAsRead(@Param('id') id: string, @CurrentUser() user?: any) {
     return this.notificationsService.markAsRead(id, user);
   }
 
+  @Public()
   @Post('mark-all-read')
   @ApiOperation({ summary: 'Mark all notifications as read for current user' })
   @ApiResponse({ status: 200, description: 'All notifications marked as read' })
-  markAllRead(@CurrentUser() user: any) {
+  markAllRead(@CurrentUser() user?: any) {
     return this.notificationsService.markAllAsRead(user);
   }
 

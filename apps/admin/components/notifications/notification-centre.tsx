@@ -110,21 +110,50 @@ export function NotificationCentre({ className = '' }: { className?: string }) {
 
   const fetchNotifications = async () => {
     try {
+      const hasToken =
+        typeof window !== 'undefined' &&
+        (localStorage.getItem('cc_access_token') ||
+         localStorage.getItem('cc_customer_token'));
+
+      if (!hasToken) {
+        setUnreadCount(notifications.filter((n) => !n.metadata?.isRead).length);
+        return;
+      }
+
       const [notifsRes, countRes] = await Promise.allSettled([
         notificationsApi.getMyNotifications(),
         notificationsApi.getUnreadCount(),
       ]);
 
-      if (notifsRes.status === 'fulfilled' && notifsRes.value?.data?.length) {
-        setNotifications(notifsRes.value.data);
+      if (notifsRes.status === 'fulfilled') {
+        const rawData = notifsRes.value?.data;
+        const list = Array.isArray(rawData)
+          ? rawData
+          : Array.isArray(rawData?.data)
+          ? rawData.data
+          : null;
+        if (list && list.length > 0) {
+          setNotifications(list);
+        }
       }
-      if (countRes.status === 'fulfilled' && countRes.value?.data?.unreadCount !== undefined) {
-        setUnreadCount(countRes.value.data.unreadCount);
-      } else {
-        setUnreadCount(notifications.filter((n) => !n.metadata?.isRead).length);
+
+      if (countRes.status === 'fulfilled') {
+        const countData = countRes.value?.data;
+        const count =
+          typeof countData?.unreadCount === 'number'
+            ? countData.unreadCount
+            : typeof countData?.data?.unreadCount === 'number'
+            ? countData.data.unreadCount
+            : undefined;
+
+        if (count !== undefined) {
+          setUnreadCount(count);
+        } else {
+          setUnreadCount(notifications.filter((n) => !n.metadata?.isRead).length);
+        }
       }
     } catch {
-      // Fallback
+      // Keep local state intact
     }
   };
 
