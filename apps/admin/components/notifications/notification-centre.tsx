@@ -45,7 +45,7 @@ const DEFAULT_DEMO_NOTIFICATIONS: NotificationItem[] = [
     body: 'Lead "Vikramaditya Solar Power Pvt Ltd" (Valuation: ₹25L) assigned with AI Lead Score 94/100.',
     status: 'DELIVERED',
     metadata: { isRead: false, priority: 'URGENT', actionUrl: '/leads' },
-    createdAt: new Date(Date.now() - 5 * 60 * 1000).toISOString(),
+    createdAt: '2026-08-29T11:45:00.000Z',
   },
   {
     id: 'notif-demo-2',
@@ -55,7 +55,7 @@ const DEFAULT_DEMO_NOTIFICATIONS: NotificationItem[] = [
     body: 'Certificate of Incorporation for "Apex Advisors LLP" successfully extracted with 99.2% confidence.',
     status: 'SENT',
     metadata: { isRead: false, priority: 'HIGH', actionUrl: '/documents' },
-    createdAt: new Date(Date.now() - 25 * 60 * 1000).toISOString(),
+    createdAt: '2026-08-29T11:25:00.000Z',
   },
   {
     id: 'notif-demo-3',
@@ -64,8 +64,8 @@ const DEFAULT_DEMO_NOTIFICATIONS: NotificationItem[] = [
     subject: 'UPI AutoPay Debit Executed',
     body: 'Monthly retainer of ₹2,999 successfully debited via NPCI e-Mandate (Txn: CC-DEBIT-88219).',
     status: 'SENT',
-    metadata: { isRead: true, readAt: new Date().toISOString(), actionUrl: '/mandates' },
-    createdAt: new Date(Date.now() - 2 * 3600 * 1000).toISOString(),
+    metadata: { isRead: true, readAt: '2026-08-29T09:45:00.000Z', actionUrl: '/mandates' },
+    createdAt: '2026-08-29T09:45:00.000Z',
   },
   {
     id: 'notif-demo-4',
@@ -74,8 +74,8 @@ const DEFAULT_DEMO_NOTIFICATIONS: NotificationItem[] = [
     subject: 'SLA Escalation Warning',
     body: 'Task "DSC Verification for OPC Registration" is approaching 4-hour SLA threshold (Escalation Level 1).',
     status: 'DELIVERED',
-    metadata: { isRead: true, readAt: new Date().toISOString(), priority: 'URGENT', actionUrl: '/sla' },
-    createdAt: new Date(Date.now() - 24 * 3600 * 1000).toISOString(),
+    metadata: { isRead: true, readAt: '2026-08-28T11:45:00.000Z', priority: 'URGENT', actionUrl: '/sla' },
+    createdAt: '2026-08-28T11:45:00.000Z',
   },
 ];
 
