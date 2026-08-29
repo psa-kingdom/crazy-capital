@@ -200,8 +200,8 @@ export default function Customer360Page() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
           <Link
-            href="/customers"
-            className="p-2 rounded-xl bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors"
+            href="/admin/customers"
+            className="p-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
@@ -424,7 +424,7 @@ export default function Customer360Page() {
               <h3 className="text-sm font-bold text-slate-900">Cloudflare R2 Encrypted Document Vault (ADR-018)</h3>
               <p className="text-xs text-slate-500">15-minute short-lived presigned URLs • Private object storage</p>
             </div>
-            <Link href="/documents">
+            <Link href="/admin/documents">
               <Button size="sm" variant="outline" className="text-xs py-1 px-2.5">
                 Open Verification Workbench <ChevronRight className="w-3.5 h-3.5 ml-1" />
               </Button>

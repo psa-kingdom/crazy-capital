@@ -22,11 +22,7 @@ apiClient.interceptors.request.use((config) => {
 
 apiClient.interceptors.response.use(
   (response) => {
-    // If unwrapped in standard response
-    if (response.data && response.data.success !== undefined && response.data.data !== undefined) {
-      return response.data.data;
-    }
-    return response.data;
+    return response;
   },
   (error) => {
     const message =
@@ -34,7 +30,11 @@ apiClient.interceptors.response.use(
       error.response?.data?.errors?.join(', ') ||
       error.message ||
       'An unexpected error occurred';
-    return Promise.reject(new Error(message));
+    const enhancedError = new Error(message) as any;
+    enhancedError.response = error.response;
+    enhancedError.status = error.response?.status;
+    enhancedError.code = error.code;
+    return Promise.reject(enhancedError);
   },
 );
 
@@ -312,6 +312,18 @@ export const paymentsApi = {
 
 // Notifications & Alerts API Services (Slice 1.9)
 export const notificationsApi = {
+  getMyNotifications: async (params?: { unreadOnly?: boolean }) => {
+    return apiClient.get('/notifications/my', { params });
+  },
+  getUnreadCount: async () => {
+    return apiClient.get('/notifications/unread-count');
+  },
+  markAsRead: async (id: string) => {
+    return apiClient.patch(`/notifications/${id}/read`);
+  },
+  markAllAsRead: async () => {
+    return apiClient.post('/notifications/mark-all-read');
+  },
   getLogs: async (params?: Record<string, any>) => {
     return apiClient.get('/notifications/logs', { params });
   },
@@ -592,7 +604,4 @@ export const telemetryApi = {
     return apiClient.get('/telemetry/probes', { params: { serviceName, limit } });
   },
 };
-
-
-
 

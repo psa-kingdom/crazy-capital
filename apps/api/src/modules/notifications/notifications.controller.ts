@@ -2,6 +2,7 @@ import {
   Controller,
   Get,
   Post,
+  Patch,
   Param,
   Body,
   Query,
@@ -27,11 +28,35 @@ export class NotificationsController {
     return this.notificationsService.findAll(query, user);
   }
 
+  @Get('unread-count')
+  @ApiOperation({ summary: 'Get current unread notification count for user' })
+  @ApiResponse({ status: 200, description: 'Unread notification count' })
+  getUnreadCount(@CurrentUser() user: any) {
+    return this.notificationsService.getUnreadCount(user);
+  }
+
   @Get('my')
-  @ApiOperation({ summary: 'Get current customer notification alerts' })
-  @ApiResponse({ status: 200, description: 'Customer notification list' })
-  findMyNotifications(@CurrentUser() user: any) {
-    return this.notificationsService.findCustomerNotifications(user);
+  @ApiOperation({ summary: 'Get current user/customer notification alerts' })
+  @ApiResponse({ status: 200, description: 'Notification list' })
+  findMyNotifications(
+    @CurrentUser() user: any,
+    @Query('unreadOnly') unreadOnly?: boolean,
+  ) {
+    return this.notificationsService.findCustomerNotifications(user, unreadOnly);
+  }
+
+  @Patch(':id/read')
+  @ApiOperation({ summary: 'Mark a notification as read' })
+  @ApiResponse({ status: 200, description: 'Notification marked as read' })
+  markAsRead(@Param('id') id: string, @CurrentUser() user: any) {
+    return this.notificationsService.markAsRead(id, user);
+  }
+
+  @Post('mark-all-read')
+  @ApiOperation({ summary: 'Mark all notifications as read for current user' })
+  @ApiResponse({ status: 200, description: 'All notifications marked as read' })
+  markAllRead(@CurrentUser() user: any) {
+    return this.notificationsService.markAllAsRead(user);
   }
 
   @Get('logs/:id')

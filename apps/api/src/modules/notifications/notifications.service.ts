@@ -375,24 +375,110 @@ export class NotificationsService {
   }
 
   /**
-   * Query customer portal notification history
+   * Query user / customer notification history with role scoping & read filtering
    */
-  async findCustomerNotifications(user: any) {
-    const customerId = user.customerId || user.userId;
+  async findCustomerNotifications(user: any, unreadOnly?: boolean) {
+    const userId = user.sub || user.userId || user.id || user.customerId;
+    const userEmail = user.email;
+    const userMobile = user.mobile;
+
+    const userFilters: any[] = [];
+    if (userId) userFilters.push({ userId });
+    if (userEmail) userFilters.push({ recipient: userEmail });
+    if (userMobile) userFilters.push({ recipient: userMobile });
+
+    const where: any = {
+      OR: userFilters.length > 0 ? userFilters : undefined,
+    };
+
+    if (unreadOnly) {
+      where.readAt = null;
+    }
 
     const logs = await this.prisma.notificationLog.findMany({
-      where: {
-        OR: [
-          { userId: customerId },
-          { recipient: user.email },
-          { recipient: user.mobile },
-        ].filter(Boolean),
-      },
+      where,
       take: 50,
       orderBy: { createdAt: 'desc' },
     });
 
     return logs.map((log) => this.mapToDto(log));
+  }
+
+  /**
+   * Get unread notification count for authenticated user
+   */
+  async getUnreadCount(user: any): Promise<{ unreadCount: number }> {
+    const userId = user.sub || user.userId || user.id || user.customerId;
+    const userEmail = user.email;
+    const userMobile = user.mobile;
+
+    const userFilters: any[] = [];
+    if (userId) userFilters.push({ userId });
+    if (userEmail) userFilters.push({ recipient: userEmail });
+    if (userMobile) userFilters.push({ recipient: userMobile });
+
+    if (userFilters.length === 0) {
+      return { unreadCount: 0 };
+    }
+
+    const count = await this.prisma.notificationLog.count({
+      where: {
+        OR: userFilters,
+        readAt: null,
+      },
+    });
+
+    return { unreadCount: count };
+  }
+
+  /**
+   * Mark individual notification as read
+   */
+  async markAsRead(id: string, user: any): Promise<NotificationLogDto> {
+    const log = await this.prisma.notificationLog.findUnique({
+      where: { id },
+    });
+
+    if (!log) {
+      throw new NotFoundException(`Notification log '${id}' not found`);
+    }
+
+    const updated = await this.prisma.notificationLog.update({
+      where: { id },
+      data: { readAt: new Date() },
+    });
+
+    return this.mapToDto(updated);
+  }
+
+  /**
+   * Mark all unread notifications as read for current user
+   */
+  async markAllAsRead(user: any): Promise<{ updatedCount: number }> {
+    const userId = user.sub || user.userId || user.id || user.customerId;
+    const userEmail = user.email;
+    const userMobile = user.mobile;
+
+    const userFilters: any[] = [];
+    if (userId) userFilters.push({ userId });
+    if (userEmail) userFilters.push({ recipient: userEmail });
+    if (userMobile) userFilters.push({ recipient: userMobile });
+
+    if (userFilters.length === 0) {
+      return { updatedCount: 0 };
+    }
+
+    const result = await this.prisma.notificationLog.updateMany({
+      where: {
+        OR: userFilters,
+        readAt: null,
+      },
+      data: {
+        readAt: new Date(),
+      },
+    });
+
+    return { updatedCount: result.count };
   }
 
   /**
@@ -464,7 +550,11 @@ export class NotificationsService {
       idempotencyKey: log.idempotencyKey,
       attempts: log.attempts || 1,
       errorMessage: log.errorMessage,
-      metadata: log.metadata,
+      metadata: {
+        ...(log.metadata || {}),
+        readAt: log.readAt ? log.readAt.toISOString() : null,
+        isRead: !!log.readAt,
+      },
       sentAt: log.sentAt ? log.sentAt.toISOString() : null,
       createdAt: log.createdAt.toISOString(),
     };

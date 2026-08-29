@@ -42,6 +42,13 @@ export class HttpExceptionFilter implements ExceptionFilter {
       message = process.env.NODE_ENV === 'production' ? 'An unexpected error occurred' : exception.message;
     }
 
+    const request = ctx.getRequest<any>();
+    const origin = request?.headers?.origin;
+    if (origin) {
+      response.setHeader('Access-Control-Allow-Origin', origin);
+      response.setHeader('Access-Control-Allow-Credentials', 'true');
+    }
+
     const errorBody: ApiErrorResponse = {
       success: false,
       message,

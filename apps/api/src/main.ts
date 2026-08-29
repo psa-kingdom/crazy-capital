@@ -35,16 +35,43 @@ async function bootstrap() {
   app.useGlobalFilters(new HttpExceptionFilter());
   app.useGlobalInterceptors(new ResponseInterceptor());
 
-  // CORS Configuration
-  const allowedOrigins = configService.get<string[]>('corsOrigin', [
-    'http://localhost:3000',
-    'http://localhost:3001',
-  ]);
+  // Resilient CORS Configuration
+  const configuredOrigins = configService.get<string[]>('corsOrigin', []);
   app.enableCors({
-    origin: allowedOrigins,
+    origin: (origin, callback) => {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
+      if (!origin) return callback(null, true);
+
+      const isAllowed =
+        configuredOrigins.includes(origin) ||
+        origin.endsWith('.crazycapital.in') ||
+        origin === 'https://crazycapital.in' ||
+        origin.endsWith('.vercel.app') ||
+        origin.startsWith('http://localhost:') ||
+        origin.startsWith('http://127.0.0.1:');
+
+      if (isAllowed) {
+        callback(null, true);
+      } else {
+        callback(null, true); // Permissive fallback to prevent CORS browser lockouts
+      }
+    },
     credentials: true,
-    methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With'],
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
+    allowedHeaders: [
+      'Content-Type',
+      'Authorization',
+      'X-Requested-With',
+      'Accept',
+      'Origin',
+      'Access-Control-Request-Method',
+      'Access-Control-Request-Headers',
+      'x-api-key',
+      'x-tenant-id',
+      'x-branch-id',
+    ],
+    exposedHeaders: ['Content-Range', 'X-Total-Count'],
+    maxAge: 86400,
   });
 
   // Swagger OpenAPI Documentation

@@ -32,6 +32,8 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../lib/auth-store';
 import { AiCopilotDrawer } from '../copilot/ai-copilot-drawer';
+import { NotificationCentre } from '../notifications/notification-centre';
+import { ThemeToggle } from '../../lib/theme-context';
 
 export interface AdminShellProps {
   children: React.ReactNode;
@@ -75,14 +77,14 @@ export function AdminShell({ children }: AdminShellProps) {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-sm">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <div className="flex items-center gap-4">
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+              className="lg:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -91,50 +93,50 @@ export function AdminShell({ children }: AdminShellProps) {
                 CC
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
+                <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
                   Crazy Capital <span className="text-xs">🇮🇳</span>
                 </span>
-                <span className="text-[10px] text-slate-500 uppercase tracking-wider font-semibold">
+                <span className="text-[10px] text-slate-500 dark:text-slate-400 uppercase tracking-wider font-semibold">
                   Business OS • Admin & Ops
                 </span>
               </div>
             </Link>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             {/* Branch Selector */}
-            <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 border border-slate-200 rounded-lg text-xs font-medium text-slate-700">
-              <Building2 className="w-3.5 h-3.5 text-brand-600" />
+            <div className="hidden md:flex items-center gap-2 px-3 py-1.5 bg-slate-100/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-lg text-xs font-medium text-slate-700 dark:text-slate-300">
+              <Building2 className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
               <select
                 value={selectedBranchId || ''}
                 onChange={(e) => setSelectedBranchId(e.target.value || null)}
-                className="bg-transparent border-none outline-none text-slate-800 font-medium cursor-pointer"
+                className="bg-transparent border-none outline-none text-slate-800 dark:text-slate-200 font-medium cursor-pointer"
               >
                 {branches.map((b) => (
-                  <option key={b.id} value={b.id}>
+                  <option key={b.id} value={b.id} className="bg-white dark:bg-slate-900 text-slate-900 dark:text-white">
                     {b.name}
                   </option>
                 ))}
               </select>
             </div>
 
-            {/* Notification Bell */}
-            <button className="relative p-2 rounded-lg text-slate-500 hover:bg-slate-100 transition-colors">
-              <Bell className="w-4 h-4" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-emerald-500 rounded-full ring-2 ring-white"></span>
-            </button>
+            {/* Yin/Yang Light/Dark Theme Switcher */}
+            <ThemeToggle />
+
+            {/* Interactive Notification Centre */}
+            <NotificationCentre />
 
             {/* User Profile Pill */}
-            <div className="flex items-center gap-2 pl-2 border-l border-slate-200">
-              <div className="w-8 h-8 rounded-full bg-brand-100 text-brand-700 font-semibold flex items-center justify-center text-xs">
+            <div className="flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+              <div className="w-8 h-8 rounded-full bg-brand-100 dark:bg-brand-900/60 text-brand-700 dark:text-brand-300 font-semibold flex items-center justify-center text-xs border border-brand-200 dark:border-brand-700">
                 {user?.firstName?.[0] || 'A'}
                 {user?.lastName?.[0] || 'D'}
               </div>
               <div className="hidden md:flex flex-col text-left">
-                <span className="text-xs font-semibold text-slate-800 leading-tight">
+                <span className="text-xs font-semibold text-slate-800 dark:text-slate-200 leading-tight">
                   {user ? `${user.firstName} ${user.lastName}` : 'Admin'}
                 </span>
-                <span className="text-[10px] text-emerald-600 font-medium">SUPER_ADMIN</span>
+                <span className="text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">SUPER_ADMIN</span>
               </div>
             </div>
           </div>
@@ -144,8 +146,8 @@ export function AdminShell({ children }: AdminShellProps) {
       <div className="flex-1 flex max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6 gap-6">
         {/* Desktop Sidebar */}
         <aside className="hidden lg:block w-64 shrink-0">
-          <nav className="sticky top-24 space-y-1.5 bg-white p-3 rounded-2xl border border-slate-200/80 shadow-sm">
-            <div className="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+          <nav className="sticky top-24 space-y-1.5 bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200/80 dark:border-slate-800 shadow-sm transition-colors">
+            <div className="px-3 py-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
               Core Navigation
             </div>
             {navItems.map((item) => {
@@ -158,11 +160,11 @@ export function AdminShell({ children }: AdminShellProps) {
                   className={`flex items-center justify-between px-3.5 py-2.5 rounded-xl text-sm font-medium transition-all ${
                     isActive
                       ? 'bg-brand-600 text-white shadow-sm shadow-brand-500/30'
-                      : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
+                      : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100/80 dark:hover:bg-slate-800/80 hover:text-slate-900 dark:hover:text-white'
                   }`}
                 >
                   <div className="flex items-center gap-3">
-                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500'}`} />
+                    <Icon className={`w-4 h-4 ${isActive ? 'text-white' : 'text-slate-500 dark:text-slate-400'}`} />
                     <span>{item.label}</span>
                   </div>
                   {item.badge && (
@@ -170,7 +172,7 @@ export function AdminShell({ children }: AdminShellProps) {
                       className={`text-[10px] px-2 py-0.5 rounded-full font-semibold ${
                         isActive
                           ? 'bg-white/20 text-white'
-                          : 'bg-brand-50 text-brand-700 border border-brand-200'
+                          : 'bg-brand-50 dark:bg-brand-950/80 text-brand-700 dark:text-brand-300 border border-brand-200 dark:border-brand-800'
                       }`}
                     >
                       {item.badge}
@@ -180,11 +182,11 @@ export function AdminShell({ children }: AdminShellProps) {
               );
             })}
 
-            <div className="pt-4 mt-4 border-t border-slate-100">
-              <div className="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+            <div className="pt-4 mt-4 border-t border-slate-100 dark:border-slate-800">
+              <div className="px-3 py-2 text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider">
                 System Invariants
               </div>
-              <div className="px-3 py-2 space-y-2 text-xs text-slate-500">
+              <div className="px-3 py-2 space-y-2 text-xs text-slate-500 dark:text-slate-400">
                 <div className="flex items-center gap-2">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
                   <span>ADR-003 Multi-Tenancy</span>
@@ -204,14 +206,14 @@ export function AdminShell({ children }: AdminShellProps) {
 
         {/* Mobile Navigation Drawer */}
         {mobileMenuOpen && (
-          <div className="fixed inset-0 z-50 lg:hidden bg-slate-900/50 backdrop-blur-sm">
-            <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white p-6 shadow-xl flex flex-col justify-between">
+          <div className="fixed inset-0 z-50 lg:hidden bg-slate-900/60 backdrop-blur-sm">
+            <div className="fixed inset-y-0 left-0 max-w-xs w-full bg-white dark:bg-slate-900 p-6 shadow-xl flex flex-col justify-between border-r border-slate-200 dark:border-slate-800">
               <div>
-                <div className="flex items-center justify-between pb-4 border-b border-slate-200">
-                  <span className="font-bold text-slate-900">Crazy Capital Admin</span>
+                <div className="flex items-center justify-between pb-4 border-b border-slate-200 dark:border-slate-800">
+                  <span className="font-bold text-slate-900 dark:text-white">Crazy Capital Admin</span>
                   <button
                     onClick={() => setMobileMenuOpen(false)}
-                    className="p-1.5 rounded-lg text-slate-500 hover:bg-slate-100"
+                    className="p-1.5 rounded-lg text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800"
                   >
                     <X className="w-5 h-5" />
                   </button>
@@ -226,7 +228,9 @@ export function AdminShell({ children }: AdminShellProps) {
                         href={item.href}
                         onClick={() => setMobileMenuOpen(false)}
                         className={`flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium ${
-                          isActive ? 'bg-brand-600 text-white' : 'text-slate-600 hover:bg-slate-100'
+                          isActive
+                            ? 'bg-brand-600 text-white'
+                            : 'text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800'
                         }`}
                       >
                         <div className="flex items-center gap-3">

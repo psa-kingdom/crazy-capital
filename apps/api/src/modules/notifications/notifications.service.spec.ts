@@ -21,6 +21,7 @@ describe('NotificationsService (Slice 1.9)', () => {
       findUnique: jest.fn(),
       findMany: jest.fn(),
       count: jest.fn(),
+      updateMany: jest.fn(),
     },
   };
 
@@ -325,6 +326,67 @@ describe('NotificationsService (Slice 1.9)', () => {
 
       expect(result.status).toBe('SENT');
       expect(result.recipient).toBe('founder@crazycapital.in');
+    });
+  });
+
+  describe('Unread Notifications & Read Mutations', () => {
+    it('should calculate unread notification count correctly', async () => {
+      mockPrisma.notificationLog.count.mockResolvedValue(4);
+
+      const result = await service.getUnreadCount({
+        userId: 'u-101',
+        email: 'user@crazycapital.in',
+      });
+
+      expect(result.unreadCount).toBe(4);
+      expect(mockPrisma.notificationLog.count).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({
+            readAt: null,
+          }),
+        }),
+      );
+    });
+
+    it('should mark single notification as read', async () => {
+      const mockLog = {
+        id: 'notif-1',
+        channel: 'IN_APP',
+        eventType: 'lead.assigned',
+        recipient: 'agent@crazycapital.in',
+        body: 'Lead Assigned',
+        status: 'DELIVERED',
+        provider: 'MOCK',
+        createdAt: new Date(),
+        readAt: null,
+      };
+
+      mockPrisma.notificationLog.findUnique.mockResolvedValue(mockLog);
+      mockPrisma.notificationLog.update.mockResolvedValue({
+        ...mockLog,
+        readAt: new Date(),
+      });
+
+      const result = await service.markAsRead('notif-1', { userId: 'agent-1' });
+      expect(result.metadata.isRead).toBe(true);
+      expect(mockPrisma.notificationLog.update).toHaveBeenCalled();
+    });
+
+    it('should mark all notifications as read for current user', async () => {
+      mockPrisma.notificationLog.updateMany.mockResolvedValue({ count: 5 });
+
+      const result = await service.markAllAsRead({
+        userId: 'agent-1',
+        email: 'agent@crazycapital.in',
+      });
+
+      expect(result.updatedCount).toBe(5);
+      expect(mockPrisma.notificationLog.updateMany).toHaveBeenCalledWith(
+        expect.objectContaining({
+          where: expect.objectContaining({ readAt: null }),
+          data: expect.objectContaining({ readAt: expect.any(Date) }),
+        }),
+      );
     });
   });
 });

@@ -17,6 +17,9 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 
+import { ThemeToggle } from '../../lib/theme-context';
+import { NotificationCentre } from '../notifications/notification-centre';
+
 export interface CustomerShellProps {
   children: React.ReactNode;
 }
@@ -34,15 +37,15 @@ export function CustomerShell({ children }: CustomerShellProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col transition-colors duration-200">
       {/* Top Navbar */}
-      <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-slate-200 shadow-xs">
+      <header className="sticky top-0 z-40 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 shadow-xs transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
           <div className="flex items-center gap-6">
-            <Link href="/customer" className="flex items-center gap-2 text-indigo-600 font-bold text-lg tracking-tight">
+            <Link href="/customer" className="flex items-center gap-2 text-indigo-600 dark:text-indigo-400 font-bold text-lg tracking-tight">
               <span className="p-1.5 rounded-lg bg-indigo-600 text-white font-black text-xs">CC</span>
               <span>Crazy Capital</span>
-              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-100">
+              <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-md bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300 border border-indigo-100 dark:border-indigo-800">
                 Customer Hub
               </span>
             </Link>
@@ -58,8 +61,8 @@ export function CustomerShell({ children }: CustomerShellProps) {
                     href={item.href}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors ${
                       isActive
-                        ? 'bg-indigo-50 text-indigo-700'
-                        : 'text-slate-600 hover:text-slate-900 hover:bg-slate-100'
+                        ? 'bg-indigo-50 dark:bg-indigo-950/80 text-indigo-700 dark:text-indigo-300'
+                        : 'text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-100 dark:hover:bg-slate-800'
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
@@ -70,17 +73,23 @@ export function CustomerShell({ children }: CustomerShellProps) {
             </nav>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-2 sm:gap-3">
             <Link
               href="/partner"
-              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-indigo-600 bg-slate-100 hover:bg-slate-200 px-3 py-1.5 rounded-lg transition-colors"
+              className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 dark:text-slate-300 hover:text-indigo-600 dark:hover:text-indigo-400 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg transition-colors"
             >
               Partner Portal
             </Link>
 
+            {/* Yin/Yang Theme Switcher */}
+            <ThemeToggle />
+
+            {/* Notification Centre */}
+            <NotificationCentre />
+
             <Link
               href="/"
-              className="text-xs font-semibold text-white bg-slate-900 hover:bg-slate-800 px-3 py-1.5 rounded-lg shadow-xs transition-colors"
+              className="text-xs font-semibold text-white bg-slate-900 dark:bg-slate-800 hover:bg-slate-800 dark:hover:bg-slate-700 px-3 py-1.5 rounded-lg shadow-xs transition-colors border border-slate-700/50"
             >
               Main Site
             </Link>
@@ -88,7 +97,7 @@ export function CustomerShell({ children }: CustomerShellProps) {
             {/* Mobile Toggle */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="md:hidden p-2 rounded-lg text-slate-600 hover:bg-slate-100"
+              className="md:hidden p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
