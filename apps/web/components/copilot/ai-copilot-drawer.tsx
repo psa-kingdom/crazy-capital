@@ -40,6 +40,7 @@ export function AiCopilotDrawer() {
   const [isLoading, setIsLoading] = useState(false);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [sessionId, setSessionId] = useState<string | undefined>(undefined);
+  const [mounted, setMounted] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   const [messages, setMessages] = useState<CopilotMsg[]>([
@@ -55,9 +56,13 @@ export function AiCopilotDrawer() {
         'GST REG-01 threshold rules',
         'Trademark NICE class search',
       ],
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      timestamp: '10:00 AM',
     },
   ]);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -203,7 +208,7 @@ export function AiCopilotDrawer() {
                           <Bot className="w-3 h-3 text-brand-600" /> <span>Crazy Copilot</span>
                         </>
                       )}
-                      <span>• {msg.timestamp}</span>
+                      <span suppressHydrationWarning>• {msg.timestamp}</span>
                     </div>
 
                     <div
