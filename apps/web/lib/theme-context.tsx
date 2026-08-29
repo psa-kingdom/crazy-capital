@@ -80,23 +80,28 @@ export function useTheme() {
 
 export function ThemeToggle({ className = '' }: { className?: string }) {
   const { theme, toggleTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   return (
     <button
       onClick={toggleTheme}
       type="button"
-      aria-label={`Switch to ${theme === 'dark' ? 'light' : 'dark'} mode (Yin/Yang)`}
-      title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} mode`}
+      aria-label={`Switch to ${mounted && theme === 'dark' ? 'light' : 'dark'} mode (Yin/Yang)`}
+      title={`Switch to ${mounted && theme === 'dark' ? 'Light' : 'Dark'} mode`}
       className={`relative p-2 rounded-xl border transition-all duration-200 flex items-center justify-center ${
-        theme === 'dark'
+        mounted && theme === 'dark'
           ? 'bg-slate-800 border-slate-700 text-amber-400 hover:bg-slate-700 hover:text-amber-300 shadow-sm'
-          : 'bg-white border-slate-200 text-slate-700 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
+          : 'bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-amber-400 hover:bg-slate-50 hover:text-slate-900 shadow-xs'
       } ${className}`}
     >
-      {theme === 'dark' ? (
+      {mounted && theme === 'dark' ? (
         <Sun className="w-4 h-4 transition-transform duration-300 rotate-0 hover:rotate-45 text-amber-400" />
       ) : (
-        <Moon className="w-4 h-4 transition-transform duration-300 rotate-0 hover:-rotate-12 text-slate-700" />
+        <Moon className="w-4 h-4 transition-transform duration-300 rotate-0 hover:-rotate-12 text-slate-700 dark:text-amber-400" />
       )}
     </button>
   );

@@ -80,6 +80,7 @@ const DEFAULT_DEMO_NOTIFICATIONS: NotificationItem[] = [
 ];
 
 export function NotificationCentre({ className = '' }: { className?: string }) {
+  const [mounted, setMounted] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'ALL' | 'UNREAD'>('ALL');
   const [notifications, setNotifications] = useState<NotificationItem[]>(DEFAULT_DEMO_NOTIFICATIONS);
@@ -89,6 +90,7 @@ export function NotificationCentre({ className = '' }: { className?: string }) {
   const { user } = useAuthStore();
 
   useEffect(() => {
+    setMounted(true);
     fetchNotifications();
     const interval = setInterval(fetchNotifications, 30000);
     return () => clearInterval(interval);
@@ -196,16 +198,21 @@ export function NotificationCentre({ className = '' }: { className?: string }) {
   };
 
   const formatRelativeTime = (isoString: string) => {
-    const diffMs = Date.now() - new Date(isoString).getTime();
-    const diffSec = Math.floor(diffMs / 1000);
-    const diffMin = Math.floor(diffSec / 60);
-    const diffHour = Math.floor(diffMin / 60);
-    const diffDay = Math.floor(diffHour / 24);
+    if (!mounted) return '';
+    try {
+      const diffMs = Date.now() - new Date(isoString).getTime();
+      const diffSec = Math.floor(diffMs / 1000);
+      const diffMin = Math.floor(diffSec / 60);
+      const diffHour = Math.floor(diffMin / 60);
+      const diffDay = Math.floor(diffHour / 24);
 
-    if (diffMin < 1) return 'Just now';
-    if (diffMin < 60) return `${diffMin}m ago`;
-    if (diffHour < 24) return `${diffHour}h ago`;
-    return `${diffDay}d ago`;
+      if (diffMin < 1) return 'Just now';
+      if (diffMin < 60) return `${diffMin}m ago`;
+      if (diffHour < 24) return `${diffHour}h ago`;
+      return `${diffDay}d ago`;
+    } catch {
+      return '';
+    }
   };
 
   const filtered = notifications.filter((n) => {
@@ -223,7 +230,7 @@ export function NotificationCentre({ className = '' }: { className?: string }) {
         className="relative p-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors shadow-xs"
       >
         <Bell className="w-4 h-4" />
-        {unreadCount > 0 && (
+        {mounted && unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 flex h-4 min-w-[16px] px-1 items-center justify-center rounded-full bg-rose-500 text-[10px] font-bold text-white ring-2 ring-white dark:ring-slate-950 animate-pulse">
             {unreadCount > 9 ? '9+' : unreadCount}
           </span>
