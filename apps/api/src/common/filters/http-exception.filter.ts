@@ -8,10 +8,13 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { ApiErrorResponse } from '@cc/types';
+import { isOriginAllowed } from '../utils/cors.util';
 
 @Catch()
 export class HttpExceptionFilter implements ExceptionFilter {
   private readonly logger = new Logger(HttpExceptionFilter.name);
+
+  constructor(private readonly configuredOrigins: string[] = []) {}
 
   catch(exception: unknown, host: ArgumentsHost) {
     const ctx = host.switchToHttp();
@@ -44,7 +47,7 @@ export class HttpExceptionFilter implements ExceptionFilter {
 
     const request = ctx.getRequest<any>();
     const origin = request?.headers?.origin;
-    if (origin) {
+    if (origin && isOriginAllowed(origin, this.configuredOrigins)) {
       response.setHeader('Access-Control-Allow-Origin', origin);
       response.setHeader('Access-Control-Allow-Credentials', 'true');
     }

@@ -6,6 +6,7 @@ import cookieParser from 'cookie-parser';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './common/filters/http-exception.filter';
 import { ResponseInterceptor } from './common/interceptors/response.interceptor';
+import { isOriginAllowed } from './common/utils/cors.util';
 
 async function bootstrap() {
   const logger = new Logger('Bootstrap');
@@ -14,28 +15,6 @@ async function bootstrap() {
 
   // Cookie parser for refresh tokens
   app.use(cookieParser());
-
-  // Universal Express CORS middleware — guarantees CORS headers on ALL requests, OPTIONS preflights, and error handlers
-  app.use((req: any, res: any, next: any) => {
-    const origin = req.headers.origin;
-    if (origin) {
-      res.setHeader('Access-Control-Allow-Origin', origin);
-      res.setHeader('Access-Control-Allow-Credentials', 'true');
-      res.setHeader(
-        'Access-Control-Allow-Methods',
-        'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
-      );
-      res.setHeader(
-        'Access-Control-Allow-Headers',
-        'Content-Type,Authorization,X-Requested-With,Accept,Origin,Access-Control-Request-Method,Access-Control-Request-Headers,x-api-key,x-tenant-id,x-branch-id',
-      );
-      res.setHeader('Access-Control-Max-Age', '86400');
-    }
-    if (req.method === 'OPTIONS') {
-      return res.sendStatus(204);
-    }
-    next();
-  });
 
   // Global prefix & versioning
   const apiPrefix = configService.get<string>('apiPrefix', 'api/v1');
@@ -53,29 +32,15 @@ async function bootstrap() {
     }),
   );
 
-  // Global Filter and Interceptor
-  app.useGlobalFilters(new HttpExceptionFilter());
-  app.useGlobalInterceptors(new ResponseInterceptor());
-
-  // Resilient CORS Configuration
+  // Strict Production-Grade CORS Configuration
   const configuredOrigins = configService.get<string[]>('corsOrigin', []);
   app.enableCors({
     origin: (origin, callback) => {
-      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server)
-      if (!origin) return callback(null, true);
-
-      const isAllowed =
-        configuredOrigins.includes(origin) ||
-        origin.endsWith('.crazycapital.in') ||
-        origin === 'https://crazycapital.in' ||
-        origin.endsWith('.vercel.app') ||
-        origin.startsWith('http://localhost:') ||
-        origin.startsWith('http://127.0.0.1:');
-
-      if (isAllowed) {
+      // Allow requests with no origin (e.g. mobile apps, curl, server-to-server) or validated trusted origins
+      if (isOriginAllowed(origin, configuredOrigins)) {
         callback(null, true);
       } else {
-        callback(null, true); // Permissive fallback to prevent CORS browser lockouts
+        callback(new Error(`CORS policy: Origin '${origin}' is not allowed.`));
       }
     },
     credentials: true,
@@ -95,6 +60,10 @@ async function bootstrap() {
     exposedHeaders: ['Content-Range', 'X-Total-Count'],
     maxAge: 86400,
   });
+
+  // Global Filter and Interceptor
+  app.useGlobalFilters(new HttpExceptionFilter(configuredOrigins));
+  app.useGlobalInterceptors(new ResponseInterceptor());
 
   // Swagger OpenAPI Documentation
   const swaggerConfig = new DocumentBuilder()
