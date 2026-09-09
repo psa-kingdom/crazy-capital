@@ -18,19 +18,18 @@ function checkPort(port, path = '/') {
 }
 
 async function waitForPorts() {
-  console.log('Waiting for all 3 services (:4000, :3000, :3001) to become healthy...');
+  console.log('Waiting for core services (:4000, :3000) to become healthy...');
   for (let i = 0; i < 45; i++) {
-    const [apiOk, webOk, adminOk] = await Promise.all([
+    const [apiOk, webOk] = await Promise.all([
       checkPort(4000, '/api/v1/health'),
       checkPort(3000, '/'),
-      checkPort(3001, '/'),
     ]);
-    if (apiOk && webOk && adminOk) {
+    if (apiOk && webOk) {
       console.log('====================================================');
-      console.log('✅ ALL SERVICES HEALTHY AND RESPONDING:');
+      console.log('✅ ALL CANONICAL SERVICES HEALTHY AND RESPONDING:');
       console.log(' - API:   http://localhost:4000/api/v1/health (HTTP 200)');
       console.log(' - Web:   http://localhost:3000 (HTTP 200)');
-      console.log(' - Admin: http://localhost:3001 (HTTP 200)');
+      console.log(' - Admin: http://localhost:3000/admin (HTTP 200)');
       console.log('====================================================');
       return true;
     }
@@ -39,7 +38,7 @@ async function waitForPorts() {
   throw new Error('Timed out waiting for services to become healthy.');
 }
 
-console.log('Starting Crazy Capital Local Stack...');
+console.log('Starting Crazy Capital Local Stack (API + Canonical Web App)...');
 
 // 1. API on port 4000 (dist main)
 const apiProcess = spawn('node', ['dist/apps/api/src/main.js'], {
@@ -48,16 +47,9 @@ const apiProcess = spawn('node', ['dist/apps/api/src/main.js'], {
   shell: true,
 });
 
-// 2. Web on port 3000 (dev)
+// 2. Web on port 3000 (dev - serves public website, customer portal, and admin portal)
 const webProcess = spawn('npx', ['next', 'dev', '--port', '3000'], {
   cwd: path.join(rootDir, 'apps', 'web'),
-  stdio: 'inherit',
-  shell: true,
-});
-
-// 3. Admin on port 3001 (dev)
-const adminProcess = spawn('npx', ['next', 'dev', '--port', '3001'], {
-  cwd: path.join(rootDir, 'apps', 'admin'),
   stdio: 'inherit',
   shell: true,
 });
@@ -65,7 +57,6 @@ const adminProcess = spawn('npx', ['next', 'dev', '--port', '3001'], {
 process.on('SIGINT', () => {
   apiProcess.kill();
   webProcess.kill();
-  adminProcess.kill();
   process.exit();
 });
 

@@ -18,7 +18,10 @@ export class Msg91SmsAdapter implements NotificationChannelProvider {
   private readonly dltTemplateId: string | null;
 
   constructor(private readonly configService: ConfigService) {
-    this.authKey = this.configService.get<string>('MSG91_AUTH_KEY') || null;
+    this.authKey =
+      this.configService.get<string>('MSG91_AUTH_KEY') ||
+      this.configService.get<string>('MSG91_API_KEY') ||
+      null;
     this.senderId = this.configService.get<string>('MSG91_SENDER_ID') || 'CRZYCP';
     this.dltTemplateId = this.configService.get<string>('MSG91_DLT_TE_ID') || null;
 

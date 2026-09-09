@@ -217,10 +217,10 @@ async function runBrowserAcceptance() {
   await page.screenshot({ path: path.join(SCREENSHOT_DIR, '04_blog_article.png'), fullPage: true });
 
   // -------------------------------------------------------------
-  // TEST 5: Admin CMS Workbench (http://localhost:3001/cms)
+  // TEST 5: Admin CMS Workbench (http://localhost:3000/admin/cms)
   // -------------------------------------------------------------
-  console.log('\n[6/7] Testing Admin CMS Workbench (http://localhost:3001/cms)...');
-  await page.goto('http://localhost:3001/cms', { waitUntil: 'networkidle' });
+  console.log('\n[6/7] Testing Admin CMS Workbench (http://localhost:3000/admin/cms)...');
+  await page.goto('http://localhost:3000/admin/cms', { waitUntil: 'networkidle' });
 
   const adminHeader = await page.textContent('h1');
   assert(adminHeader.includes('CMS & Knowledge Base Engine'), 'Admin CMS Workbench loaded with header');
@@ -274,41 +274,41 @@ async function runBrowserAcceptance() {
   assert(custText.includes('Customer Portal') || custText.includes('Active Applications') || custText.includes('Overview'), 'Customer Self-Service Portal (/customer) renders');
 
   // Admin Reports (Slice 1.12)
-  await page.goto('http://localhost:3001/reports', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/reports', { waitUntil: 'domcontentloaded' });
   const reportText = await page.textContent('body');
   assert(reportText.includes('Reports') || reportText.includes('Analytics') || reportText.includes('Executive'), 'Admin Reports & Analytics (/reports) renders');
 
   // Admin Leads (Slice 1.2)
-  await page.goto('http://localhost:3001/leads', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/leads', { waitUntil: 'domcontentloaded' });
   const leadsText = await page.textContent('body');
   assert(leadsText.includes('Leads') || leadsText.includes('CRM'), 'Admin Leads Hub (/leads) renders');
 
   // Admin Documents (Slice 1.7)
-  await page.goto('http://localhost:3001/documents', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/documents', { waitUntil: 'domcontentloaded' });
   const docText = await page.textContent('body');
   assert(docText.includes('Document') || docText.includes('Vault'), 'Admin Document Vault (/documents) renders');
 
   // Admin Invoices (Slice 1.8)
-  await page.goto('http://localhost:3001/invoices', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/invoices', { waitUntil: 'domcontentloaded' });
   const invText = await page.textContent('body');
   assert(invText.includes('Invoices') || invText.includes('Billing'), 'Admin Invoices Hub (/invoices) renders');
 
   // Admin Commissions (Slice 1.9)
-  await page.goto('http://localhost:3001/commissions', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/commissions', { waitUntil: 'domcontentloaded' });
   const commText = await page.textContent('body');
   assert(commText.includes('Commissions') || commText.includes('Payouts'), 'Admin Commissions Hub (/commissions) renders');
 
   // Admin Notifications (Slice 1.10)
-  await page.goto('http://localhost:3001/notifications', { waitUntil: 'domcontentloaded' });
+  await page.goto('http://localhost:3000/admin/notifications', { waitUntil: 'domcontentloaded' });
   const notifText = await page.textContent('body');
   assert(notifText.includes('Notifications') || notifText.includes('Alerts'), 'Admin Notification Matrix (/notifications) renders');
 
   // -------------------------------------------------------------
   // TEST 7: Vertical Slice 2.1 — Visual Workflow Builder (/workflows)
   // -------------------------------------------------------------
-  console.log('\n[8/8] Testing Vertical Slice 2.1 — Visual Workflow Builder (http://localhost:3001/workflows)...');
+  console.log('\n[8/8] Testing Vertical Slice 2.1 — Visual Workflow Builder (http://localhost:3000/admin/workflows)...');
   
-  const wfRes = await page.goto('http://localhost:3001/workflows', { waitUntil: 'networkidle' });
+  const wfRes = await page.goto('http://localhost:3000/admin/workflows', { waitUntil: 'networkidle' });
   await wait(600);
   assert(wfRes && wfRes.status() === 200, 'Visual Workflow Builder (/workflows) responds with HTTP 200');
 
@@ -389,9 +389,9 @@ async function runBrowserAcceptance() {
   // -------------------------------------------------------------
   // TEST 9: Vertical Slice 2.2 — SLA Tracking & 4-Level Auto-Escalation (/sla)
   // -------------------------------------------------------------
-  console.log('\n[9/9] Testing Vertical Slice 2.2 — SLA Tracking & 4-Level Auto-Escalation (http://localhost:3001/sla)...');
+  console.log('\n[9/9] Testing Vertical Slice 2.2 — SLA Tracking & 4-Level Auto-Escalation (http://localhost:3000/admin/sla)...');
   
-  const slaRes = await page.goto('http://localhost:3001/sla', { waitUntil: 'networkidle' });
+  const slaRes = await page.goto('http://localhost:3000/admin/sla', { waitUntil: 'networkidle' });
   await wait(600);
   assert(slaRes && slaRes.status() === 200, 'SLA Command Center (/sla) responds with HTTP 200');
 
@@ -460,9 +460,9 @@ async function runBrowserAcceptance() {
   // -------------------------------------------------------------
   // TEST 10: Vertical Slice 2.3 — Intelligent Task Engine & Workload Balancing (/tasks)
   // -------------------------------------------------------------
-  console.log('\n[10/10] Testing Vertical Slice 2.3 — Task Engine & Workload Balancing (http://localhost:3001/tasks)...');
+  console.log('\n[10/10] Testing Vertical Slice 2.3 — Task Engine & Workload Balancing (http://localhost:3000/admin/tasks)...');
   
-  const tasksRes = await page.goto('http://localhost:3001/tasks', { waitUntil: 'networkidle' });
+  const tasksRes = await page.goto('http://localhost:3000/admin/tasks', { waitUntil: 'networkidle' });
   await wait(600);
   assert(tasksRes && tasksRes.status() === 200, 'Task Engine & Workload page (/tasks) responds with HTTP 200');
 
@@ -567,9 +567,9 @@ async function runBrowserAcceptance() {
   // -------------------------------------------------------------
   // TEST 11: Vertical Slice 2.4 — Branch Hierarchy & Regional Operations Hubs (/branches)
   // -------------------------------------------------------------
-  console.log('\n[11/11] Testing Vertical Slice 2.4 — Branch Hierarchy & Regional Hubs (http://localhost:3001/branches)...');
+  console.log('\n[11/11] Testing Vertical Slice 2.4 — Branch Hierarchy & Regional Hubs (http://localhost:3000/admin/branches)...');
 
-  const branchesRes = await page.goto('http://localhost:3001/branches', { waitUntil: 'networkidle' });
+  const branchesRes = await page.goto('http://localhost:3000/admin/branches', { waitUntil: 'networkidle' });
   await wait(600);
   assert(branchesRes && branchesRes.status() === 200, 'Branch Hierarchy page (/branches) responds with HTTP 200');
 
@@ -722,9 +722,9 @@ async function runBrowserAcceptance() {
   // -------------------------------------------------------------
   // TEST 12: Vertical Slice 2.5 — RazorpayX Automated Partner Payouts (/commissions)
   // -------------------------------------------------------------
-  console.log('\n[12/12] Testing Vertical Slice 2.5 — RazorpayX Automated Partner Payouts (http://localhost:3001/commissions)...');
+  console.log('\n[12/12] Testing Vertical Slice 2.5 — RazorpayX Automated Partner Payouts (http://localhost:3000/admin/commissions)...');
 
-  const slice25Res = await page.goto('http://localhost:3001/commissions', { waitUntil: 'networkidle' });
+  const slice25Res = await page.goto('http://localhost:3000/admin/commissions', { waitUntil: 'networkidle' });
   await wait(600);
   assert(slice25Res && slice25Res.status() === 200, 'Commissions & Payouts page (/commissions) responds with HTTP 200');
 

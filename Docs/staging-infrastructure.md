@@ -9,7 +9,6 @@ Custom production domains are intentionally deferred until purchase/DNS readines
 
 Staging environments use secure, provider-generated HTTPS endpoints:
 - **Backend API (Railway):** `https://api-staging-41ee.up.railway.app`
-- **Admin Portal (Vercel):** `https://admin-*-psumanassociates-9980s-projects.vercel.app`
 - **Customer / Web Portal (Vercel):** `https://web-*-psumanassociates-9980s-projects.vercel.app`
 
 ---
@@ -17,21 +16,20 @@ Staging environments use secure, provider-generated HTTPS endpoints:
 ## 2. Infrastructure Topology
 
 ```
-                               GitHub Repository
-                       (psa-kingdom/crazy-capital @ main)
-                                      │
-                 ┌────────────────────┴────────────────────┐
-                 │                                         │
-        Vercel Staging Projects                 Railway Staging Project
-        (psa-kingdom Account)                     (crazy-capital)
-                 │                                         │
-     ┌───────────┴───────────┐                 ┌───────────┴───────────┐
-     │                       │                 │                       │
-  @cc/web                 @cc/admin         @cc/api                PostgreSQL
- (apps/web)             (apps/admin)       (apps/api)             (Internal VPC)
-     │                       │                 │                       │
-     └─────── HTTPS REST ────┴─────────────────┘                       │
-                                               └────── Prisma Client ──┘
+                                GitHub Repository
+                        (psa-kingdom/crazy-capital @ main)
+                                       │
+                 ┌─────────────────────┴─────────────────────┐
+                 │                                           │
+        Vercel Staging Project                    Railway Staging Project
+         (@cc/web in apps/web)                        (crazy-capital)
+                 │                                           │
+       Unified Next.js 15 App                     ┌──────────┴──────────┐
+   (Public, Portal, & Admin /admin)               │                     │
+                 │                             @cc/api              PostgreSQL
+                 └────────── HTTPS REST ────── (apps/api)         (Internal VPC)
+                                                  │                     │
+                                                  └──── Prisma Client ──┘
 ```
 
 ---
@@ -56,7 +54,7 @@ Staging environments use secure, provider-generated HTTPS endpoints:
     "buildCommand": "npx prisma generate --schema=apps/api/prisma/schema.prisma && npx turbo run build --filter=@cc/api..."
   },
   "deploy": {
-    "startCommand": "npx prisma db push --schema=apps/api/prisma/schema.prisma --skip-generate && node apps/api/dist/main.js",
+    "startCommand": "npx prisma migrate deploy --schema=apps/api/prisma/schema.prisma && node apps/api/dist/apps/api/src/main.js",
     "healthcheckPath": "/api/v1/health",
     "healthcheckTimeout": 120,
     "restartPolicyType": "ON_FAILURE",
@@ -74,7 +72,7 @@ Staging environments use secure, provider-generated HTTPS endpoints:
 | `API_PREFIX` | Global API version prefix | `api/v1` |
 | `JWT_SECRET` | 32+ char cryptographic secret for access tokens | *Secure Staging Secret* |
 | `JWT_REFRESH_SECRET` | 32+ char cryptographic secret for refresh tokens | *Secure Staging Secret* |
-| `CORS_ORIGIN` | Allowed frontend origins | `https://crazy-capital-web.vercel.app,https://crazy-capital-admin.vercel.app,http://localhost:3000,http://localhost:3001` |
+| `CORS_ORIGIN` | Allowed frontend origins | `https://crazy-capital-web.vercel.app,http://localhost:3000` |
 
 ---
 
@@ -83,11 +81,10 @@ Staging environments use secure, provider-generated HTTPS endpoints:
 ### 4.1 Project Matrix
 | App | Vercel Project Name | Root Directory | Environment Variable |
 |---|---|---|---|
-| `@cc/web` (Customer & Public) | `psumanassociates-9980s-projects/web` | `apps/web` | `NEXT_PUBLIC_API_URL=https://api-staging-41ee.up.railway.app/api/v1` |
-| `@cc/admin` (Admin & Operations) | `psumanassociates-9980s-projects/admin` | `apps/admin` | `NEXT_PUBLIC_API_URL=https://api-staging-41ee.up.railway.app/api/v1` |
+| `@cc/web` (Unified Portal & Admin) | `psumanassociates-9980s-projects/web` | `apps/web` | `NEXT_PUBLIC_API_URL=https://api-staging-41ee.up.railway.app/api/v1` |
 
 ### 4.2 Monorepo Build Execution
-- Both projects compile via Next.js 15 App Router using Turborepo workspaces.
+- Compiles via Next.js 15 App Router using Turborepo workspaces.
 - Shared workspace dependencies (`@cc/ui`, `@cc/types`, `@cc/validation`, `@cc/shared`) are resolved automatically.
 
 ---
