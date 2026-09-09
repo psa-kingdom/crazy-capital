@@ -8,13 +8,12 @@
 
 ## 1. System Architecture & Topology
 
-Crazy Capital is structured as a high-performance **Turborepo monorepo** consisting of 3 applications and 5 shared packages:
+Crazy Capital is structured as a high-performance **Turborepo monorepo** consisting of 2 applications and 5 shared packages:
 
 | Service / App | Directory | Default Port | Technology Stack | Purpose |
 |---|---|---|---|---|
 | **Platform API** | `apps/api` | `http://localhost:4000` | NestJS, Prisma, Passport JWT, Swagger | Central backend REST API & business engine |
-| **Admin Cockpit** | `apps/admin` | `http://localhost:3001` | Next.js 15 (App Router), TailwindCSS, `@cc/ui` | Executive dashboards, CRM, SLA operations, reports |
-| **Customer & Partner Portal** | `apps/web` | `http://localhost:3000` | Next.js 15 (App Router), TailwindCSS, `@cc/ui` | Customer Self-Service Cockpit & Partner Growth Hub |
+| **Unified Web App** | `apps/web` | `http://localhost:3000` | Next.js 15 (App Router), TailwindCSS, `@cc/ui` | Public portal, Customer/Partner hubs, and Admin Cockpit (`/admin`) |
 | **Shared Types** | `packages/types` | N/A | TypeScript | Shared domain models, DTOs, and interfaces |
 | **UI Primitives** | `packages/ui` | N/A | React 19, TailwindCSS | Harmonized UI components (Card, Button, Badge, Modal) |
 | **Validation Schemas** | `packages/validation` | N/A | Zod, class-validator | Shared request and form validation schemas |
@@ -40,14 +39,14 @@ Crazy Capital is structured as a high-performance **Turborepo monorepo** consist
    PORT=4000
    NODE_ENV=development
    API_PREFIX=api/v1
-   CORS_ORIGIN=http://localhost:3000,http://localhost:3001
+   CORS_ORIGIN=http://localhost:3000
    DATABASE_URL="postgresql://postgres:postgres@localhost:5432/crazy_capital?schema=public"
    JWT_SECRET="local-dev-secret-key-minimum-32-characters-long"
    JWT_REFRESH_SECRET="local-dev-refresh-secret-key-minimum-32-chars"
    ```
    *(Note: Cloudflare R2, Razorpay, Resend, MSG91, and Interakt have automatic deterministic mock fallbacks for safe offline local development).*
 
-3. `apps/admin` and `apps/web` automatically point to `http://localhost:4000/api/v1` by default.
+3. `apps/web` automatically points to `http://localhost:4000/api/v1` by default.
 
 ### C. Database Migration & Synthetic Seed Execution
 Run from the workspace root:
@@ -55,8 +54,8 @@ Run from the workspace root:
 # 1. Generate Prisma Client
 npm run --workspace=@cc/api prisma:generate
 
-# 2. Push schema to database
-npx --workspace=@cc/api prisma db push
+# 2. Apply migrations to database
+npm run db:deploy
 
 # 3. Seed comprehensive synthetic test data
 npm run --workspace=@cc/api prisma:seed

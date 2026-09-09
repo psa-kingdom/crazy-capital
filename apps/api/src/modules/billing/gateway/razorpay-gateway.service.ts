@@ -18,7 +18,9 @@ export class RazorpayGatewayService implements PaymentGatewayProvider {
 
   constructor(private readonly configService: ConfigService) {
     this.keyId = this.configService.get<string>('RAZORPAY_KEY_ID');
-    this.keySecret = this.configService.get<string>('RAZORPAY_KEY_SECRET');
+    this.keySecret =
+      this.configService.get<string>('RAZORPAY_KEY_SECRET') ||
+      this.configService.get<string>('RAZORPAY_SECRET');
     this.webhookSecret = this.configService.get<string>('RAZORPAY_WEBHOOK_SECRET');
 
     if (this.keyId && this.keySecret) {
