@@ -25,7 +25,7 @@ import {
   AlertCircle,
   X,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { LeadActivityType, LeadStatus } from '@cc/types';
 import { crmApi, customerApi } from '@/lib/api';
 
@@ -33,6 +33,7 @@ export default function LeadDetailPage() {
   const params = useParams();
   const router = useRouter();
   const leadId = params.id as string;
+  const { success } = useToast();
 
   const [lead, setLead] = useState({
     id: leadId,
@@ -210,7 +211,7 @@ export default function LeadDetailPage() {
     setActivities([convAct, ...activities]);
     setIsConvertModalOpen(false);
 
-    alert(`🎉 Lead converted to Customer! Redirecting to Customer 360 profile...`);
+    success('Lead Converted!', 'Redirecting to Customer 360 profile...');
     router.push('/customers');
   };
 

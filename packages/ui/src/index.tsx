@@ -1,3 +1,5 @@
+'use client';
+
 import React from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
@@ -663,6 +665,220 @@ export function PageHeader({
         )}
       </div>
       {actions && <div className="flex items-center gap-3">{actions}</div>}
+    </div>
+  );
+}
+
+/* ==========================================================================
+   9. TOAST NOTIFICATION SYSTEM
+   ========================================================================== */
+
+export type ToastVariant = 'success' | 'error' | 'warning' | 'info';
+
+export interface ToastItem {
+  id: string;
+  variant: ToastVariant;
+  title: string;
+  message?: string;
+  duration?: number;
+}
+
+export interface ToastContextValue {
+  toasts: ToastItem[];
+  toast: (opts: Omit<ToastItem, 'id'>) => void;
+  success: (title: string, message?: string) => void;
+  error: (title: string, message?: string) => void;
+  warning: (title: string, message?: string) => void;
+  info: (title: string, message?: string) => void;
+  dismiss: (id: string) => void;
+}
+
+const ToastContext = React.createContext<ToastContextValue | null>(null);
+
+export function ToastProvider({ children }: { children: React.ReactNode }) {
+  const [toasts, setToasts] = React.useState<ToastItem[]>([]);
+
+  const dismiss = React.useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
+  }, []);
+
+  const toast = React.useCallback(
+    (opts: Omit<ToastItem, 'id'>) => {
+      const id = Math.random().toString(36).slice(2);
+      const duration = opts.duration ?? 4000;
+      setToasts((prev) => [...prev, { ...opts, id, duration }]);
+      if (duration > 0) {
+        setTimeout(() => dismiss(id), duration);
+      }
+    },
+    [dismiss],
+  );
+
+  const success = React.useCallback(
+    (title: string, message?: string) => toast({ variant: 'success', title, message }),
+    [toast],
+  );
+  const error = React.useCallback(
+    (title: string, message?: string) => toast({ variant: 'error', title, message }),
+    [toast],
+  );
+  const warning = React.useCallback(
+    (title: string, message?: string) => toast({ variant: 'warning', title, message }),
+    [toast],
+  );
+  const info = React.useCallback(
+    (title: string, message?: string) => toast({ variant: 'info', title, message }),
+    [toast],
+  );
+
+  return (
+    <ToastContext.Provider value={{ toasts, toast, success, error, warning, info, dismiss }}>
+      {children}
+      <ToastContainer toasts={toasts} dismiss={dismiss} />
+    </ToastContext.Provider>
+  );
+}
+
+export function useToast(): ToastContextValue {
+  const ctx = React.useContext(ToastContext);
+  if (!ctx) throw new Error('useToast must be used inside <ToastProvider>');
+  return ctx;
+}
+
+const toastStyles: Record<ToastVariant, { container: string; icon: React.ReactNode }> = {
+  success: {
+    container:
+      'bg-teal-950/95 border-teal-700 text-teal-100',
+    icon: <CheckCircle2 className="w-4 h-4 text-teal-400 shrink-0 mt-0.5" />,
+  },
+  error: {
+    container:
+      'bg-red-950/95 border-red-700 text-red-100',
+    icon: <XCircle className="w-4 h-4 text-red-400 shrink-0 mt-0.5" />,
+  },
+  warning: {
+    container:
+      'bg-amber-950/95 border-amber-700 text-amber-100',
+    icon: <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />,
+  },
+  info: {
+    container:
+      'bg-indigo-950/95 border-indigo-700 text-indigo-100',
+    icon: <Info className="w-4 h-4 text-indigo-400 shrink-0 mt-0.5" />,
+  },
+};
+
+function ToastContainer({
+  toasts,
+  dismiss,
+}: {
+  toasts: ToastItem[];
+  dismiss: (id: string) => void;
+}) {
+  if (toasts.length === 0) return null;
+  return (
+    <div className="fixed bottom-4 right-4 z-[9999] flex flex-col gap-2 w-80 max-w-[calc(100vw-2rem)]">
+      {toasts.map((t) => {
+        const style = toastStyles[t.variant];
+        return (
+          <div
+            key={t.id}
+            role="alert"
+            className={cn(
+              'flex items-start gap-3 rounded-xl border px-4 py-3 shadow-xl backdrop-blur-sm text-sm',
+              'animate-in slide-in-from-right-5 fade-in duration-200',
+              style.container,
+            )}
+          >
+            {style.icon}
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold leading-snug">{t.title}</div>
+              {t.message && (
+                <div className="text-xs opacity-80 mt-0.5 leading-snug">{t.message}</div>
+              )}
+            </div>
+            <button
+              onClick={() => dismiss(t.id)}
+              className="shrink-0 opacity-60 hover:opacity-100 transition-opacity p-0.5 rounded"
+              aria-label="Dismiss notification"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/* ==========================================================================
+   10. CONFIRM DIALOG
+   ========================================================================== */
+
+export interface ConfirmDialogProps {
+  isOpen: boolean;
+  title: string;
+  message: string;
+  confirmLabel?: string;
+  cancelLabel?: string;
+  variant?: 'danger' | 'primary';
+  onConfirm: () => void;
+  onCancel: () => void;
+}
+
+export function ConfirmDialog({
+  isOpen,
+  title,
+  message,
+  confirmLabel = 'Confirm',
+  cancelLabel = 'Cancel',
+  variant = 'danger',
+  onConfirm,
+  onCancel,
+}: ConfirmDialogProps) {
+  if (!isOpen) return null;
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+      <div
+        className="fixed inset-0 bg-black/60 backdrop-blur-sm"
+        onClick={onCancel}
+      />
+      <div className="relative w-full max-w-sm rounded-2xl bg-white dark:bg-[#131722] p-6 shadow-2xl border border-gray-200 dark:border-gray-800 z-10 animate-in fade-in zoom-in-95 duration-200">
+        <div className="flex items-start gap-3 mb-4">
+          {variant === 'danger' ? (
+            <div className="p-2 rounded-xl bg-red-100 dark:bg-red-950/50">
+              <XCircle className="w-5 h-5 text-red-600" />
+            </div>
+          ) : (
+            <div className="p-2 rounded-xl bg-indigo-100 dark:bg-indigo-950/50">
+              <Info className="w-5 h-5 text-indigo-600" />
+            </div>
+          )}
+          <div>
+            <h3 className="text-base font-bold text-[#0b0e14] dark:text-[#f9fafb]">{title}</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-0.5">{message}</p>
+          </div>
+        </div>
+        <div className="flex items-center justify-end gap-3 pt-4 border-t border-gray-100 dark:border-gray-800">
+          <button
+            onClick={onCancel}
+            className="px-4 py-2 text-sm font-medium rounded-xl border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          >
+            {cancelLabel}
+          </button>
+          <button
+            onClick={onConfirm}
+            className={cn(
+              'px-4 py-2 text-sm font-bold rounded-xl text-white transition-colors',
+              variant === 'danger'
+                ? 'bg-red-600 hover:bg-red-700'
+                : 'bg-[#4f46e5] hover:bg-[#4338ca]',
+            )}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

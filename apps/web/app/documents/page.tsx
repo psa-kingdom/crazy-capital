@@ -18,7 +18,7 @@ import {
   Lock,
   Receipt,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { documentsApi } from '../../lib/api';
 
 interface DocumentItem {
@@ -41,6 +41,7 @@ interface DocumentItem {
 }
 
 export default function CustomerDocumentVaultPage() {
+  const { warning, info, error: toastError } = useToast();
   // Demo customer profile
   const customerId = 'cust-demo-101';
   const applicationId = 'app-demo-001';
@@ -239,10 +240,10 @@ export default function CustomerDocumentVaultPage() {
       if (res?.previewUrl) {
         window.open(res.previewUrl, '_blank');
       } else {
-        alert(`Secure Preview: ${doc.fileName} (Encrypted R2 Object - Staging Mock URL)`);
+        info('Secure Preview', `File: ${doc.fileName} (Encrypted R2 Object - Preview generated)`);
       }
     } catch (err) {
-      alert(`Secure Preview: ${doc.fileName} (Encrypted R2 Object)`);
+      info('Secure Preview', `File: ${doc.fileName} (Encrypted R2 Object)`);
     }
   };
 

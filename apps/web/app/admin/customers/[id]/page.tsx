@@ -23,12 +23,13 @@ import {
   Eye,
   Check,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { customerApi, documentsApi } from '@/lib/api';
 
 export default function Customer360Page() {
   const params = useParams();
   const customerId = params.id as string;
+  const { info } = useToast();
 
   const [activeTab, setActiveTab] = useState<'profile' | 'applications' | 'documents' | 'billing'>('profile');
 
@@ -449,9 +450,9 @@ export default function Customer360Page() {
                       try {
                         const res: any = await documentsApi.getPreviewUrl(doc.id);
                         if (res?.previewUrl) window.open(res.previewUrl, '_blank');
-                        else alert(`Preview: ${doc.fileName}`);
+                        else info('Preview unavailable', `File: ${doc.fileName}`);
                       } catch {
-                        alert(`Preview: ${doc.fileName}`);
+                        info('Preview', `File: ${doc.fileName}`);
                       }
                     }}
                     className="inline-flex items-center gap-1 text-[11px] font-semibold text-brand-600 hover:text-brand-800"

@@ -22,7 +22,7 @@ import {
   XCircle,
   UserPlus,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { crmApi, leadScoringApi } from '@/lib/api';
 import { LeadStatus, LeadScoreGrade, PriorityQueueItemDto, LeadScoreFactor } from '@cc/types';
 import { Flame, RefreshCw, Zap, Award, Target, Check, ShieldCheck, AlertTriangle } from 'lucide-react';
@@ -45,6 +45,7 @@ interface LeadItem {
 }
 
 export default function LeadsPage() {
+  const { warning } = useToast();
   const [viewMode, setViewMode] = useState<'kanban' | 'table' | 'priority'>('priority');
   const [search, setSearch] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
@@ -255,7 +256,7 @@ export default function LeadsPage() {
   const handleCreateLead = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newLead.firstName || !newLead.lastName || !newLead.mobile) {
-      alert('Please fill in required fields: First Name, Last Name, and Mobile Number.');
+      warning('Required fields missing', 'Please fill in First Name, Last Name, and Mobile Number.');
       return;
     }
 

@@ -20,7 +20,7 @@ import {
   XCircle,
   FileText,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { invoicesApi, paymentsApi } from '../../lib/api';
 
 interface CustomerInvoice {
@@ -54,6 +54,7 @@ interface CustomerInvoice {
 }
 
 export default function CustomerInvoicesPage() {
+  const { error: toastError } = useToast();
   const [invoices, setInvoices] = useState<CustomerInvoice[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'ALL' | 'UNPAID' | 'PAID'>('ALL');
@@ -207,7 +208,7 @@ export default function CustomerInvoicesPage() {
       setIsCheckoutModalOpen(false);
       setIsSuccessModalOpen(true);
     } catch (err: any) {
-      alert(`Payment processing failed: ${err.message}`);
+      toastError('Payment Failed', `Payment processing failed: ${err.message || 'Unknown error'}`);
     } finally {
       setPaying(false);
     }

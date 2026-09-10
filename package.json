@@ -22,6 +22,7 @@
     "typecheck": "turbo run typecheck",
     "test": "turbo run test",
     "test:browser": "node scripts/browser-acceptance-suite.js",
+    "qa:headed": "node scripts/browser-exploratory-suite.js --headed",
     "start:stack": "node scripts/start-local-stack.js",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
     "prepare": "node -e \"try { require('husky') } catch (e) {}\""

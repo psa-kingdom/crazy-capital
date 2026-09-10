@@ -25,9 +25,11 @@ import {
 import { CustomerShell } from '../../../../components/layout/customer-shell';
 import { customerPortalApi, documentsApi, paymentsApi } from '../../../../lib/api';
 import { CustomerApplicationDetailDto } from '@cc/types';
+import { useToast } from '@cc/ui';
 
 export default function CustomerApplicationDetailPage() {
   const params = useParams();
+  const { info: toastInfo, error: toastError } = useToast();
   const applicationId = params?.id as string;
 
   const [detail, setDetail] = useState<CustomerApplicationDetailDto | null>(null);
@@ -100,10 +102,10 @@ export default function CustomerApplicationDetailPage() {
       const order = res.data?.data || res.data;
 
       // In mock/test gateway or live checkout:
-      alert(`Razorpay Order created: ${order.orderId || order.id || 'ORDER_SUCCESS'}. Initiating mock payment completion.`);
+      toastInfo('Payment order created', `Order ${order.orderId || order.id || 'created'}. Initiating payment.`);
       await fetchDetail();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to create payment order');
+      toastError('Payment failed', err.response?.data?.message || 'Failed to create payment order');
     } finally {
       setPayingInvoiceId(null);
     }
