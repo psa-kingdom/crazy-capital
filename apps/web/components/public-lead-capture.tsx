@@ -35,6 +35,7 @@ function PublicLeadCaptureInner({
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
+  const [validationError, setValidationError] = useState('');
 
   // Extract UTM and branch parameters from URL
   const utmSource = searchParams?.get('utm_source') || 'WEBSITE';
@@ -51,9 +52,10 @@ function PublicLeadCaptureInner({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.firstName || !formData.lastName || !formData.mobile) {
-      alert('Please provide First Name, Last Name, and a valid 10-digit Mobile Number.');
+      setValidationError('Please provide First Name, Last Name, and a valid 10-digit Mobile Number.');
       return;
     }
+    setValidationError('');
 
     setIsSubmitting(true);
     try {
@@ -244,6 +246,13 @@ function PublicLeadCaptureInner({
             className="w-full px-3 py-2 border border-slate-200 rounded-lg outline-none focus:ring-2 focus:ring-brand-500 bg-slate-50 focus:bg-white text-slate-900"
           />
         </div>
+
+        {validationError && (
+          <div className="flex items-center gap-2 p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+            <span className="shrink-0">⚠️</span>
+            <span>{validationError}</span>
+          </div>
+        )}
 
         <Button
           type="submit"

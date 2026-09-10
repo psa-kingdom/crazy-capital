@@ -23,6 +23,7 @@ export const metadata: Metadata = {
 };
 
 import { ThemeProvider } from "../lib/theme-context";
+import { ToastProvider } from '@cc/ui';
 
 export default function RootLayout({
   children,
@@ -51,7 +52,9 @@ export default function RootLayout({
       </head>
       <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 font-sans antialiased transition-colors duration-200" suppressHydrationWarning>
         <ThemeProvider>
-          {children}
+          <ToastProvider>
+            {children}
+          </ToastProvider>
         </ThemeProvider>
       </body>
     </html>

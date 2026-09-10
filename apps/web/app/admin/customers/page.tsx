@@ -16,7 +16,7 @@ import {
   Download,
   XCircle,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { CustomerType } from '@cc/types';
 import { customerApi } from '@/lib/api';
 
@@ -39,6 +39,7 @@ interface CustomerItem {
 }
 
 export default function CustomersPage() {
+  const { warning } = useToast();
   const [search, setSearch] = useState('');
   const [typeFilter, setTypeFilter] = useState('');
   const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
@@ -125,7 +126,7 @@ export default function CustomersPage() {
   const handleCreateCustomer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newCustomer.firstName || !newCustomer.lastName || !newCustomer.email || !newCustomer.mobile) {
-      alert('Please fill all required customer fields.');
+      warning('Required fields missing', 'Please fill all required customer fields.');
       return;
     }
 

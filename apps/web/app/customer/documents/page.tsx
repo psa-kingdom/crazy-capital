@@ -20,8 +20,10 @@ import {
 } from 'lucide-react';
 import { CustomerShell } from '../../../components/layout/customer-shell';
 import { customerPortalApi, documentsApi } from '../../../lib/api';
+import { useToast } from '@cc/ui';
 
 export default function CustomerVaultPage() {
+  const { error: toastError } = useToast();
   const [vaultData, setVaultData] = useState<{
     documents: any[];
     missingRequirements: any[];
@@ -93,10 +95,10 @@ export default function CustomerVaultPage() {
       if (url) {
         window.open(url, '_blank');
       } else {
-        alert('Download URL could not be generated.');
+        toastError('Download unavailable', 'Download URL could not be generated.');
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to generate download URL');
+      toastError('Download failed', err.response?.data?.message || 'Failed to generate download URL');
     }
   };
 

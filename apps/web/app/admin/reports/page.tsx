@@ -22,7 +22,7 @@ import {
   UserCheck,
   FileSpreadsheet,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { reportsApi } from '@/lib/api';
 import { useAuthStore } from '@/lib/auth-store';
 import {
@@ -35,6 +35,7 @@ import {
 
 export default function ReportsAndAnalyticsPage() {
   const { user, selectedBranchId, setSelectedBranchId } = useAuthStore();
+  const { error: toastError } = useToast();
 
   const [activeTab, setActiveTab] = useState<'OVERVIEW' | 'REVENUE' | 'LEADS' | 'OPERATIONS' | 'BRANCHES'>('OVERVIEW');
   const [dateRange, setDateRange] = useState<'7D' | '30D' | '90D' | 'ALL'>('30D');
@@ -120,7 +121,7 @@ export default function ReportsAndAnalyticsPage() {
       window.URL.revokeObjectURL(url);
       document.body.removeChild(a);
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Export failed');
+      toastError('Export failed', err.response?.data?.message || 'Export failed');
     } finally {
       setExporting(false);
     }

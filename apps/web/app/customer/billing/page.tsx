@@ -18,8 +18,10 @@ import {
 import { CustomerShell } from '../../../components/layout/customer-shell';
 import { customerPortalApi, paymentsApi } from '../../../lib/api';
 import { InvoiceDto } from '@cc/types';
+import { useToast } from '@cc/ui';
 
 export default function CustomerBillingPage() {
+  const { info: toastInfo, error: toastError } = useToast();
   const [invoices, setInvoices] = useState<InvoiceDto[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,10 +50,10 @@ export default function CustomerBillingPage() {
       setPayingId(invoiceId);
       const res = await paymentsApi.createOrder({ invoiceId });
       const order = res.data?.data || res.data;
-      alert(`Razorpay Payment Order generated: ${order.orderId || order.id || 'ORDER_SUCCESS'}. Processing payment verification.`);
+      toastInfo('Payment order created', `Order ${order.orderId || order.id || 'created'}. Processing verification.`);
       await fetchInvoices();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Payment initiation failed');
+      toastError('Payment failed', err.response?.data?.message || 'Payment initiation failed');
     } finally {
       setPayingId(null);
     }

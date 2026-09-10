@@ -23,6 +23,7 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AdminShell } from '@/components/layout/admin-shell';
+import { useToast } from '@cc/ui';
 import { notificationsApi } from '@/lib/api';
 import { NotificationChannel, NotificationStatus } from '@cc/types';
 
@@ -47,6 +48,7 @@ interface NotificationLog {
 }
 
 export default function NotificationsPage() {
+  const { error: toastError } = useToast();
   const [logs, setLogs] = useState<NotificationLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -115,7 +117,7 @@ export default function NotificationsPage() {
         setSelectedLog(refreshed.data);
       }
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Failed to retry notification');
+      toastError('Retry failed', err.response?.data?.message || 'Failed to retry notification');
     } finally {
       setRetryingId(null);
     }
@@ -139,7 +141,7 @@ export default function NotificationsPage() {
       );
       await fetchLogs();
     } catch (err: any) {
-      alert(err.response?.data?.message || 'Test dispatch failed');
+      toastError('Test dispatch failed', err.response?.data?.message || 'Test dispatch failed');
     } finally {
       setDispatchingTest(false);
     }

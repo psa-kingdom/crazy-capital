@@ -23,7 +23,7 @@ import {
   ExternalLink,
   ShieldCheck,
 } from 'lucide-react';
-import { Card, Button, Badge } from '@cc/ui';
+import { Card, Button, Badge, useToast } from '@cc/ui';
 import { invoicesApi, paymentsApi, customerApi, applicationsApi } from '@/lib/api';
 
 interface InvoiceItem {
@@ -66,6 +66,7 @@ interface InvoiceItem {
 }
 
 export default function AdminInvoicesPage() {
+  const { error } = useToast();
   const [invoices, setInvoices] = useState<InvoiceItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
@@ -291,7 +292,7 @@ export default function AdminInvoicesPage() {
       }
       setIsCreateModalOpen(false);
     } catch (err: any) {
-      alert(`Failed to create invoice: ${err.message}`);
+      error('Failed to create invoice', err.message);
     } finally {
       setActionLoading(false);
     }
@@ -337,7 +338,7 @@ export default function AdminInvoicesPage() {
       setIsManualPayModalOpen(false);
       setSelectedInvoice(null);
     } catch (err: any) {
-      alert(`Payment record failed: ${err.message}`);
+      error('Payment record failed', err.message);
     } finally {
       setActionLoading(false);
     }

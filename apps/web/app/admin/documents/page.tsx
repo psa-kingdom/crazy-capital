@@ -21,7 +21,7 @@ import {
   Layers,
   FileText,
 } from 'lucide-react';
-import { Card, Button, Badge, Modal, Input } from '@cc/ui';
+import { Card, Button, Badge, Modal, Input, useToast } from '@cc/ui';
 import { documentsApi, documentOcrApi } from '@/lib/api';
 import { DocumentOcrRecordDto, DocumentOcrMatchStatus, DocumentOcrSuggestedAction } from '@cc/types';
 import { Sparkles, RefreshCw, CheckCheck, FileSearch, ShieldCheck as ShieldCheckIcon, AlertOctagon } from 'lucide-react';
@@ -48,6 +48,7 @@ interface DocumentRecord {
 }
 
 export default function DocumentVerificationWorkbenchPage() {
+  const { info, error, success } = useToast();
   const [activeTab, setActiveTab] = useState<'ALL' | 'PENDING' | 'VERIFIED' | 'REJECTED'>('ALL');
   const [search, setSearch] = useState('');
   const [loading, setLoading] = useState(false);
@@ -196,10 +197,10 @@ export default function DocumentVerificationWorkbenchPage() {
       if (res?.previewUrl) {
         window.open(res.previewUrl, '_blank');
       } else {
-        alert(`Secure Preview: ${doc.fileName}\nCloudflare R2 Encrypted Key: org_org-1/cust_${doc.customerId}/${doc.fileName}`);
+        info('Preview unavailable', `Secure file: ${doc.fileName}`);
       }
     } catch (err) {
-      alert(`Secure Preview: ${doc.fileName}`);
+      info('Preview link', `Cloudflare R2 encrypted object: ${doc.fileName}`);
     }
   };
 
@@ -231,7 +232,7 @@ export default function DocumentVerificationWorkbenchPage() {
       setActionSuccess(`Document "${doc.fileName}" marked as VERIFIED. Workflow gates unblocked.`);
       setTimeout(() => setActionSuccess(null), 4000);
     } catch (err: any) {
-      alert(`Verification failed: ${err.message}`);
+      error('Verification failed', err.message);
     } finally {
       setSubmittingAction(false);
     }
@@ -328,7 +329,7 @@ export default function DocumentVerificationWorkbenchPage() {
       setTimeout(() => setActionSuccess(null), 4000);
       setSelectedOcrDoc(null);
     } catch (e) {
-      alert('Action failed');
+      error('Action failed', 'Could not complete document action.');
     } finally {
       setIsAutoVerifying(false);
     }
@@ -366,7 +367,7 @@ export default function DocumentVerificationWorkbenchPage() {
       setRejectionRemarks('');
       setTimeout(() => setActionSuccess(null), 4000);
     } catch (err: any) {
-      alert(`Rejection failed: ${err.message}`);
+      error('Rejection failed', err.message);
     } finally {
       setSubmittingAction(false);
     }
@@ -392,7 +393,7 @@ export default function DocumentVerificationWorkbenchPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0e14] text-slate-900 dark:text-slate-100 p-4 md:p-8">
+    <div className="min-h-screen bg-slate-50 dark:bg-[#0b0e14] text-slate-900 dark:text-slate-100 p-4 md:p-8" suppressHydrationWarning>
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Header */}
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800">
@@ -555,7 +556,7 @@ export default function DocumentVerificationWorkbenchPage() {
 
                       {/* Audit */}
                       <td className="py-3.5 px-4 text-[11px] text-slate-500 dark:text-slate-400 space-y-0.5">
-                        <div>Uploaded: {new Date(doc.uploadedAt).toLocaleDateString()}</div>
+                        <div suppressHydrationWarning>Uploaded: {doc.uploadedAt ? doc.uploadedAt.split('T')[0] : '—'}</div>
                         {doc.verifiedBy && <div>Reviewed by: {doc.verifiedBy}</div>}
                         {doc.remarks && <div className="italic text-slate-600 dark:text-slate-300">&quot;{doc.remarks}&quot;</div>}
                       </td>

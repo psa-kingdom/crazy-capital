@@ -28,7 +28,7 @@ import {
   HelpCircle,
 } from 'lucide-react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Card, Badge, Button } from '@cc/ui';
+import { Card, Badge, Button, useToast } from '@cc/ui';
 import {
   WorkflowDto,
   WorkflowStageDto,
@@ -281,6 +281,7 @@ const FALLBACK_WORKFLOWS: WorkflowDto[] = [
 ];
 
 export default function WorkflowsBuilderPage() {
+  const { warning, error } = useToast();
   const [workflows, setWorkflows] = useState<WorkflowDto[]>(FALLBACK_WORKFLOWS);
   const [selectedWorkflowId, setSelectedWorkflowId] = useState<string>(FALLBACK_WORKFLOWS[0].id);
   const [currentWorkflow, setCurrentWorkflow] = useState<WorkflowDto>(FALLBACK_WORKFLOWS[0]);
@@ -471,11 +472,11 @@ export default function WorkflowsBuilderPage() {
   // Add Transition
   const handleAddTransition = () => {
     if (!transitionForm.fromStageId || !transitionForm.toStageId) {
-      alert('Please select both From and To stages');
+      warning('Incomplete selection', 'Please select both From and To stages.');
       return;
     }
     if (transitionForm.fromStageId === transitionForm.toStageId) {
-      alert('A stage cannot transition to itself.');
+      warning('Invalid transition', 'A stage cannot transition to itself.');
       return;
     }
 
@@ -508,7 +509,7 @@ export default function WorkflowsBuilderPage() {
   const handleDeleteStage = (stageId: string) => {
     const stageToDelete = currentWorkflow.stages.find((s) => s.id === stageId);
     if (stageToDelete?.isStartStage) {
-      alert('Cannot delete the designated Start Stage of a workflow.');
+      warning('Cannot delete start stage', 'The designated Start Stage of a workflow cannot be deleted.');
       return;
     }
     const updatedStages = currentWorkflow.stages.filter((s) => s.id !== stageId);

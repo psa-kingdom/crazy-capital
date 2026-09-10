@@ -23,11 +23,12 @@ import {
   X,
 } from 'lucide-react';
 import { AdminShell } from '@/components/layout/admin-shell';
-import { Card, Button, Badge, Modal } from '@cc/ui';
+import { Card, Button, Badge, Modal, useToast, ConfirmDialog } from '@cc/ui';
 import { cmsApi } from '@/lib/api';
 import { BlogPostDto, BlogCategoryDto, BlogPostStatus } from '@cc/types';
 
 export default function AdminCmsPage() {
+  const { warning, error, success } = useToast();
   const [posts, setPosts] = useState<BlogPostDto[]>([]);
   const [categories, setCategories] = useState<BlogCategoryDto[]>([]);
   const [selectedStatus, setSelectedStatus] = useState<string>('ALL');
@@ -41,6 +42,7 @@ export default function AdminCmsPage() {
   const [activeEditorTab, setActiveEditorTab] = useState<'content' | 'seo' | 'preview'>('content');
   const [editingPostId, setEditingPostId] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState<boolean>(false);
+  const [postToArchive, setPostToArchive] = useState<{ id: string; title: string } | null>(null);
 
   // Form State
   const [formData, setFormData] = useState({
@@ -151,7 +153,7 @@ export default function AdminCmsPage() {
 
   const handleSavePost = async (publishImmediate = false) => {
     if (!formData.title.trim() || !formData.excerpt.trim() || !formData.content.trim()) {
-      alert('Please fill out the Title, Excerpt, and Article Content.');
+      warning('Required fields missing', 'Please fill out the Title, Excerpt, and Article Content.');
       return;
     }
 
@@ -187,20 +189,26 @@ export default function AdminCmsPage() {
       setIsEditorOpen(false);
       await loadData();
     } catch (err: any) {
-      alert(`Save failed: ${err?.response?.data?.message || err.message}`);
+      error('Save failed', err?.response?.data?.message || err.message);
     } finally {
       setIsSaving(false);
     }
   };
 
-  const handleDeletePost = async (id: string, title: string) => {
-    if (confirm(`Are you sure you want to archive "${title}"?`)) {
-      try {
-        await cmsApi.deletePost(id);
-        await loadData();
-      } catch (err: any) {
-        alert(`Delete failed: ${err.message}`);
-      }
+  const handleDeletePost = (id: string, title: string) => {
+    setPostToArchive({ id, title });
+  };
+
+  const confirmArchivePost = async () => {
+    if (!postToArchive) return;
+    try {
+      await cmsApi.deletePost(postToArchive.id);
+      success('Article Archived', `"${postToArchive.title}" has been archived.`);
+      await loadData();
+    } catch (err: any) {
+      error('Delete failed', err.message);
+    } finally {
+      setPostToArchive(null);
     }
   };
 
@@ -219,7 +227,7 @@ export default function AdminCmsPage() {
       setCategoryFormData({ name: '', slug: '', description: '', sortOrder: 0 });
       await loadData();
     } catch (err: any) {
-      alert(`Category creation failed: ${err.message}`);
+      error('Category creation failed', err.message);
     }
   };
 
@@ -769,6 +777,17 @@ export default function AdminCmsPage() {
           </div>
         </div>
       )}
+
+      <ConfirmDialog
+        isOpen={Boolean(postToArchive)}
+        title="Archive Article"
+        message={`Are you sure you want to archive "${postToArchive?.title}"? This will unpublish the article and remove it from public view.`}
+        confirmLabel="Archive Article"
+        cancelLabel="Cancel"
+        variant="danger"
+        onConfirm={confirmArchivePost}
+        onCancel={() => setPostToArchive(null)}
+      />
     </AdminShell>
   );
 }
