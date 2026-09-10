@@ -50,44 +50,47 @@ export default function HomePage() {
   const popularServices = SERVICE_VERTICALS.filter((s) => s.isPopular);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200">
+    <div className="min-h-screen overflow-x-hidden bg-slate-50 dark:bg-slate-900 text-slate-900 dark:text-slate-100 flex flex-col justify-between transition-colors duration-200">
       {/* Top Navbar */}
       <header className="border-b border-slate-200 dark:border-slate-800 bg-white/90 dark:bg-slate-950/80 backdrop-blur-md sticky top-0 z-50 transition-colors">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-amber-400 flex items-center justify-center font-black text-white shadow-lg shadow-brand-500/20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-2">
+          <div className="flex items-center gap-2 sm:gap-3 shrink-0">
+            <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
+              <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-amber-400 flex items-center justify-center font-black text-white shadow-lg shadow-brand-500/20 shrink-0 text-sm sm:text-base">
                 CC
               </div>
               <div className="flex flex-col">
-                <span className="font-extrabold text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1.5">
+                <span className="font-extrabold text-sm sm:text-base tracking-tight text-slate-900 dark:text-white flex items-center gap-1">
                   Crazy Capital <span className="text-xs">🇮🇳</span>
                 </span>
-                <span className="text-[10px] text-slate-500 dark:text-slate-400 tracking-wider font-semibold uppercase">
+                <span className="hidden sm:block text-[10px] text-slate-500 dark:text-slate-400 tracking-wider font-semibold uppercase">
                   India&apos;s Business Operating System
                 </span>
               </div>
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 sm:gap-3 text-xs font-semibold">
+          <div className="flex items-center gap-1.5 sm:gap-3 text-xs font-semibold shrink-0">
             <Link
               href="/blog"
-              className="hidden md:flex px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors items-center gap-1.5"
+              className="hidden lg:flex px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors items-center gap-1.5"
             >
               <BookOpen className="w-3.5 h-3.5 text-brand-500 dark:text-brand-400" /> Knowledge Center
             </Link>
 
             <Link
               href="/customer"
-              className="px-3 py-1.5 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 dark:hover:bg-emerald-500/30 transition-colors flex items-center gap-1.5"
+              title="Customer Portal"
+              className="px-2.5 sm:px-3 py-1.5 rounded-lg bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/20 dark:border-emerald-500/30 text-emerald-700 dark:text-emerald-400 hover:bg-emerald-500/20 dark:hover:bg-emerald-500/30 transition-colors flex items-center gap-1.5"
             >
-              <FileCheck2 className="w-3.5 h-3.5" /> Customer Portal
+              <FileCheck2 className="w-3.5 h-3.5 shrink-0" />
+              <span className="hidden sm:inline">Customer Portal</span>
+              <span className="sm:hidden">Portal</span>
             </Link>
 
             <Link
               href="/partner"
-              className="hidden sm:flex px-3 py-1.5 rounded-lg bg-brand-600/10 dark:bg-brand-600/20 border border-brand-500/20 dark:border-brand-500/30 text-brand-700 dark:text-brand-400 hover:bg-brand-600/20 dark:hover:bg-brand-600/30 transition-colors items-center gap-1.5"
+              className="hidden md:flex px-3 py-1.5 rounded-lg bg-brand-600/10 dark:bg-brand-600/20 border border-brand-500/20 dark:border-brand-500/30 text-brand-700 dark:text-brand-400 hover:bg-brand-600/20 dark:hover:bg-brand-600/30 transition-colors items-center gap-1.5"
             >
               <Users2 className="w-3.5 h-3.5" /> Partner Hub
             </Link>
@@ -101,9 +104,9 @@ export default function HomePage() {
             {/* Admin Login Button */}
             <Link
               href="/admin"
-              className="px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors font-bold shadow-xs flex items-center gap-1.5"
+              className="px-2.5 sm:px-3.5 py-1.5 rounded-lg bg-slate-900 dark:bg-white text-white dark:text-slate-950 hover:bg-slate-800 dark:hover:bg-slate-100 transition-colors font-bold shadow-xs flex items-center gap-1"
             >
-              Admin Login ➔
+              <span className="hidden sm:inline">Admin</span> Login ➔
             </Link>
           </div>
         </div>
